@@ -1,0 +1,36 @@
+server:
+  port: @server.port@
+management:
+  security:
+    flag: false
+  metrics:
+    export:
+      statsd:
+        flavor: etsy
+        enabled: false
+spring:
+  application:
+    name: @project.name@
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.postgresql.Driver
+    url: @db.url@
+    username: @db.user@
+    password: @db.password@
+    hikari:
+      idle-timeout: 30000
+      maximum-pool-size: 10
+    flyway:
+      schemas: af
+info:
+  version: @project.version@
+  stage: dev
+
+kafka:
+  bootstrap.servers: "localhost:29092"
+  wblist.topic:
+    command: "wb-list-command"
+    event.sink: "wb-list-event-sink"
