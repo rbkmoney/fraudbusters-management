@@ -40,7 +40,7 @@ public class WbListResource {
     @DeleteMapping(value = "/whiteList")
     public ResponseEntity<String> removeRowFromWhiteList(@RequestBody ListRecord record) throws ExecutionException, InterruptedException {
         Row row = listRecordToRowConverter.destinationToSource(record);
-        log.info("WbListResource whiteList add record {}", record);
+        log.info("WbListResource whiteList remove record {}", record);
         String idMessage = commandService.sendCommandSync(row, ListType.white, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
@@ -49,12 +49,8 @@ public class WbListResource {
     public ResponseEntity<List<ListRecord>> getWhiteList(@RequestParam String partyId,
                                                          @RequestParam String shopId,
                                                          @RequestParam String listName) {
-            List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(partyId, shopId,
-                    com.rbkmoney.fraudbusters.management.domain.enums.ListType.white, listName);
-            List<ListRecord> listRecords = filteredListRecords.stream()
-                    .map(wbListRecordsToListRecordConverter::destinationToSource)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok().body(listRecords);
+        List<ListRecord> listRecords = selectConvertedList(partyId, shopId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.white);
+        return ResponseEntity.ok().body(listRecords);
     }
 
     @PostMapping(value = "/blackList")
@@ -77,13 +73,17 @@ public class WbListResource {
     public ResponseEntity<List<ListRecord>> getBlackList(@RequestParam String partyId,
                                                          @RequestParam String shopId,
                                                          @RequestParam String listName) {
-            List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(partyId, shopId,
-                    com.rbkmoney.fraudbusters.management.domain.enums.ListType.black, listName);
-            List<ListRecord> listRecords = filteredListRecords.stream()
-                    .map(wbListRecordsToListRecordConverter::destinationToSource)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok().body(listRecords);
+        List<ListRecord> listRecords = selectConvertedList(partyId, shopId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);
+        return ResponseEntity.ok().body(listRecords);
     }
 
+    private List<ListRecord> selectConvertedList(String partyId, String shopId, String listName,
+                                                 com.rbkmoney.fraudbusters.management.domain.enums.ListType black) {
+        List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(partyId, shopId,
+                black, listName);
+        return filteredListRecords.stream()
+                .map(wbListRecordsToListRecordConverter::destinationToSource)
+                .collect(Collectors.toList());
+    }
 
 }
