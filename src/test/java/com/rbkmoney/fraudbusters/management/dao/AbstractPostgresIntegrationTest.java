@@ -19,9 +19,9 @@ import java.time.Duration;
 @RunWith(SpringRunner.class)
 @EnableConfigurationProperties({DataSourceProperties.class})
 @ContextConfiguration(classes = {DataSourceAutoConfiguration.class},
-        initializers = AbstractPostgreIntegrationTest.Initializer.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class AbstractPostgreIntegrationTest {
+        initializers = AbstractPostgresIntegrationTest.Initializer.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+public abstract class AbstractPostgresIntegrationTest {
 
     @ClassRule
     public static PostgreSQLContainer postgres = (PostgreSQLContainer) new PostgreSQLContainer("postgres:9.6")

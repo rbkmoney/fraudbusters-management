@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.dao.wblist;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgreIntegrationTest;
+import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @ContextConfiguration(classes = {WbListDaoImpl.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class WbListDaoImplTest extends AbstractPostgreIntegrationTest {
+public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY = "party";
     public static final String SHOP = "shop";
