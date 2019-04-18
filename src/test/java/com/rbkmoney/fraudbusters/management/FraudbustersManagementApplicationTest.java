@@ -104,7 +104,7 @@ public class FraudbustersManagementApplicationTest extends AbstractKafkaIntegrat
     }
 
     @Test
-    public void executeTest() {
+    public void executeTest() throws ExecutionException, InterruptedException {
         Mockito.doNothing().when(wbListDao).saveListRecord(any());
 
         ListRecord record = new ListRecord();
