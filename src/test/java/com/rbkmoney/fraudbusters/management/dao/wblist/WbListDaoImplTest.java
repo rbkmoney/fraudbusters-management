@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @ContextConfiguration(classes = {WbListDaoImpl.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY = "party";
