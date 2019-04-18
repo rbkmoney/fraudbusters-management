@@ -36,14 +36,14 @@ public class WbListResource {
 
     @PostMapping(value = "/whiteList")
     public ResponseEntity<String> insertRowToWhite(@RequestBody ListRecord record) {
-        Row row = listRecordToRowConverter.convert(record);
+        Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
         return sendCommand(row, ListType.white, Command.CREATE);
     }
 
     @DeleteMapping(value = "/whiteList")
     public ResponseEntity<String> removeRowFromWhiteList(@RequestBody ListRecord record) {
-        Row row = listRecordToRowConverter.convert(record);
+        Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
         return sendCommand(row, ListType.white, Command.DELETE);
     }
@@ -67,14 +67,14 @@ public class WbListResource {
 
     @PostMapping(value = "/blackList")
     public ResponseEntity<String> insertRowToBlack(@RequestBody ListRecord record) {
-        Row row = listRecordToRowConverter.convert(record);
+        Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
         return sendCommand(row, ListType.black, Command.CREATE);
     }
 
     @DeleteMapping(value = "/blackList")
     public ResponseEntity<String> removeRowFromBlackList(@RequestBody ListRecord record) {
-        Row row = listRecordToRowConverter.convert(record);
+        Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
         return sendCommand(row, ListType.black, Command.DELETE);
     }
