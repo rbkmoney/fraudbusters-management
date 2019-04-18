@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.serializer;
 
 
+import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.thrift.TBase;
@@ -16,7 +17,7 @@ public class ThriftSerializer<T extends TBase> implements Serializer<T> {
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-
+        log.warn("ThriftSerializer configure configs: {} isKey: {} is do nothing!", isKey);
     }
 
     @Override
@@ -24,12 +25,12 @@ public class ThriftSerializer<T extends TBase> implements Serializer<T> {
         try {
             return thriftSerializer.get().serialize(event);
         } catch (TException e) {
-            throw new RuntimeException(e);
+            throw new KafkaSerializationException(e);
         }
     }
 
     @Override
     public void close() {
-
+        thriftSerializer.remove();
     }
 }
