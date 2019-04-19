@@ -1,17 +1,19 @@
 package com.rbkmoney.fraudbusters.management.dao.condition;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.jooq.Comparator;
 import org.jooq.Field;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-/**
- * Created by tolkonepiu on 31/05/2017.
- */
+@EqualsAndHashCode
+@ToString
 public class ConditionParameterSource {
 
+    @Getter
     private List<ConditionField> conditionFields;
 
     public ConditionParameterSource() {
@@ -25,30 +27,5 @@ public class ConditionParameterSource {
         }
         return this;
     }
-
-    public List<ConditionField> getConditionFields() {
-        return conditionFields;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ConditionParameterSource that = (ConditionParameterSource) o;
-
-        return conditionFields.equals(that.conditionFields);
-    }
-
-    @Override
-    public int hashCode() {
-        return conditionFields.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "ConditionParameterSource{" +
-                "conditionFields=" + conditionFields +
-                '}';
-    }
+    
 }
