@@ -23,9 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by tolkonepiu on 29/05/2017.
- */
 public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
 
     private final DSLContext dslContext;

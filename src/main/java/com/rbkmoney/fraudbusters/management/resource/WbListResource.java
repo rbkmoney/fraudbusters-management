@@ -79,9 +79,8 @@ public class WbListResource {
     }
 
     private List<ListRecord> selectConvertedList(String partyId, String shopId, String listName,
-                                                 com.rbkmoney.fraudbusters.management.domain.enums.ListType black) {
-        List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(partyId, shopId,
-                black, listName);
+                                                 com.rbkmoney.fraudbusters.management.domain.enums.ListType type) {
+        List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(partyId, shopId, type, listName);
         return filteredListRecords.stream()
                 .map(wbListRecordsToListRecordConverter::destinationToSource)
                 .collect(Collectors.toList());

@@ -26,7 +26,7 @@ public class ErrorController {
         log.error("HttpClientErrorException.Unauthorized exception e: ", e);
     }
 
-    @ExceptionHandler({KafkaSerializationException.class})
+    @ExceptionHandler(KafkaSerializationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleBadRequest(KafkaSerializationException e) {
@@ -36,7 +36,7 @@ public class ErrorController {
                 .build();
     }
 
-    @ExceptionHandler({DaoException.class})
+    @ExceptionHandler(DaoException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleBadRequest(DaoException e) {
