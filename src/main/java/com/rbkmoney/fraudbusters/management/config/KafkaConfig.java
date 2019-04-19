@@ -3,7 +3,7 @@ package com.rbkmoney.fraudbusters.management.config;
 import com.rbkmoney.damsel.wb_list.ChangeCommand;
 import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.fraudbusters.management.serializer.EventDeserializer;
-import com.rbkmoney.fraudbusters.management.serializer.ThriftSerializer;
+import com.rbkmoney.serializer.ThriftSerializer;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;

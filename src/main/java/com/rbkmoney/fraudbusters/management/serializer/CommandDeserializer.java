@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.serializer;
 
 
 import com.rbkmoney.damsel.wb_list.ChangeCommand;
+import com.rbkmoney.deserializer.AbstractDeserializerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

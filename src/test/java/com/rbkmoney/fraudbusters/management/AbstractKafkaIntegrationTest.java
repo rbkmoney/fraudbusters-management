@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.fraudbusters.management.config.KafkaConfig;
 import com.rbkmoney.fraudbusters.management.serializer.EventDeserializer;
-import com.rbkmoney.fraudbusters.management.serializer.ThriftSerializer;
+import com.rbkmoney.serializer.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
