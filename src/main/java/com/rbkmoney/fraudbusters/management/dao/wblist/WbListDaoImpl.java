@@ -1,15 +1,14 @@
 package com.rbkmoney.fraudbusters.management.dao.wblist;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
+import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.dao.mapper.RecordRowMapper;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsRecord;
 import com.rbkmoney.fraudbusters.management.exception.DaoException;
-import org.jooq.DeleteConditionStep;
-import org.jooq.Query;
-import org.jooq.Record7;
-import org.jooq.SelectConditionStep;
+import org.jooq.*;
+import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +17,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.WbListRecords.WB_LIST_RECORDS;
+import static org.jooq.Comparator.EQUALS;
 
 @Component
 public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
+    private static final int LIMIT_TOTAL = 100;
     private final RowMapper<WbListRecords> listRecordRowMapper;
 
     public WbListDaoImpl(DataSource dataSource) {
@@ -75,20 +76,23 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
     @Override
     public List<WbListRecords> getFilteredListRecords(String partyId, String shopId, ListType listType, String listName) throws DaoException {
-        SelectConditionStep<Record7<String, String, String, ListType, String, String, LocalDateTime>> query =
-                getDslContext()
-                        .select(WB_LIST_RECORDS.ID,
-                                WB_LIST_RECORDS.PARTY_ID,
-                                WB_LIST_RECORDS.SHOP_ID,
-                                WB_LIST_RECORDS.LIST_TYPE,
-                                WB_LIST_RECORDS.LIST_NAME,
-                                WB_LIST_RECORDS.VALUE,
-                                WB_LIST_RECORDS.INSERT_TIME)
-                        .from(WB_LIST_RECORDS)
-                        .where(WB_LIST_RECORDS.PARTY_ID.eq(partyId)
-                                .and(WB_LIST_RECORDS.SHOP_ID.eq(shopId))
-                                .and(WB_LIST_RECORDS.LIST_TYPE.eq(listType))
-                                .and(WB_LIST_RECORDS.LIST_NAME.eq(listName)));
+        Condition condition = DSL.trueCondition();
+        SelectLimitPercentStep<Record7<String, String, String, ListType, String, String, LocalDateTime>> query = getDslContext()
+                .select(WB_LIST_RECORDS.ID,
+                        WB_LIST_RECORDS.PARTY_ID,
+                        WB_LIST_RECORDS.SHOP_ID,
+                        WB_LIST_RECORDS.LIST_TYPE,
+                        WB_LIST_RECORDS.LIST_NAME,
+                        WB_LIST_RECORDS.VALUE,
+                        WB_LIST_RECORDS.INSERT_TIME)
+                .from(WB_LIST_RECORDS)
+                .where(appendConditions(condition, Operator.AND,
+                        new ConditionParameterSource()
+                                .addValue(WB_LIST_RECORDS.PARTY_ID, partyId, EQUALS)
+                                .addValue(WB_LIST_RECORDS.SHOP_ID, shopId, EQUALS)
+                                .addValue(WB_LIST_RECORDS.LIST_TYPE, listType, EQUALS)
+                                .addValue(WB_LIST_RECORDS.LIST_NAME, listName, EQUALS)))
+                .limit(LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 }

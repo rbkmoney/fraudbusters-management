@@ -48,7 +48,7 @@ public class WbListResource {
 
     @GetMapping(value = "/whiteList")
     public ResponseEntity<List<ListRecord>> getWhiteList(@RequestParam String partyId,
-                                                         @RequestParam String shopId,
+                                                         @RequestParam(required = false) String shopId,
                                                          @RequestParam String listName) {
         List<ListRecord> listRecords = selectConvertedList(partyId, shopId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.white);
         return ResponseEntity.ok().body(listRecords);
@@ -72,7 +72,7 @@ public class WbListResource {
 
     @GetMapping(value = "/blackList")
     public ResponseEntity<List<ListRecord>> getBlackList(@RequestParam String partyId,
-                                                         @RequestParam String shopId,
+                                                         @RequestParam(required = false) String shopId,
                                                          @RequestParam String listName) {
         List<ListRecord> listRecords = selectConvertedList(partyId, shopId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);
         return ResponseEntity.ok().body(listRecords);

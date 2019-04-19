@@ -1,5 +1,7 @@
 package com.rbkmoney.fraudbusters.management.dao;
 
+import com.rbkmoney.fraudbusters.management.dao.condition.ConditionField;
+import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.exception.DaoException;
 import org.jooq.*;
 import org.jooq.conf.ParamType;
@@ -154,4 +156,19 @@ public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
         return sqlParameterSource;
     }
 
+    protected Condition appendConditions(Condition condition, Operator operator, ConditionParameterSource conditionParameterSource) {
+        for (ConditionField field : conditionParameterSource.getConditionFields()) {
+            if (field.getValue() != null) {
+                condition = DSL.condition(operator, condition, buildCondition(field));
+            }
+        }
+        return condition;
+    }
+
+    private Condition buildCondition(ConditionField field) {
+        return field.getField().compare(
+                field.getComparator(),
+                field.getValue()
+        );
+    }
 }

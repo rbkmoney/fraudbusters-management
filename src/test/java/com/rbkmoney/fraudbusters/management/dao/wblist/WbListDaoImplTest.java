@@ -64,5 +64,10 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(PARTY, SHOP, ListType.black, LIST_NAME);
 
         Assert.assertEquals(1, filteredListRecords.size());
+
+        filteredListRecords = wbListDao.getFilteredListRecords(null, SHOP, ListType.black, null);
+
+        Assert.assertEquals(2, filteredListRecords.size());
+
     }
 }
