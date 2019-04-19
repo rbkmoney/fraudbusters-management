@@ -1,7 +1,5 @@
 package com.rbkmoney.fraudbusters.management;
 
-import com.rbkmoney.damsel.wb_list.ListType;
-import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.controller.ErrorController;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordConverter;
@@ -30,9 +28,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -75,14 +76,25 @@ public class ExceptionApplicationTest {
     private static String SERVICE_URL = "http://localhost:%s";
 
     @NotNull
-    private Row createRow(ListType listType) {
-        Row row = new Row();
-        row.setShopId(SHOP_ID);
-        row.setPartyId(PARTY_ID);
-        row.setListName(LIST_NAME);
-        row.setListType(listType);
-        row.setValue(VALUE);
-        return row;
+    private ListRecord createRow() {
+        ListRecord listRecord = new ListRecord();
+        listRecord.setShopId(SHOP_ID);
+        listRecord.setPartyId(PARTY_ID);
+        listRecord.setListName(LIST_NAME);
+        listRecord.setValue(VALUE);
+        return listRecord;
+    }
+
+    @Test(expected = HttpClientErrorException.BadRequest.class)
+    public void executionRestTestBadRequest() throws ExecutionException, InterruptedException {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        Mockito.when(commandService.sendCommandSync(any(), any(), any())).thenReturn(ID_TEST);
+
+        ListRecord listRecord = new ListRecord();
+        String format = String.format(SERVICE_URL, serverPort);
+        ResponseEntity<String> response = restTemplate.postForEntity(format + "/whiteList", listRecord, String.class);
+        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assert.assertEquals(response.getBody(), ID_TEST);
     }
 
     @Test
@@ -90,7 +102,7 @@ public class ExceptionApplicationTest {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(commandService.sendCommandSync(any(), any(), any())).thenReturn(ID_TEST);
 
-        ListRecord listRecord = new ListRecord();
+        ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
         ResponseEntity<String> response = restTemplate.postForEntity(format + "/whiteList", listRecord, String.class);
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -102,7 +114,7 @@ public class ExceptionApplicationTest {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(commandService.sendCommandSync(any(), any(), any())).thenThrow(new DaoException(TEST_MESSAGE));
 
-        ListRecord listRecord = new ListRecord();
+        ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
         restTemplate.postForEntity(format + "/whiteList", listRecord, ErrorResponse.class);
     }
@@ -112,8 +124,22 @@ public class ExceptionApplicationTest {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(commandService.sendCommandSync(any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
 
-        ListRecord listRecord = new ListRecord();
+        ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
         restTemplate.postForEntity(format + "/whiteList", listRecord, ErrorResponse.class);
+    }
+
+    @Test(expected = HttpClientErrorException.BadRequest.class)
+    public void getRestTestBadRequest() throws ExecutionException, InterruptedException {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        Mockito.when(commandService.sendCommandSync(any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
+        HashMap<String, Object> uriVariables = new HashMap<>();
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(String.format(SERVICE_URL, serverPort) + "/whiteList")
+                .queryParam("partyId", PARTY_ID)
+                .queryParam("shopId", SHOP_ID)
+        ;
+        uriVariables.put("partyId", PARTY_ID);
+        uriVariables.put("shopId", SHOP_ID);
+        restTemplate.getForEntity(builder.buildAndExpand(uriVariables).toUri(), ErrorResponse.class);
     }
 }

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class WbListResource {
     private final CommandService commandService;
 
     @PostMapping(value = "/whiteList")
-    public ResponseEntity<String> insertRowToWhite(@RequestBody ListRecord record) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> insertRowToWhite(@Validated @RequestBody ListRecord record) throws ExecutionException, InterruptedException {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
         String idMessage = commandService.sendCommandSync(row, ListType.white, Command.CREATE);
@@ -38,7 +39,7 @@ public class WbListResource {
     }
 
     @DeleteMapping(value = "/whiteList")
-    public ResponseEntity<String> removeRowFromWhiteList(@RequestBody ListRecord record) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody ListRecord record) throws ExecutionException, InterruptedException {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList remove record {}", record);
         String idMessage = commandService.sendCommandSync(row, ListType.white, Command.DELETE);

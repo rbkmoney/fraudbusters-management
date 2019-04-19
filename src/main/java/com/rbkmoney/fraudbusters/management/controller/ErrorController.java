@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 public class ErrorController {
 
     public static final String FORMAT_DATA_EXCEPTION = "formatDataException";
+    public static final String INVALID_PARAMETERS = "invalidParameters";
     public static final String DATA_BASE_INVOCATION_EXCEPTION = "dataBaseInvocationException";
 
     @ExceptionHandler(HttpClientErrorException.Unauthorized.class)
@@ -41,6 +42,16 @@ public class ErrorController {
     public ErrorResponse handleBadRequest(DaoException e) {
         return ErrorResponse.builder()
                 .code(DATA_BASE_INVOCATION_EXCEPTION)
+                .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler({HttpClientErrorException.BadRequest.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleBadRequest(HttpClientErrorException.BadRequest e) {
+        return ErrorResponse.builder()
+                .code(INVALID_PARAMETERS)
                 .message(e.getMessage())
                 .build();
     }
