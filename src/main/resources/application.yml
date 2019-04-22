@@ -31,9 +31,13 @@ info:
 
 kafka:
   bootstrap.servers: "localhost:29092"
-  wblist.topic:
-    command: "wb-list-command"
-    event.sink: "wb-list-event-sink"
+  topic:
+    wblist:
+      command: "wb-list-command"
+      event.sink: "wb-list-event-sink"
+    fraudbusters:
+      template: "wb-list-command"
+      reference: "wb-list-command"
   ssl:
     enable: false
     keystore-location: src/main/resources/cert/kenny-k.struzhkin.p12

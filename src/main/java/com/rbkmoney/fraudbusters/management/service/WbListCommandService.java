@@ -14,15 +14,15 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 @RequiredArgsConstructor
-public class CommandService {
+public class WbListCommandService {
 
     private final KafkaTemplate kafkaTemplate;
 
-    @Value("${kafka.wblist.topic.command}")
+    @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
 
-    public String sendCommandSync(Row row, ListType white, Command command) throws ExecutionException, InterruptedException {
-        row.setListType(white);
+    public String sendCommandSync(Row row, ListType type, Command command) throws ExecutionException, InterruptedException {
+        row.setListType(type);
         String uuid = UUID.randomUUID().toString();
         kafkaTemplate.send(topicCommand, uuid, createChangeCommand(row, command))
                 .get();

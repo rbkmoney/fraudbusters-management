@@ -8,7 +8,7 @@ import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordC
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
-import com.rbkmoney.fraudbusters.management.service.CommandService;
+import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +28,13 @@ public class WbListResource {
     private final ListRecordToRowConverter listRecordToRowConverter;
     private final WbListDao wbListDao;
     private final WbListRecordsToListRecordConverter wbListRecordsToListRecordConverter;
-    private final CommandService commandService;
+    private final WbListCommandService wbListCommandService;
 
     @PostMapping(value = "/whiteList")
     public ResponseEntity<String> insertRowToWhite(@Validated @RequestBody ListRecord record) throws ExecutionException, InterruptedException {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
-        String idMessage = commandService.sendCommandSync(row, ListType.white, Command.CREATE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.white, Command.CREATE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -42,7 +42,7 @@ public class WbListResource {
     public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody ListRecord record) throws ExecutionException, InterruptedException {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList remove record {}", record);
-        String idMessage = commandService.sendCommandSync(row, ListType.white, Command.DELETE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.white, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -58,7 +58,7 @@ public class WbListResource {
     public ResponseEntity<String> insertRowToBlack(@RequestBody ListRecord record) throws ExecutionException, InterruptedException {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
-        String idMessage = commandService.sendCommandSync(row, ListType.black, Command.CREATE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.black, Command.CREATE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -66,7 +66,7 @@ public class WbListResource {
     public ResponseEntity<String> removeRowFromBlackList(@RequestBody ListRecord record) throws ExecutionException, InterruptedException {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
-        String idMessage = commandService.sendCommandSync(row, ListType.black, Command.DELETE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.black, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 

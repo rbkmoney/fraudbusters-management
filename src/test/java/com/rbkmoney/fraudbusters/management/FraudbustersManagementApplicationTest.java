@@ -46,9 +46,9 @@ public class FraudbustersManagementApplicationTest extends AbstractKafkaIntegrat
     private static final String PARTY_ID = "partyId";
     private static final String LIST_NAME = "listName";
 
-    @Value("${kafka.wblist.topic.event.sink}")
+    @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
-    @Value("${kafka.wblist.topic.command}")
+    @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
 
     @MockBean
