@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management.domain;
 
 import lombok.Data;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 

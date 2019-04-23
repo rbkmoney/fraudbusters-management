@@ -1,0 +1,72 @@
+package com.rbkmoney.fraudbusters.management.dao.template;
+
+import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
+import com.rbkmoney.fraudbusters.management.dao.mapper.RecordRowMapper;
+import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
+import com.rbkmoney.fraudbusters.management.exception.DaoException;
+import org.jooq.*;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
+import java.util.List;
+
+import static com.rbkmoney.fraudbusters.management.domain.tables.FTemplate.F_TEMPLATE;
+
+@Component
+public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
+
+    private static final int LIMIT_TOTAL = 100;
+    private final RowMapper<TemplateModel> listRecordRowMapper;
+
+    public TemplateDaoImpl(DataSource dataSource) {
+        super(dataSource);
+        listRecordRowMapper = new RecordRowMapper<>(F_TEMPLATE, TemplateModel.class);
+    }
+
+    @Override
+    public void insert(TemplateModel templateModel) throws DaoException {
+        Query query = getDslContext()
+                .insertInto(F_TEMPLATE)
+                .set(getDslContext().newRecord(F_TEMPLATE, templateModel))
+                .onConflict(F_TEMPLATE.ID)
+                .doUpdate()
+                .set(getDslContext().newRecord(F_TEMPLATE, templateModel));
+        execute(query);
+    }
+
+    @Override
+    public void remove(String id) throws DaoException {
+        DeleteConditionStep<FTemplateRecord> where = getDslContext()
+                .delete(F_TEMPLATE)
+                .where(F_TEMPLATE.ID.eq(id));
+        execute(where);
+    }
+
+    @Override
+    public void remove(TemplateModel templateModel) throws DaoException {
+        DeleteConditionStep<FTemplateRecord> where = getDslContext()
+                .delete(F_TEMPLATE)
+                .where(F_TEMPLATE.ID.eq(templateModel.getId()));
+        execute(where);
+    }
+
+    @Override
+    public TemplateModel getById(String id) throws DaoException {
+        SelectConditionStep<Record2<String, String>> where = getDslContext()
+                .select(F_TEMPLATE.ID, F_TEMPLATE.TEMPLATE)
+                .from(F_TEMPLATE)
+                .where(F_TEMPLATE.ID.eq(id));
+        return fetchOne(where, listRecordRowMapper);
+    }
+
+    @Override
+    public List<TemplateModel> getList(int limit) throws DaoException {
+        SelectLimitPercentStep<Record2<String, String>> query = getDslContext()
+                .select(F_TEMPLATE.ID, F_TEMPLATE.TEMPLATE)
+                .from(F_TEMPLATE)
+                .limit(limit != 0 ? limit : LIMIT_TOTAL);
+        return fetch(query, listRecordRowMapper);
+    }
+}

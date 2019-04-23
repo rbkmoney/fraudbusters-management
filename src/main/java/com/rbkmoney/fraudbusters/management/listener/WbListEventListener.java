@@ -17,7 +17,7 @@ public class WbListEventListener {
     private final WbListDao wbListDao;
     private final EventToListRecordConverter eventToListRecordConverter;
 
-    @KafkaListener(topics = "${kafka.wblist.topic.event.sink}", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.wblist.event.sink}", containerFactory = "kafkaListenerContainerFactory")
     public void listen(Event event) {
         log.info("WbListListener event: {}", event);
         WbListRecords record = eventToListRecordConverter.convert(event);
