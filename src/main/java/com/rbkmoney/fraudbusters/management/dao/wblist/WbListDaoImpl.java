@@ -32,7 +32,8 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
     @Override
     public void saveListRecord(WbListRecords listRecord) throws DaoException {
-        Query query = getDslContext().insertInto(WB_LIST_RECORDS)
+        Query query = getDslContext()
+                .insertInto(WB_LIST_RECORDS)
                 .set(getDslContext().newRecord(WB_LIST_RECORDS, listRecord))
                 .onConflict(WB_LIST_RECORDS.PARTY_ID, WB_LIST_RECORDS.SHOP_ID, WB_LIST_RECORDS.LIST_TYPE,
                         WB_LIST_RECORDS.LIST_NAME, WB_LIST_RECORDS.VALUE)
@@ -42,14 +43,16 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
     @Override
     public void removeRecord(String id) throws DaoException {
-        DeleteConditionStep<WbListRecordsRecord> where = getDslContext().delete(WB_LIST_RECORDS)
+        DeleteConditionStep<WbListRecordsRecord> where = getDslContext()
+                .delete(WB_LIST_RECORDS)
                 .where(WB_LIST_RECORDS.ID.eq(id));
         execute(where);
     }
 
     @Override
     public void removeRecord(WbListRecords listRecord) throws DaoException {
-        DeleteConditionStep<WbListRecordsRecord> where = getDslContext().delete(WB_LIST_RECORDS)
+        DeleteConditionStep<WbListRecordsRecord> where = getDslContext()
+                .delete(WB_LIST_RECORDS)
                 .where(WB_LIST_RECORDS.PARTY_ID.eq(listRecord.getPartyId())
                         .and(WB_LIST_RECORDS.SHOP_ID.eq(listRecord.getShopId()))
                         .and(WB_LIST_RECORDS.LIST_TYPE.eq(listRecord.getListType()))

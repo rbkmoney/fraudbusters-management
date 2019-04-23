@@ -1,7 +1,8 @@
 package com.rbkmoney.fraudbusters.management.config;
 
-import com.rbkmoney.damsel.wb_list.ChangeCommand;
+import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.wb_list.Event;
+import com.rbkmoney.fraudbusters.management.serializer.CommandFraudDeserializer;
 import com.rbkmoney.fraudbusters.management.serializer.EventDeserializer;
 import com.rbkmoney.serializer.ThriftSerializer;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -10,6 +11,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.thrift.TBase;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +52,6 @@ public class KafkaConfig {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EventDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
         sslConfigure(props);
@@ -58,18 +60,56 @@ public class KafkaConfig {
 
     @Bean
     public ConsumerFactory<String, Event> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+        Map<String, Object> configs = consumerConfigs();
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EventDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(configs);
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> kafkaListenerContainerFactory() {
+    @Autowired
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> kafkaListenerContainerFactory(ConsumerFactory<String, Event> consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, Event> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(consumerFactory);
+        return factory;
+    }
+
+    //Template
+    @Bean
+    public ConsumerFactory<String, Command> consumerTemplateFactory() {
+        Map<String, Object> configs = consumerConfigs();
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CommandFraudDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(configs);
+    }
+
+    @Bean
+    @Autowired
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaTemplateListenerContainerFactory(ConsumerFactory<String, Command> consumerTemplateFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, Command> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerTemplateFactory);
+        factory.setConcurrency(1);
+        return factory;
+    }
+
+
+    //Reference
+    @Bean
+    public ConsumerFactory<String, Command> consumerReferenceFactory() {
+        Map<String, Object> configs = consumerConfigs();
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CommandFraudDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(configs);
+    }
+
+    @Bean
+    @Autowired
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaReferenceListenerContainerFactory(ConsumerFactory<String, Command> consumerReferenceFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, Command> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerReferenceFactory);
+        factory.setConcurrency(1);
         return factory;
     }
 
     @Bean
-    public ProducerFactory<String, ChangeCommand> producerFactory() {
+    public ProducerFactory<String, TBase> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -92,7 +132,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, ChangeCommand> kafkaTemplate() {
+    public KafkaTemplate<String, TBase> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

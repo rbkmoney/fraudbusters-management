@@ -6,7 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.ListRecord;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
 import com.rbkmoney.fraudbusters.management.resource.WbListResource;
-import com.rbkmoney.fraudbusters.management.serializer.CommandDeserializer;
+import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +37,9 @@ import static org.mockito.ArgumentMatchers.any;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@EnableAutoConfiguration(exclude = FlywayAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 @SpringBootTest(classes = FraudbustersManagementApplication.class)
-public class FraudbustersManagementApplicationTest extends AbstractKafkaIntegrationTest {
+public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     private static final String VALUE = "value";
     private static final String KEY = "key";
@@ -104,7 +105,7 @@ public class FraudbustersManagementApplicationTest extends AbstractKafkaIntegrat
     }
 
     @Test
-    public void executeTest() throws ExecutionException, InterruptedException {
+    public void executeTest() {
         Mockito.doNothing().when(wbListDao).saveListRecord(any());
 
         ListRecord record = new ListRecord();
@@ -115,7 +116,7 @@ public class FraudbustersManagementApplicationTest extends AbstractKafkaIntegrat
 
         ResponseEntity<String> stringResponseEntity = wbListResource.insertRowToBlack(record);
 
-        Consumer<String, ChangeCommand> consumer = createConsumer(CommandDeserializer.class);
+        Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class);
         consumer.subscribe(Collections.singletonList(topicCommand));
         List<ChangeCommand> eventList = consumeCommand(consumer);
 
@@ -124,7 +125,7 @@ public class FraudbustersManagementApplicationTest extends AbstractKafkaIntegrat
         Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
 
         stringResponseEntity = wbListResource.removeRowFromWhiteList(record);
-        consumer = createConsumer(CommandDeserializer.class);
+        consumer = createConsumer(CommandChangeDeserializer.class);
         consumer.subscribe(Collections.singletonList(topicCommand));
         eventList = consumeCommand(consumer);
 

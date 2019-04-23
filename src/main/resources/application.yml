@@ -36,8 +36,8 @@ kafka:
       command: "wb-list-command"
       event.sink: "wb-list-event-sink"
     fraudbusters:
-      template: "wb-list-command"
-      reference: "wb-list-command"
+      template: "template"
+      reference: "template_reference"
   ssl:
     enable: false
     keystore-location: src/main/resources/cert/kenny-k.struzhkin.p12

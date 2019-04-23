@@ -10,7 +10,6 @@ public class EventDeserializer extends AbstractDeserializerAdapter<Event> {
 
     @Override
     public Event deserialize(String topic, byte[] data) {
-        Event event = new Event();
-        return deserialize(data, event);
+        return deserialize(data, new Event());
     }
 }

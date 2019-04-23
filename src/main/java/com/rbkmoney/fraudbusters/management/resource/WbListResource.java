@@ -31,7 +31,7 @@ public class WbListResource {
     private final WbListCommandService wbListCommandService;
 
     @PostMapping(value = "/whiteList")
-    public ResponseEntity<String> insertRowToWhite(@Validated @RequestBody ListRecord record) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> insertRowToWhite(@Validated @RequestBody ListRecord record) {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
         String idMessage = wbListCommandService.sendCommandSync(row, ListType.white, Command.CREATE);
@@ -39,7 +39,7 @@ public class WbListResource {
     }
 
     @DeleteMapping(value = "/whiteList")
-    public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody ListRecord record) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody ListRecord record) {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList remove record {}", record);
         String idMessage = wbListCommandService.sendCommandSync(row, ListType.white, Command.DELETE);
@@ -55,7 +55,7 @@ public class WbListResource {
     }
 
     @PostMapping(value = "/blackList")
-    public ResponseEntity<String> insertRowToBlack(@RequestBody ListRecord record) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> insertRowToBlack(@RequestBody ListRecord record) {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
         String idMessage = wbListCommandService.sendCommandSync(row, ListType.black, Command.CREATE);
@@ -63,7 +63,7 @@ public class WbListResource {
     }
 
     @DeleteMapping(value = "/blackList")
-    public ResponseEntity<String> removeRowFromBlackList(@RequestBody ListRecord record) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> removeRowFromBlackList(@RequestBody ListRecord record) {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
         String idMessage = wbListCommandService.sendCommandSync(row, ListType.black, Command.DELETE);

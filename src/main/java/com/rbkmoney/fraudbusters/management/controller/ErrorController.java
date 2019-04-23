@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.controller;
 
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
 import com.rbkmoney.fraudbusters.management.exception.DaoException;
+import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ public class ErrorController {
     public static final String FORMAT_DATA_EXCEPTION = "formatDataException";
     public static final String INVALID_PARAMETERS = "invalidParameters";
     public static final String DATA_BASE_INVOCATION_EXCEPTION = "dataBaseInvocationException";
+    public static final String KAFKA_PRODUCE_ERROR = "kafkaProduceError";
 
     @ExceptionHandler(HttpClientErrorException.Unauthorized.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -52,6 +54,16 @@ public class ErrorController {
     public ErrorResponse handleBadRequest(HttpClientErrorException.BadRequest e) {
         return ErrorResponse.builder()
                 .code(INVALID_PARAMETERS)
+                .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler({KafkaProduceException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ErrorResponse handleBadRequest(KafkaProduceException e) {
+        return ErrorResponse.builder()
+                .code(KAFKA_PRODUCE_ERROR)
                 .message(e.getMessage())
                 .build();
     }

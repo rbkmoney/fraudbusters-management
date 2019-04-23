@@ -42,15 +42,18 @@ public abstract class AbstractKafkaIntegrationTest {
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public static final String WB_LIST_EVENT_SINK = "wb-list-event-sink";
         public static final String WB_LIST_COMMAND = "wb-list-command";
+        public static final String TEMPLATE = "template";
+        public static final String REFERENCE = "template_reference";
 
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues
-                    .of(
-                            "kafka.bootstrap.servers=" + kafka.getBootstrapServers())
+                    .of("kafka.bootstrap.servers=" + kafka.getBootstrapServers())
                     .applyTo(configurableApplicationContext.getEnvironment());
             initTopic(WB_LIST_COMMAND);
             initTopic(WB_LIST_EVENT_SINK);
+            initTopic(TEMPLATE);
+            initTopic(REFERENCE);
         }
 
         @NotNull
