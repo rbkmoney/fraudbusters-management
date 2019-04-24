@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
+import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.converter.CommandToReferenceModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
@@ -18,7 +19,7 @@ public class ReferenceListener {
     private final CommandToReferenceModelConverter converter;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.reference}", containerFactory = "kafkaReferenceListenerContainerFactory")
-    public void listen(Command command) {
+    public void listen(Command command) throws DaoException {
         log.info("ReferenceListener command: {}", command);
         ReferenceModel referenceModel = converter.convert(command);
         switch (command.getCommandType()) {

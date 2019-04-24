@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.controller;
 
+import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
-import com.rbkmoney.fraudbusters.management.exception.DaoException;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import lombok.RequiredArgsConstructor;

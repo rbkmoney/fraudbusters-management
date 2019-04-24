@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.dao.reference;
 
+import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import org.jetbrains.annotations.NotNull;

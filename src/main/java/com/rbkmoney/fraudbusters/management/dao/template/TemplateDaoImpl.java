@@ -1,10 +1,9 @@
 package com.rbkmoney.fraudbusters.management.dao.template;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
-import com.rbkmoney.fraudbusters.management.dao.mapper.RecordRowMapper;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
-import com.rbkmoney.fraudbusters.management.exception.DaoException;
+import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -26,7 +25,7 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public void insert(TemplateModel templateModel) throws DaoException {
+    public void insert(TemplateModel templateModel) {
         Query query = getDslContext()
                 .insertInto(F_TEMPLATE)
                 .set(getDslContext().newRecord(F_TEMPLATE, templateModel))
@@ -37,7 +36,7 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public void remove(String id) throws DaoException {
+    public void remove(String id) {
         DeleteConditionStep<FTemplateRecord> where = getDslContext()
                 .delete(F_TEMPLATE)
                 .where(F_TEMPLATE.ID.eq(id));
@@ -45,7 +44,7 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public void remove(TemplateModel templateModel) throws DaoException {
+    public void remove(TemplateModel templateModel) {
         DeleteConditionStep<FTemplateRecord> where = getDslContext()
                 .delete(F_TEMPLATE)
                 .where(F_TEMPLATE.ID.eq(templateModel.getId()));
@@ -53,7 +52,7 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public TemplateModel getById(String id) throws DaoException {
+    public TemplateModel getById(String id) {
         SelectConditionStep<Record2<String, String>> where = getDslContext()
                 .select(F_TEMPLATE.ID, F_TEMPLATE.TEMPLATE)
                 .from(F_TEMPLATE)
@@ -62,7 +61,7 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public List<TemplateModel> getList(int limit) throws DaoException {
+    public List<TemplateModel> getList(int limit) {
         SelectLimitPercentStep<Record2<String, String>> query = getDslContext()
                 .select(F_TEMPLATE.ID, F_TEMPLATE.TEMPLATE)
                 .from(F_TEMPLATE)

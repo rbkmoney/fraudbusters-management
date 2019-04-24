@@ -1,10 +1,9 @@
 package com.rbkmoney.fraudbusters.management.dao.reference;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
-import com.rbkmoney.fraudbusters.management.dao.mapper.RecordRowMapper;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FReferenceRecord;
-import com.rbkmoney.fraudbusters.management.exception.DaoException;
+import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -26,7 +25,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public void insert(ReferenceModel referenceModel) throws DaoException {
+    public void insert(ReferenceModel referenceModel) {
         Query query = getDslContext().insertInto(F_REFERENCE)
                 .set(getDslContext().newRecord(F_REFERENCE, referenceModel))
                 .onConflict(F_REFERENCE.PARTY_ID, F_REFERENCE.SHOP_ID, F_REFERENCE.IS_GLOBAL)
@@ -36,7 +35,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public void remove(String id) throws DaoException {
+    public void remove(String id) {
         DeleteConditionStep<FReferenceRecord> where = getDslContext()
                 .delete(F_REFERENCE)
                 .where(F_REFERENCE.ID.eq(id));
@@ -44,7 +43,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public void remove(ReferenceModel referenceModel) throws DaoException {
+    public void remove(ReferenceModel referenceModel) {
         DeleteConditionStep<FReferenceRecord> where = getDslContext()
                 .delete(F_REFERENCE)
                 .where(F_REFERENCE.PARTY_ID.eq(referenceModel.getPartyId())
@@ -54,7 +53,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public ReferenceModel getById(String id) throws DaoException {
+    public ReferenceModel getById(String id) {
         SelectConditionStep<Record5<String, String, String, String, Boolean>> where =
                 getDslContext()
                         .select(F_REFERENCE.ID,
@@ -68,7 +67,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public List<ReferenceModel> getList(int limit) throws DaoException {
+    public List<ReferenceModel> getList(int limit) {
         SelectLimitPercentStep<Record5<String, String, String, String, Boolean>> query =
                 getDslContext()
                         .select(F_REFERENCE.ID,
@@ -82,7 +81,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public List<ReferenceModel> getListByTemplateId(String templateId, int limit) throws DaoException {
+    public List<ReferenceModel> getListByTemplateId(String templateId, int limit) {
         SelectLimitPercentStep<Record5<String, String, String, String, Boolean>> query =
                 getDslContext()
                         .select(F_REFERENCE.ID,

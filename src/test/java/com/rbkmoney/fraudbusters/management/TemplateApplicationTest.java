@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management;
 
+import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
