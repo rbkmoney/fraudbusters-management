@@ -1,5 +1,7 @@
 server:
   port: @server.port@
+  servlet:
+      context-path: "/fb-management/v1"
 management:
   security:
     flag: false
@@ -8,6 +10,7 @@ management:
       statsd:
         flavor: etsy
         enabled: false
+
 spring:
   application:
     name: @project.name@

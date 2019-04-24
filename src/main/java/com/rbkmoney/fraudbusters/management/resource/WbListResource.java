@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.resource;
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.damsel.wb_list.Row;
+import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordConverter;
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
@@ -17,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Slf4j

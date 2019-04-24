@@ -1,12 +1,12 @@
 package com.rbkmoney.fraudbusters.management;
 
+import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.controller.ErrorController;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordConverter;
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
-import com.rbkmoney.fraudbusters.management.exception.DaoException;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
 import com.rbkmoney.fraudbusters.management.resource.WbListResource;
@@ -74,7 +74,7 @@ public class ExceptionApplicationTest {
     @LocalServerPort
     int serverPort;
 
-    private static String SERVICE_URL = "http://localhost:%s";
+    private static String SERVICE_URL = "http://localhost:%s/fb-management/v1";
 
     @NotNull
     private ListRecord createRow() {
@@ -87,7 +87,7 @@ public class ExceptionApplicationTest {
     }
 
     @Test(expected = HttpClientErrorException.BadRequest.class)
-    public void executionRestTestBadRequest() throws ExecutionException, InterruptedException {
+    public void executionRestTestBadRequest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenReturn(ID_TEST);
 
@@ -99,7 +99,7 @@ public class ExceptionApplicationTest {
     }
 
     @Test
-    public void executionRestTest() throws ExecutionException, InterruptedException {
+    public void executionRestTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenReturn(ID_TEST);
 
@@ -111,7 +111,7 @@ public class ExceptionApplicationTest {
     }
 
     @Test(expected = HttpServerErrorException.InternalServerError.class)
-    public void executionRestDaoExceptionTest() throws ExecutionException, InterruptedException {
+    public void executionRestDaoExceptionTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new DaoException(TEST_MESSAGE));
 
@@ -121,7 +121,7 @@ public class ExceptionApplicationTest {
     }
 
     @Test(expected = HttpServerErrorException.InternalServerError.class)
-    public void executionRestKafkaSerializationTest() throws ExecutionException, InterruptedException {
+    public void executionRestKafkaSerializationTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
 
@@ -131,7 +131,7 @@ public class ExceptionApplicationTest {
     }
 
     @Test(expected = HttpClientErrorException.BadRequest.class)
-    public void getRestTestBadRequest() throws ExecutionException, InterruptedException {
+    public void getRestTestBadRequest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
         HashMap<String, Object> uriVariables = new HashMap<>();

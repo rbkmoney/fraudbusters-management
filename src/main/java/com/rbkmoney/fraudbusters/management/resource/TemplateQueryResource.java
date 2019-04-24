@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
+import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class TemplateQueryResource {
     private final ReferenceDao referenceDao;
 
     @GetMapping(value = "/template/{id}/reference")
-    public ResponseEntity<List<ReferenceModel>> getReferences(@RequestParam String id,
+    public ResponseEntity<List<ReferenceModel>> getReferences(@PathVariable(value = "id") String id,
                                                               @Validated @RequestParam(required = false) int limit) {
         log.info("TemplateManagementResource getReferences id: {} limit: {}", id, limit);
         List<ReferenceModel> listByTemplateId = referenceDao.getListByTemplateId(id, limit);

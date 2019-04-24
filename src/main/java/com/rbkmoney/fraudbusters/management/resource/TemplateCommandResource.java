@@ -14,9 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,7 +41,7 @@ public class TemplateCommandResource {
     }
 
     @PostMapping(value = "/template/{id}/reference")
-    public ResponseEntity<List<String>> insertReference(@RequestParam String id,
+    public ResponseEntity<List<String>> insertReference(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<ReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
@@ -68,7 +68,7 @@ public class TemplateCommandResource {
     }
 
     @DeleteMapping(value = "/template/{id}/reference")
-    public ResponseEntity<List<String>> deleteReference(@RequestParam String id,
+    public ResponseEntity<List<String>> deleteReference(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<ReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
