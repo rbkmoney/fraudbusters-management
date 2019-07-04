@@ -63,6 +63,8 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void listenCreated() throws ExecutionException, InterruptedException {
+        Mockito.clearInvocations(wbListDao);
+
         Event event = new Event();
         Row row = createRow(ListType.black);
         event.setRow(row);
@@ -71,10 +73,12 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         Producer<String, Event> producer = createProducer();
 
         producer.send(producerRecord).get();
+        producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
+        producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
         producer.close();
         Thread.sleep(500L);
 
-        Mockito.verify(wbListDao, Mockito.times(1)).saveListRecord(any());
+        Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
     }
 
     @Test

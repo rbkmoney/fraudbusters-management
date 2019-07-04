@@ -9,11 +9,10 @@ management:
     export:
       statsd:
         flavor: etsy
-        enabled: false
-
+---
 spring:
   application:
-    name: @project.name@
+    name: @name@
   output:
     ansi:
       enabled: always
