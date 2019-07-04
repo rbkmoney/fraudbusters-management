@@ -2,7 +2,7 @@ CREATE SCHEMA IF NOT EXISTS af;
 
 CREATE TYPE af.list_type AS ENUM('white', 'black');
 
--- wb.list --
+-- af.wb_list_records --
 CREATE TABLE af.wb_list_records(
   id                       CHARACTER VARYING NOT NULL,
   party_id                 CHARACTER VARYING NOT NULL,
@@ -16,14 +16,14 @@ CREATE TABLE af.wb_list_records(
 
 CREATE UNIQUE INDEX wb_list_key on af.wb_list_records(party_id, shop_id, list_type, list_name, value);
 
--- fraudbusters.template --
+-- af.template --
 CREATE TABLE af.f_template(
   id                       CHARACTER VARYING NOT NULL,
   template                 TEXT NOT NULL,
   CONSTRAINT f_template_pkey PRIMARY KEY (id)
 );
 
--- fraudbusters.reference --
+-- af.reference --
 CREATE TABLE af.f_reference(
   id                       CHARACTER VARYING NOT NULL,
   party_id                 CHARACTER VARYING,

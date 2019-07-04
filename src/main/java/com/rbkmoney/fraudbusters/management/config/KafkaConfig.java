@@ -26,6 +26,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.kafka.clients.consumer.ConsumerConfig.MAX_POLL_RECORDS_CONFIG;
+
 @Configuration
 public class KafkaConfig {
 
@@ -55,6 +57,7 @@ public class KafkaConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
+        props.put(MAX_POLL_RECORDS_CONFIG, 1);
         sslConfigure(props);
         return props;
     }

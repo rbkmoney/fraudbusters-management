@@ -17,4 +17,6 @@ public interface ReferenceDao {
     List<ReferenceModel> getList(int limit);
 
     List<ReferenceModel> getListByTemplateId(String templateId, int limit);
+
+    List<ReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, int limit);
 }
