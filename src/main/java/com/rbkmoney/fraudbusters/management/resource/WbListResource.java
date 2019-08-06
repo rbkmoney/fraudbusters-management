@@ -47,7 +47,7 @@ public class WbListResource {
     }
 
     @GetMapping(value = "/whiteList")
-    public ResponseEntity<List<ListRecord>> getWhiteList(@RequestParam String partyId,
+    public ResponseEntity<List<ListRecord>> getWhiteList(@RequestParam(required = false) String partyId,
                                                          @RequestParam(required = false) String shopId,
                                                          @RequestParam String listName) {
         List<ListRecord> listRecords = selectConvertedList(partyId, shopId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.white);
