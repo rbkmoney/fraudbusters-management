@@ -26,6 +26,7 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     public void saveListRecord() {
         String id = "id";
         WbListRecords listRecord = createListRecord(id);
+
         wbListDao.saveListRecord(listRecord);
         WbListRecords byId = wbListDao.getById(id);
         Assert.assertEquals(listRecord, byId);

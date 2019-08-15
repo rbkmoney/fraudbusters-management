@@ -26,16 +26,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -105,9 +106,12 @@ public class ExceptionApplicationTest {
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
-        ResponseEntity<String> response = restTemplate.postForEntity(format + "/whiteList", listRecord, String.class);
+        List<ListRecord> listRecords = new ArrayList<>();
+        listRecords.add(listRecord);
+        ResponseEntity<List<String>> response = restTemplate.exchange(format + "/whiteList", HttpMethod.POST, new HttpEntity<>(listRecords), new ParameterizedTypeReference<List<String>>() {
+        });
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assert.assertEquals(response.getBody(), ID_TEST);
+        Assert.assertEquals(response.getBody().get(0), ID_TEST);
     }
 
     @Test(expected = HttpServerErrorException.InternalServerError.class)
@@ -117,7 +121,9 @@ public class ExceptionApplicationTest {
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
-        restTemplate.postForEntity(format + "/whiteList", listRecord, ErrorResponse.class);
+        List<ListRecord> listRecords = new ArrayList<>();
+        listRecords.add(listRecord);
+        restTemplate.postForEntity(format + "/whiteList", listRecords, ErrorResponse.class);
     }
 
     @Test(expected = HttpServerErrorException.InternalServerError.class)
@@ -127,7 +133,9 @@ public class ExceptionApplicationTest {
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
-        restTemplate.postForEntity(format + "/whiteList", listRecord, ErrorResponse.class);
+        List<ListRecord> listRecords = new ArrayList<>();
+        listRecords.add(listRecord);
+        restTemplate.postForEntity(format + "/whiteList", listRecords, ErrorResponse.class);
     }
 
     @Test(expected = HttpClientErrorException.BadRequest.class)
