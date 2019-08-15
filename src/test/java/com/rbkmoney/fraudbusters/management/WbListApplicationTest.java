@@ -118,17 +118,23 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         record.setShopId(SHOP_ID);
         record.setValue(VALUE);
 
-        ResponseEntity<String> stringResponseEntity = wbListResource.insertRowToBlack(record);
+        ListRecord recordSecond = new ListRecord();
+        recordSecond.setListName(LIST_NAME);
+        recordSecond.setPartyId(PARTY_ID);
+        recordSecond.setShopId(SHOP_ID);
+        recordSecond.setValue(VALUE + 2);
+
+        ResponseEntity<List<String>> stringResponseEntity = wbListResource.insertRowToBlack(List.of(record, recordSecond));
 
         Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class);
         consumer.subscribe(Collections.singletonList(topicCommand));
         List<ChangeCommand> eventList = consumeCommand(consumer);
 
-        Assert.assertEquals(1, eventList.size());
+        Assert.assertEquals(2, eventList.size());
         Assert.assertEquals(eventList.get(0).command, Command.CREATE);
         Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
 
-        stringResponseEntity = wbListResource.removeRowFromWhiteList(record);
+        ResponseEntity<String> result = wbListResource.removeRowFromWhiteList(record);
         consumer = createConsumer(CommandChangeDeserializer.class);
         consumer.subscribe(Collections.singletonList(topicCommand));
         eventList = consumeCommand(consumer);

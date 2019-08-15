@@ -3,7 +3,6 @@ package com.rbkmoney.fraudbusters.management.resource;
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.damsel.wb_list.Row;
-import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordConverter;
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
@@ -13,11 +12,11 @@ import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,11 +30,27 @@ public class WbListResource {
     private final WbListCommandService wbListCommandService;
 
     @PostMapping(value = "/whiteList")
-    public ResponseEntity<String> insertRowToWhite(@Validated @RequestBody ListRecord record) {
+    public ResponseEntity<List<String>> insertRowToWhite(@Validated @RequestBody List<ListRecord> records) {
+        return insertInList(this::insertInWhiteList, records);
+    }
+
+    private ResponseEntity<List<String>> insertInList(Function<ListRecord, String> func, List<ListRecord> records) {
+        try {
+            List<String> recordIds = records.stream()
+                    .map(func)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok()
+                    .body(recordIds);
+        } catch (Exception e) {
+            log.error("Error when insert rows: {} e: ", records, e);
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    private String insertInWhiteList(ListRecord record) {
         Row row = listRecordToRowConverter.destinationToSource(record);
         log.info("WbListResource whiteList add record {}", record);
-        String idMessage = wbListCommandService.sendCommandSync(row, ListType.white, Command.CREATE);
-        return ResponseEntity.ok().body(idMessage);
+        return wbListCommandService.sendCommandSync(row, ListType.white, Command.CREATE);
     }
 
     @DeleteMapping(value = "/whiteList")
@@ -55,11 +70,15 @@ public class WbListResource {
     }
 
     @PostMapping(value = "/blackList")
-    public ResponseEntity<String> insertRowToBlack(@RequestBody ListRecord record) {
+    public ResponseEntity<List<String>> insertRowToBlack(@RequestBody List<ListRecord> records) {
+        return insertInList(this::insertBlackList, records);
+
+    }
+
+    private String insertBlackList(ListRecord record) {
         Row row = listRecordToRowConverter.destinationToSource(record);
-        log.info("WbListResource whiteList add record {}", record);
-        String idMessage = wbListCommandService.sendCommandSync(row, ListType.black, Command.CREATE);
-        return ResponseEntity.ok().body(idMessage);
+        log.info("WbListResource blackList add record {}", record);
+        return wbListCommandService.sendCommandSync(row, ListType.black, Command.CREATE);
     }
 
     @DeleteMapping(value = "/blackList")
@@ -71,7 +90,7 @@ public class WbListResource {
     }
 
     @GetMapping(value = "/blackList")
-    public ResponseEntity<List<ListRecord>> getBlackList(@RequestParam String partyId,
+    public ResponseEntity<List<ListRecord>> getBlackList(@RequestParam(required = false) String partyId,
                                                          @RequestParam(required = false) String shopId,
                                                          @RequestParam String listName) {
         List<ListRecord> listRecords = selectConvertedList(partyId, shopId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);
