@@ -79,14 +79,15 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
     @Override
     public List<WbListRecords> getFilteredListRecords(String partyId, String shopId, ListType listType, String listName) {
         Condition condition = DSL.trueCondition();
-        SelectLimitPercentStep<Record7<String, String, String, ListType, String, String, LocalDateTime>> query = getDslContext()
+        SelectLimitPercentStep<Record8<String, String, String, ListType, String, String, LocalDateTime, String>> query = getDslContext()
                 .select(WB_LIST_RECORDS.ID,
                         WB_LIST_RECORDS.PARTY_ID,
                         WB_LIST_RECORDS.SHOP_ID,
                         WB_LIST_RECORDS.LIST_TYPE,
                         WB_LIST_RECORDS.LIST_NAME,
                         WB_LIST_RECORDS.VALUE,
-                        WB_LIST_RECORDS.INSERT_TIME)
+                        WB_LIST_RECORDS.INSERT_TIME,
+                        WB_LIST_RECORDS.ROW_INFO)
                 .from(WB_LIST_RECORDS)
                 .where(appendConditions(condition, Operator.AND,
                         new ConditionParameterSource()

@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,6 +70,34 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         Row row = createRow(ListType.black);
         event.setRow(row);
         event.setEventType(EventType.CREATED);
+        ProducerRecord producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
+        Producer<String, Event> producer = createProducer();
+
+        producer.send(producerRecord).get();
+        producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
+        producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
+        producer.close();
+        Thread.sleep(500L);
+
+        Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
+    }
+
+    @Test
+    public void listenCreatedGrey() throws ExecutionException, InterruptedException {
+        Mockito.clearInvocations(wbListDao);
+
+        Event event = new Event();
+        Row row = createRow(ListType.grey);
+        event.setEventType(EventType.CREATED);
+        RowInfo rowInfo = RowInfo.count_info(new CountInfo()
+                .setCount(5)
+                .setTimeToLive("2019-08-22T13:14:17.443332Z")
+                .setStartCountTime("2019-08-22T11:14:17.443332Z")
+        );
+        row.setRowInfo(rowInfo);
+
+        event.setRow(row);
+
         ProducerRecord producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
         Producer<String, Event> producer = createProducer();
 

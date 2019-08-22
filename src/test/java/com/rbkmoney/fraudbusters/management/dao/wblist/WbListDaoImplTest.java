@@ -1,19 +1,22 @@
 package com.rbkmoney.fraudbusters.management.dao.wblist;
 
-import com.rbkmoney.dao.DaoException;
+import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordWithRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.domain.CountInfoListRecord;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@ContextConfiguration(classes = {WbListDaoImpl.class})
+@ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToListRecordWithRowConverter.class, JacksonAutoConfiguration.class})
 public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY = "party";
@@ -21,6 +24,9 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     public static final String LIST_NAME = "ip";
     @Autowired
     WbListDao wbListDao;
+
+    @Autowired
+    WbListRecordsToListRecordWithRowConverter wbListRecordsToListRecordWithRowConverter;
 
     @Test
     public void saveListRecord() {
@@ -70,5 +76,21 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         Assert.assertEquals(2, filteredListRecords.size());
 
+        WbListRecords listRecord_4 = createListRecord("4");
+        listRecord_4.setRowInfo("{ \n" +
+                "  \"count\":5, \n" +
+                "  \"time_to_live\":\"2019-08-22T13:14:17.443332Z\",\n" +
+                "  \"start_count_time\": \"2019-08-22T11:14:17.443332Z\"\n" +
+                "}");
+        listRecord_4.setListType(ListType.grey);
+        wbListDao.saveListRecord(listRecord_4);
+
+        filteredListRecords = wbListDao.getFilteredListRecords(null, SHOP, ListType.grey, null);
+        Assert.assertEquals(1, filteredListRecords.size());
+        Assert.assertFalse(filteredListRecords.get(0).getRowInfo().isEmpty());
+
+        CountInfoListRecord countInfoListRecord = wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
+
+        Assert.assertEquals(5L, countInfoListRecord.getCount().longValue());
     }
 }

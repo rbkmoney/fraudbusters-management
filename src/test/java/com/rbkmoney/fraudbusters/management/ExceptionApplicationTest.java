@@ -2,8 +2,10 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.controller.ErrorController;
+import com.rbkmoney.fraudbusters.management.converter.CountInfoListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordConverter;
+import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordWithRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
@@ -68,6 +70,10 @@ public class ExceptionApplicationTest {
     public WbListDao wbListDao;
     @MockBean
     public WbListRecordsToListRecordConverter wbListRecordsToListRecordConverter;
+    @MockBean
+    public CountInfoListRecordToRowConverter countInfoListRecordToRowConverter;
+    @MockBean
+    public WbListRecordsToListRecordWithRowConverter wbListRecordsToListRecordWithRowConverter;
 
     @Autowired
     RestTemplateBuilder restTemplateBuilder;

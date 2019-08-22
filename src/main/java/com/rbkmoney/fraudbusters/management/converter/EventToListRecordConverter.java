@@ -17,7 +17,7 @@ public class EventToListRecordConverter implements Converter<Event, WbListRecord
 
     @Override
     public WbListRecords convert(Event event) {
-        WbListRecords record = rowToWbListRecordsConverter.destinationToSource(event.getRow());
+        WbListRecords record = rowToWbListRecordsConverter.convert(event.getRow());
         record.setId(UUID.randomUUID().toString());
         return record;
     }
