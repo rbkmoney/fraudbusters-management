@@ -23,6 +23,7 @@ public class RowToWbListRecordsConverter implements Converter<Row, WbListRecords
         wbListRecords.setShopId(destination.getShopId());
         wbListRecords.setListName(destination.getListName());
         wbListRecords.setListType(initListType(destination));
+        wbListRecords.setValue(destination.getValue());
         wbListRecords.setRowInfo(initRowInfo(destination));
         return wbListRecords;
     }
