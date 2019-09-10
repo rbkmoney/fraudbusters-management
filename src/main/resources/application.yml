@@ -40,6 +40,9 @@ kafka:
     fraudbusters:
       template: "template"
       reference: "template_reference"
+      group:
+        list: "group"
+        reference: "group_reference"
   ssl:
     enable: false
     keystore-location: src/main/resources/cert/kenny-k.struzhkin.p12

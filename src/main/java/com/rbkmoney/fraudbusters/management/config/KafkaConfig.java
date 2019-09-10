@@ -96,6 +96,15 @@ public class KafkaConfig {
         return factory;
     }
 
+    @Bean
+    @Autowired
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaGroupListenerContainerFactory(ConsumerFactory<String, Command> consumerTemplateFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, Command> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerTemplateFactory);
+        factory.setErrorHandler(new LoggingErrorHandler());
+        factory.setConcurrency(1);
+        return factory;
+    }
 
     //Reference
     @Bean
@@ -108,6 +117,16 @@ public class KafkaConfig {
     @Bean
     @Autowired
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaReferenceListenerContainerFactory(ConsumerFactory<String, Command> consumerReferenceFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, Command> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerReferenceFactory);
+        factory.setErrorHandler(new LoggingErrorHandler());
+        factory.setConcurrency(1);
+        return factory;
+    }
+
+    @Bean
+    @Autowired
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaGroupReferenceListenerContainerFactory(ConsumerFactory<String, Command> consumerReferenceFactory) {
         ConcurrentKafkaListenerContainerFactory<String, Command> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerReferenceFactory);
         factory.setErrorHandler(new LoggingErrorHandler());
