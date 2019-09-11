@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
-import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.converter.CommandToGroupModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
@@ -13,24 +12,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GroupListener {
+public class GroupListener extends CommandListener<GroupModel> {
 
     private final GroupDao groupDao;
     private final CommandToGroupModelConverter converter;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.group.list}", containerFactory = "kafkaGroupListenerContainerFactory")
-    public void listen(Command command) throws DaoException {
+    public void listen(Command command) {
         log.info("GroupListener event: {}", command);
-        GroupModel groupModel = converter.convert(command);
-        switch (command.getCommandType()) {
-            case CREATE:
-                groupDao.insert(groupModel);
-                break;
-            case DELETE:
-                groupDao.remove(groupModel);
-                break;
-            default:
-                log.warn("GroupListener CommandType not found! groupModel: {}", groupModel);
-        }
+        handle(command, converter, groupDao::insert, groupDao::remove);
     }
+
 }
