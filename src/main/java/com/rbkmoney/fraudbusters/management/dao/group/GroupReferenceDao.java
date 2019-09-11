@@ -2,6 +2,8 @@ package com.rbkmoney.fraudbusters.management.dao.group;
 
 import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
 
+import java.util.List;
+
 public interface GroupReferenceDao {
 
     void insert(GroupReferenceModel referenceModel);
@@ -10,6 +12,6 @@ public interface GroupReferenceDao {
 
     void remove(GroupReferenceModel referenceModel);
 
-    GroupReferenceModel getByGroupId(String id);
+    List<GroupReferenceModel> getByGroupId(String id);
 
 }

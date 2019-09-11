@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference.F_GROUP_REFERENCE;
 import static org.jooq.Comparator.EQUALS;
@@ -54,7 +55,7 @@ public class GroupReferenceDaoImpl extends AbstractDao implements GroupReference
     }
 
     @Override
-    public GroupReferenceModel getByGroupId(String id) {
+    public List<GroupReferenceModel> getByGroupId(String id) {
         SelectConditionStep<Record4<Long, String, String, String>> where =
                 getDslContext()
                         .select(F_GROUP_REFERENCE.ID,
@@ -63,6 +64,6 @@ public class GroupReferenceDaoImpl extends AbstractDao implements GroupReference
                                 F_GROUP_REFERENCE.GROUP_ID)
                         .from(F_GROUP_REFERENCE)
                         .where(F_GROUP_REFERENCE.GROUP_ID.eq(id));
-        return fetchOne(where, listRecordRowMapper);
+        return fetch(where, listRecordRowMapper);
     }
 }
