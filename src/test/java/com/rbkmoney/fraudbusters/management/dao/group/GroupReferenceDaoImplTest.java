@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.List;
+
 @ContextConfiguration(classes = {GroupReferenceDaoImpl.class})
 public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
@@ -26,12 +28,12 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceModel.setGroupId(GROUP_ID);
         groupReferenceDao.insert(referenceModel);
 
-        GroupReferenceModel byId = groupReferenceDao.getByGroupId(GROUP_ID);
-        Assert.assertEquals(PARTY_ID, byId.getPartyId());
+        List<GroupReferenceModel> byId = groupReferenceDao.getByGroupId(GROUP_ID);
+        Assert.assertEquals(PARTY_ID, byId.get(0).getPartyId());
 
         groupReferenceDao.remove(referenceModel);
 
         byId = groupReferenceDao.getByGroupId(GROUP_ID);
-        Assert.assertNull(byId);
+        Assert.assertTrue(byId.isEmpty());
     }
 }
