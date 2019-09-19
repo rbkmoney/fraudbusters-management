@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ public class CommandToGroupModelConverter implements Converter<Command, GroupMod
         Group group = command.getCommandBody().getGroup();
         model.setGroupId(group.getGroupId());
         List<PriorityId> templateIds = group.getTemplateIds();
-        if (templateIds != null && !templateIds.isEmpty()) {
+        if (!CollectionUtils.isEmpty(templateIds)) {
             model.setPriorityTemplates(convertPriorityIds(templateIds));
         }
         return model;
