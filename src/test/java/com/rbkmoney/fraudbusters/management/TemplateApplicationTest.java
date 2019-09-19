@@ -1,13 +1,18 @@
 package com.rbkmoney.fraudbusters.management;
 
-import com.rbkmoney.dao.DaoException;
+import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.group.GroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.domain.GroupModel;
+import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.resource.GroupCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.TemplateCommandResource;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.misc.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -20,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -32,12 +38,19 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @MockBean
     public TemplateDao templateDao;
     @MockBean
+    public GroupDao groupDao;
+    @MockBean
     public WbListDao wbListDao;
     @MockBean
     public ReferenceDao referenceDao;
+    @MockBean
+    public GroupReferenceDao groupReferenceDao;
 
     @Autowired
     TemplateCommandResource templateCommandResource;
+
+    @Autowired
+    GroupCommandResource groupCommandResource;
 
     @Test
     public void templateTest() throws InterruptedException {
@@ -50,6 +63,19 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         Mockito.verify(templateDao, Mockito.times(1)).insert(templateModel);
         Mockito.verify(templateDao, Mockito.times(1)).remove(templateModel);
+    }
+
+    @Test
+    public void groupTest() throws InterruptedException {
+        GroupModel groupModel = new GroupModel();
+        groupModel.setGroupId("id");
+        groupModel.setPriorityTemplates(List.of(new Pair<>(1L,"test")));
+        groupCommandResource.insertGroup(groupModel);
+        groupCommandResource.removeGroup(groupModel);
+        Thread.sleep(4000L);
+
+        Mockito.verify(groupDao, Mockito.times(1)).insert(groupModel);
+        Mockito.verify(groupDao, Mockito.times(1)).remove(groupModel);
     }
 
     @Test
@@ -66,5 +92,20 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         Mockito.verify(referenceDao, Mockito.times(1)).insert(any());
         Mockito.verify(referenceDao, Mockito.times(1)).remove((ReferenceModel) any());
+    }
+
+    @Test
+    public void groupReferenceTest() throws InterruptedException {
+        GroupReferenceModel groupReferenceModel = new GroupReferenceModel();
+        groupReferenceModel.setId("id");
+        groupReferenceModel.setPartyId("party_id");
+        groupReferenceModel.setShopId("shop_id");
+
+        groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
+        groupCommandResource.deleteGroupReference("id", Collections.singletonList(groupReferenceModel));
+        Thread.sleep(4000L);
+
+        Mockito.verify(groupReferenceDao, Mockito.times(1)).insert(any());
+        Mockito.verify(groupReferenceDao, Mockito.times(1)).remove(any());
     }
 }

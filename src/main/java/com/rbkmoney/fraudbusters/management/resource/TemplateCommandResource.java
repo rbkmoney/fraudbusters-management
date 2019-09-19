@@ -6,12 +6,11 @@ import com.rbkmoney.fraudbusters.management.converter.ReferenceToCommandConverte
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
-import com.rbkmoney.fraudbusters.management.service.FraudbustersCommandService;
-import com.rbkmoney.fraudbusters.management.service.FraudbustersReferenceService;
+import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
+import com.rbkmoney.fraudbusters.management.service.TemplateReferenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TemplateCommandResource {
 
-    private final FraudbustersCommandService fraudbustersCommandService;
-    private final FraudbustersReferenceService fraudbustersReferenceService;
+    private final TemplateCommandService templateCommandService;
+    private final TemplateReferenceService templateReferenceService;
     private final TemplateModelToCommandConverter templateModelToCommandConverter;
     private final ReferenceToCommandConverter referenceToCommandConverter;
 
@@ -33,7 +32,7 @@ public class TemplateCommandResource {
         log.info("TemplateManagementResource insertTemplate templateModel: {}", templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
         command.setCommandType(CommandType.CREATE);
-        String idMessage = fraudbustersCommandService.sendCommandSync(command);
+        String idMessage = templateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -44,7 +43,7 @@ public class TemplateCommandResource {
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.CREATE))
-                .map(fraudbustersReferenceService::sendCommandSync)
+                .map(templateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
     }
@@ -60,7 +59,7 @@ public class TemplateCommandResource {
         log.info("TemplateManagementResource removeTemplate templateModel: {}", templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
         command.setCommandType(CommandType.DELETE);
-        String idMessage = fraudbustersCommandService.sendCommandSync(command);
+        String idMessage = templateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -71,7 +70,7 @@ public class TemplateCommandResource {
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.DELETE))
-                .map(fraudbustersReferenceService::sendCommandSync)
+                .map(templateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
     }

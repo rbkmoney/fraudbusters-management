@@ -44,6 +44,8 @@ public abstract class AbstractKafkaIntegrationTest {
         public static final String WB_LIST_COMMAND = "wb-list-command";
         public static final String TEMPLATE = "template";
         public static final String REFERENCE = "template_reference";
+        public static final String GROUP_REFERENCE = "group_reference";
+        public static final String GROUP = "group";
 
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
@@ -54,6 +56,8 @@ public abstract class AbstractKafkaIntegrationTest {
             initTopic(WB_LIST_EVENT_SINK);
             initTopic(TEMPLATE);
             initTopic(REFERENCE);
+            initTopic(GROUP_REFERENCE);
+            initTopic(GROUP);
         }
 
         @NotNull

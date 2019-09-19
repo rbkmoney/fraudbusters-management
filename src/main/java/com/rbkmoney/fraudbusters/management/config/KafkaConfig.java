@@ -78,7 +78,6 @@ public class KafkaConfig {
         return factory;
     }
 
-    //Template
     @Bean
     public ConsumerFactory<String, Command> consumerTemplateFactory() {
         Map<String, Object> configs = consumerConfigs();
@@ -89,13 +88,14 @@ public class KafkaConfig {
     @Bean
     @Autowired
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaTemplateListenerContainerFactory(ConsumerFactory<String, Command> consumerTemplateFactory) {
-        ConcurrentKafkaListenerContainerFactory<String, Command> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerTemplateFactory);
-        factory.setErrorHandler(new LoggingErrorHandler());
-        factory.setConcurrency(1);
-        return factory;
+        return createDefaultContainerFactory(consumerTemplateFactory);
     }
 
+    @Bean
+    @Autowired
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaGroupListenerContainerFactory(ConsumerFactory<String, Command> consumerTemplateFactory) {
+        return createDefaultContainerFactory(consumerTemplateFactory);
+    }
 
     //Reference
     @Bean
@@ -108,6 +108,16 @@ public class KafkaConfig {
     @Bean
     @Autowired
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaReferenceListenerContainerFactory(ConsumerFactory<String, Command> consumerReferenceFactory) {
+        return createDefaultContainerFactory(consumerReferenceFactory);
+    }
+
+    @Bean
+    @Autowired
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaGroupReferenceListenerContainerFactory(ConsumerFactory<String, Command> consumerReferenceFactory) {
+        return createDefaultContainerFactory(consumerReferenceFactory);
+    }
+
+    private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> createDefaultContainerFactory(ConsumerFactory<String, Command> consumerReferenceFactory) {
         ConcurrentKafkaListenerContainerFactory<String, Command> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerReferenceFactory);
         factory.setErrorHandler(new LoggingErrorHandler());

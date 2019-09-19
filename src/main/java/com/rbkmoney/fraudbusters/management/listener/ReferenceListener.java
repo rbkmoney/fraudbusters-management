@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
-import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.converter.CommandToReferenceModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
@@ -13,24 +12,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ReferenceListener {
+public class ReferenceListener extends CommandListener<ReferenceModel> {
 
     private final ReferenceDao referenceDao;
     private final CommandToReferenceModelConverter converter;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.reference}", containerFactory = "kafkaReferenceListenerContainerFactory")
-    public void listen(Command command) throws DaoException {
+    public void listen(Command command) {
         log.info("ReferenceListener command: {}", command);
-        ReferenceModel referenceModel = converter.convert(command);
-        switch (command.getCommandType()) {
-            case CREATE:
-                referenceDao.insert(referenceModel);
-                break;
-            case DELETE:
-                referenceDao.remove(referenceModel);
-                break;
-            default:
-                log.warn("ReferenceListener CommandType not found! templateModel: {}", referenceModel);
-        }
+        handle(command, converter, referenceDao::insert, referenceDao::remove);
     }
 }

@@ -1,0 +1,13 @@
+package com.rbkmoney.fraudbusters.management.domain;
+
+import lombok.Data;
+
+@Data
+public class GroupReferenceModel {
+
+    private String id;
+    private String partyId;
+    private String shopId;
+    private String groupId;
+
+}

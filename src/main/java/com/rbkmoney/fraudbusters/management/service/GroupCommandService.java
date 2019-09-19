@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FraudbustersCommandService {
+public class GroupCommandService {
 
     private final CommandSender commandSender;
 
-    @Value("${kafka.topic.fraudbusters.template}")
-    public String topicCommand;
+    @Value("${kafka.topic.fraudbusters.group.list}")
+    public String topic;
 
     public String sendCommandSync(Command command) {
-        String key = command.getCommandBody().getTemplate().getId();
-        return commandSender.send(topicCommand, command, key);
+        String key = command.getCommandBody().getGroup().getGroupId();
+        return commandSender.send(topic, command, key);
     }
 
 }
