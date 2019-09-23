@@ -14,4 +14,6 @@ public interface GroupReferenceDao {
 
     List<GroupReferenceModel> getByGroupId(String id);
 
+    List<GroupReferenceModel> getByPartyIdAndShopId(String partyId, String shopId);
+
 }

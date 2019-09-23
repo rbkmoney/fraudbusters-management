@@ -120,4 +120,33 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
                         .limit(limit != 0 ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
+
+    @Override
+    public ReferenceModel getGlobalReference() {
+        return fetchOne(getDslContext()
+                        .select(F_REFERENCE.ID,
+                                F_REFERENCE.PARTY_ID,
+                                F_REFERENCE.SHOP_ID,
+                                F_REFERENCE.TEMPLATE_ID,
+                                F_REFERENCE.IS_GLOBAL)
+                        .from(F_REFERENCE)
+                        .where(F_REFERENCE.IS_GLOBAL.eq(true)),
+                listRecordRowMapper);
+    }
+
+
+    @Override
+    public List<ReferenceModel> getByPartyAndShop(String partyId, String shopId) {
+        SelectConditionStep<Record5<String, String, String, String, Boolean>> where = getDslContext()
+                .select(F_REFERENCE.ID,
+                        F_REFERENCE.PARTY_ID,
+                        F_REFERENCE.SHOP_ID,
+                        F_REFERENCE.TEMPLATE_ID,
+                        F_REFERENCE.IS_GLOBAL)
+                .from(F_REFERENCE)
+                .where(F_REFERENCE.PARTY_ID.eq(partyId)
+                        .and(F_REFERENCE.SHOP_ID.eq(shopId).or(F_REFERENCE.SHOP_ID.isNull()))
+                        .and(F_REFERENCE.IS_GLOBAL.eq(false)));
+        return fetch(where, listRecordRowMapper);
+    }
 }

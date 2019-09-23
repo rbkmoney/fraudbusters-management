@@ -77,7 +77,7 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
         producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
         producer.close();
-        Thread.sleep(500L);
+        Thread.sleep(1000L);
 
         Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
     }
@@ -105,7 +105,7 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
         producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
         producer.close();
-        Thread.sleep(500L);
+        Thread.sleep(3000L);
 
         Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
     }
@@ -121,7 +121,7 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
         producer.send(producerRecord).get();
         producer.close();
-        Thread.sleep(500L);
+        Thread.sleep(3000L);
 
         Mockito.verify(wbListDao, Mockito.times(1)).removeRecord((WbListRecords) any());
     }
