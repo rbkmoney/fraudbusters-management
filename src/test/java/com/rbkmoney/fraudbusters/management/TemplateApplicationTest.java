@@ -53,9 +53,6 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @Autowired
     GroupCommandResource groupCommandResource;
 
-    @Value("${kafka.topic.fraudbusters.group.list}")
-    public String groupCommandTopic;
-
     @Test
     public void templateTest() throws InterruptedException {
         TemplateModel templateModel = new TemplateModel();
