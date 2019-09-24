@@ -4,10 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.group.GroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
-import com.rbkmoney.fraudbusters.management.domain.GroupModel;
-import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.misc.Pair;
@@ -51,8 +48,8 @@ public class EmulateResource {
                 GroupModel groupModel = groupDao.getById(groupReferenceModel.getGroupId());
                 if (groupModel != null) {
                     List<TemplateModel> groupsTemplates = groupModel.getPriorityTemplates().stream()
-                            .sorted(Comparator.comparingLong(value -> value.a))
-                            .map(p -> templateDao.getById(p.b))
+                            .sorted(Comparator.comparingLong(PriorityIdModel::getPriority))
+                            .map(p -> templateDao.getById(p.getId()))
                             .collect(Collectors.toList());
                     resultModels.addAll(groupsTemplates);
                 }

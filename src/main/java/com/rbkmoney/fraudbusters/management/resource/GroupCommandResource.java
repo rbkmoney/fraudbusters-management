@@ -28,7 +28,7 @@ public class GroupCommandResource {
     private final GroupReferenceToCommandConverter groupReferenceToCommandConverter;
 
     @PostMapping(value = "/group")
-    public ResponseEntity<String> insertGroup(@Validated @RequestBody GroupModel groupModel) {
+    public ResponseEntity<String> insertGroup(@RequestBody GroupModel groupModel) {
         log.info("GroupCommandResource insertTemplate groupModel: {}", groupModel);
         Command command = groupModelToCommandConverter.convert(groupModel);
         command.setCommandType(CommandType.CREATE);

@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.dao.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
+import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupRecord;
 import org.jooq.DeleteConditionStep;
 import org.jooq.Query;
@@ -30,7 +31,7 @@ public class GroupDaoImpl extends AbstractDao implements GroupDao {
                 .map(pair -> getDslContext()
                         .insertInto(F_GROUP)
                         .columns(F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID)
-                        .values(groupModel.getGroupId(), pair.a, pair.b)
+                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId())
                         .onConflict(F_GROUP.GROUP_ID, F_GROUP.TEMPLATE_ID)
                         .doNothing()
                 ).collect(Collectors.toList());
@@ -59,8 +60,8 @@ public class GroupDaoImpl extends AbstractDao implements GroupDao {
                 .select(F_GROUP.ID, F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID)
                 .from(F_GROUP)
                 .where(F_GROUP.GROUP_ID.eq(id));
-        List<org.antlr.v4.runtime.misc.Pair<Long, String>> list = fetch(where, (rs, rowNum) ->
-                new org.antlr.v4.runtime.misc.Pair<>(
+        List<PriorityIdModel> list = fetch(where, (rs, rowNum) ->
+                new PriorityIdModel(
                         rs.getLong(F_GROUP.PRIORITY.getName()),
                         rs.getString(F_GROUP.TEMPLATE_ID.getName()))
         );

@@ -1,29 +1,30 @@
 package com.rbkmoney.fraudbusters.management;
 
+import com.rbkmoney.damsel.fraudbusters.PriorityId;
 import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.group.GroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
-import com.rbkmoney.fraudbusters.management.domain.GroupModel;
-import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.domain.*;
 import com.rbkmoney.fraudbusters.management.resource.GroupCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.TemplateCommandResource;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.misc.Pair;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,6 +53,9 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @Autowired
     GroupCommandResource groupCommandResource;
 
+    @Value("${kafka.topic.fraudbusters.group.list}")
+    public String groupCommandTopic;
+
     @Test
     public void templateTest() throws InterruptedException {
         TemplateModel templateModel = new TemplateModel();
@@ -66,16 +70,27 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void groupTest() throws InterruptedException {
+    public void groupTest() throws InterruptedException, IOException {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId("id");
-        groupModel.setPriorityTemplates(List.of(new Pair<>(1L,"test")));
+        groupModel.setPriorityTemplates(List.of(new PriorityIdModel(1L, "test")));
+        checkSerialization(groupModel);
+
         groupCommandResource.insertGroup(groupModel);
         groupCommandResource.removeGroup(groupModel);
+
         Thread.sleep(4000L);
 
         Mockito.verify(groupDao, Mockito.times(1)).insert(groupModel);
         Mockito.verify(groupDao, Mockito.times(1)).remove(groupModel);
+    }
+
+    private void checkSerialization(GroupModel groupModel) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(groupModel);
+        GroupModel groupModelAfterSerialization = objectMapper.readValue(json, GroupModel.class);
+
+        Assert.assertEquals(groupModel, groupModelAfterSerialization);
     }
 
     @Test

@@ -28,7 +28,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,12 +70,11 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         event.setRow(row);
         event.setEventType(EventType.CREATED);
         ProducerRecord producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
-        Producer<String, Event> producer = createProducer();
-
-        producer.send(producerRecord).get();
-        producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
-        producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
-        producer.close();
+        try (Producer<String, Event> producer = createProducer()) {
+            producer.send(producerRecord).get();
+            producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
+            producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
+        }
         Thread.sleep(1000L);
 
         Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
@@ -98,13 +96,12 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
         event.setRow(row);
 
-        ProducerRecord producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
-        Producer<String, Event> producer = createProducer();
-
-        producer.send(producerRecord).get();
-        producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
-        producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
-        producer.close();
+        try (Producer<String, Event> producer = createProducer()) {
+            ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
+            producer.send(producerRecord).get();
+            producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
+            producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
+        }
         Thread.sleep(3000L);
 
         Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());

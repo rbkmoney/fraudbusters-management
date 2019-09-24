@@ -9,11 +9,7 @@ import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDaoImpl;
-import com.rbkmoney.fraudbusters.management.domain.GroupModel;
-import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
-import org.antlr.v4.runtime.misc.Pair;
+import com.rbkmoney.fraudbusters.management.domain.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +45,9 @@ public class EmulateResourceTest extends AbstractPostgresIntegrationTest {
     public void getRulesByPartyAndShop() {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(GROUP_ID);
-        ArrayList<Pair<Long, String>> priorityTemplates = new ArrayList<>();
-        priorityTemplates.add(new Pair<>(2L, TEMPLATE_1));
-        priorityTemplates.add(new Pair<>(1L, TEMPLATE_2));
+        ArrayList<PriorityIdModel> priorityTemplates = new ArrayList<>();
+        priorityTemplates.add(new PriorityIdModel(2L, TEMPLATE_1));
+        priorityTemplates.add(new PriorityIdModel(1L, TEMPLATE_2));
         groupModel.setPriorityTemplates(priorityTemplates);
         groupDao.insert(groupModel);
 

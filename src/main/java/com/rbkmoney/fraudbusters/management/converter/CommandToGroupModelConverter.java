@@ -4,8 +4,8 @@ import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.Group;
 import com.rbkmoney.damsel.fraudbusters.PriorityId;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
+import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -30,9 +30,9 @@ public class CommandToGroupModelConverter implements Converter<Command, GroupMod
         return model;
     }
 
-    private List<Pair<Long, String>> convertPriorityIds(List<PriorityId> templateIds) {
+    private List<PriorityIdModel> convertPriorityIds(List<PriorityId> templateIds) {
         return templateIds.stream()
-                .map(priorityId -> new Pair<>(priorityId.getPriority(), priorityId.getId()))
+                .map(priorityId -> new PriorityIdModel(priorityId.getPriority(), priorityId.getId()))
                 .collect(Collectors.toList());
     }
 }
