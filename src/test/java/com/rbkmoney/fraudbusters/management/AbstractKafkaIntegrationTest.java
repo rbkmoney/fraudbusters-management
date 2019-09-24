@@ -12,7 +12,6 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -60,17 +59,13 @@ public abstract class AbstractKafkaIntegrationTest {
             initTopic(GROUP);
         }
 
-        @NotNull
-        private <T> Consumer<String, T> initTopic(String topicName) {
-            Consumer<String, T> consumer = createConsumer(EventDeserializer.class);
-            try {
+        private <T> void initTopic(String topicName) {
+            try (Consumer<String, T> consumer = createConsumer(EventDeserializer.class)) {
                 consumer.subscribe(Collections.singletonList(topicName));
                 consumer.poll(Duration.ofMillis(100L));
             } catch (Exception e) {
                 log.error("KafkaAbstractTest initialize e: ", e);
             }
-            consumer.close();
-            return consumer;
         }
     }
 

@@ -23,8 +23,8 @@ public class GroupModelToCommandConverter implements Converter<GroupModel, Comma
         group.setGroupId(groupModel.getGroupId());
         group.setTemplateIds(groupModel.getPriorityTemplates().stream()
                 .map(pair -> new PriorityId()
-                        .setPriority(pair.a)
-                        .setId(pair.b))
+                        .setPriority(pair.getPriority())
+                        .setId(pair.getId()))
                 .collect(Collectors.toList()));
         command.setCommandBody(CommandBody.group(group));
         return command;

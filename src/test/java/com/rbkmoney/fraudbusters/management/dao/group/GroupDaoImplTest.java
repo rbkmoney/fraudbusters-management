@@ -1,8 +1,9 @@
 package com.rbkmoney.fraudbusters.management.dao.group;
 
+import com.rbkmoney.damsel.fraudbusters.PriorityId;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
-import org.antlr.v4.runtime.misc.Pair;
+import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,9 @@ public class GroupDaoImplTest extends AbstractPostgresIntegrationTest {
     public void insert() {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(GROUP_1);
-        groupModel.setPriorityTemplates(List.of(new Pair<>(2L, TEST_TEMPL_1), new Pair<>(1L, TEST_TEMPL_2)));
+        groupModel.setPriorityTemplates(List.of(
+                new PriorityIdModel(2L, TEST_TEMPL_1),
+                new PriorityIdModel(1L, TEST_TEMPL_2)));
         groupDao.insert(groupModel);
 
         GroupModel byId = groupDao.getById(GROUP_1);

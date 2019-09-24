@@ -23,7 +23,7 @@ public class ReferenceQueryResource {
 
     @GetMapping(value = "/reference")
     public ResponseEntity<List<ReferenceModel>> getReferencesByFilters(@RequestParam(value = "partyId") String partyId,
-                                                                       @RequestParam(value = "partyId") String shopId,
+                                                                       @RequestParam(value = "shopId") String shopId,
                                                                        @RequestParam(value = "isGlobal") Boolean isGlobal,
                                                                        @Validated @RequestParam(required = false) int limit) {
         log.info("TemplateManagementResource getReferences partyId: {} shopId: {} isGlobal: {} limit: {}", partyId, shopId, isGlobal, limit);

@@ -68,4 +68,6 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
                 .limit(limit != 0 ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
+
+
 }
