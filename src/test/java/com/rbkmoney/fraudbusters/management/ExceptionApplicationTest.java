@@ -3,11 +3,12 @@ package com.rbkmoney.fraudbusters.management;
 import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.controller.ErrorController;
 import com.rbkmoney.fraudbusters.management.converter.CountInfoListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordConverter;
-import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordWithRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordWithRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
+import com.rbkmoney.fraudbusters.management.domain.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
@@ -29,7 +30,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -45,7 +49,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {WbListResource.class, ErrorController.class})
+@SpringBootTest(webEnvironment = RANDOM_PORT,
+        classes = {WbListResource.class, ErrorController.class})
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 public class ExceptionApplicationTest {
 
@@ -63,7 +68,7 @@ public class ExceptionApplicationTest {
     @MockBean
     public WbListCommandService wbListCommandService;
     @MockBean
-    public ListRecordToRowConverter listRecordToRowConverter;
+    public PaymentListRecordToRowConverter paymentListRecordToRowConverter;
     @MockBean
     public WbListEventListener wbListEventListener;
     @MockBean
@@ -85,7 +90,7 @@ public class ExceptionApplicationTest {
 
     @NotNull
     private ListRecord createRow() {
-        ListRecord listRecord = new ListRecord();
+        PaymentListRecord listRecord = new PaymentListRecord();
         listRecord.setShopId(SHOP_ID);
         listRecord.setPartyId(PARTY_ID);
         listRecord.setListName(LIST_NAME);
@@ -96,7 +101,7 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpClientErrorException.BadRequest.class)
     public void executionRestTestBadRequest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenReturn(ID_TEST);
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenReturn(ID_TEST);
 
         ListRecord listRecord = new ListRecord();
         String format = String.format(SERVICE_URL, serverPort);
@@ -108,7 +113,7 @@ public class ExceptionApplicationTest {
     @Test
     public void executionRestTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenReturn(ID_TEST);
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenReturn(ID_TEST);
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
@@ -123,7 +128,7 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpServerErrorException.InternalServerError.class)
     public void executionRestDaoExceptionTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new DaoException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenThrow(new DaoException(TEST_MESSAGE));
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
@@ -135,7 +140,7 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpServerErrorException.InternalServerError.class)
     public void executionRestKafkaSerializationTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
@@ -147,7 +152,7 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpClientErrorException.BadRequest.class)
     public void getRestTestBadRequest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
         HashMap<String, Object> uriVariables = new HashMap<>();
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(String.format(SERVICE_URL, serverPort) + "/whiteList")
                 .queryParam("partyId", PARTY_ID)

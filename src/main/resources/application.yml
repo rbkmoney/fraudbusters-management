@@ -34,6 +34,10 @@ info:
 kafka:
   bootstrap.servers: "localhost:29092"
   topic:
+    p2p:
+      wblist:
+        command: "p2p-wb-list-command"
+        event.sink: "p2p-wb-list-event-sink"
     wblist:
       command: "wb-list-command"
       event.sink: "wb-list-event-sink"

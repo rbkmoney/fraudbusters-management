@@ -32,7 +32,7 @@
         <db.password>postgres</db.password>
         <db.schema>af</db.schema>
         <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
-        <wb.list.proto.version>1.26-99f4118</wb.list.proto.version>
+        <wb.list.proto.version>1.27-be77f75</wb.list.proto.version>
         <kafka.streams.version>2.1.0</kafka.streams.version>
         <kafka.clients.version>2.1.0</kafka.clients.version>
         <fraudbusters.proto.version>1.12-0668b74</fraudbusters.proto.version>

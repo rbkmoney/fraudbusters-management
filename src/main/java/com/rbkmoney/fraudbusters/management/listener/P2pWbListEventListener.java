@@ -2,8 +2,9 @@ package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.dao.DaoException;
-import com.rbkmoney.fraudbusters.management.converter.payment.EventToListRecordConverter;
-import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.converter.p2p.P2pEventToListRecordConverter;
+import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
+import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,21 +14,21 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class WbListEventListener {
+public class P2pWbListEventListener {
 
-    private final WbListDao wbListDao;
-    private final EventToListRecordConverter eventToListRecordConverter;
+    private final P2PWbListDao p2PWbListDao;
+    private final P2pEventToListRecordConverter p2pEventToListRecordConverter;
 
-    @KafkaListener(topics = "${kafka.topic.wblist.event.sink}", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.p2p.wblist.event.sink}", containerFactory = "kafkaListenerContainerFactory")
     public void listen(Event event) throws DaoException {
         log.info("WbListListener event: {}", event);
-        WbListRecords record = eventToListRecordConverter.convert(event);
+        P2pWbListRecords record = p2pEventToListRecordConverter.convert(event);
         switch (event.getEventType()) {
             case CREATED:
-                wbListDao.saveListRecord(record);
+                p2PWbListDao.saveListRecord(record);
                 break;
             case DELETED:
-                wbListDao.removeRecord(record);
+                p2PWbListDao.removeRecord(record);
                 break;
             default:
                 log.warn("WbListListener event for list not found! event: {}", event);

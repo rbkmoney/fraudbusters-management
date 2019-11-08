@@ -1,6 +1,7 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.converter.payment;
 
 import com.rbkmoney.damsel.wb_list.Event;
+import com.rbkmoney.fraudbusters.management.converter.payment.RowToWbListRecordsConverter;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;

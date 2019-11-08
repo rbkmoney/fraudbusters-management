@@ -20,10 +20,7 @@ public class WbListCommandService {
 
     private final KafkaTemplate kafkaTemplate;
 
-    @Value("${kafka.topic.wblist.command}")
-    public String topicCommand;
-
-    public String sendCommandSync(Row row, ListType type, Command command) {
+    public String sendCommandSync(String topicCommand, Row row, ListType type, Command command) {
         row.setListType(type);
         String uuid = UUID.randomUUID().toString();
         try {

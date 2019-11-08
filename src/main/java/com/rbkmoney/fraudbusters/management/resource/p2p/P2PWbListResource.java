@@ -1,17 +1,17 @@
-package com.rbkmoney.fraudbusters.management.resource;
+package com.rbkmoney.fraudbusters.management.resource.p2p;
 
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.converter.CountInfoListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordWithRowConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.converter.p2p.P2PWbListRecordsToListRecordConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.P2pListRecordToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.P2pWbListRecordsToListRecordWithRowConverter;
+import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
 import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
-import com.rbkmoney.fraudbusters.management.domain.PaymentListRecord;
-import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
+import com.rbkmoney.fraudbusters.management.domain.P2pListRecord;
+import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,21 +26,22 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
+@RequestMapping("/p2p")
 @RequiredArgsConstructor
-public class WbListResource {
+public class P2PWbListResource {
 
-    private final PaymentListRecordToRowConverter paymentListRecordToRowConverter;
+    private final P2pListRecordToRowConverter p2pListRecordToRowConverter;
     private final CountInfoListRecordToRowConverter countInfoListRecordToRowConverter;
-    private final WbListDao wbListDao;
-    private final WbListRecordsToListRecordConverter wbListRecordsToListRecordConverter;
-    private final WbListRecordsToListRecordWithRowConverter wbListRecordsToListRecordWithRowConverter;
+    private final P2PWbListDao p2PWbListDao;
+    private final P2PWbListRecordsToListRecordConverter p2PWbListRecordsToListRecordConverter;
+    private final P2pWbListRecordsToListRecordWithRowConverter listRecordWithRowConverter;
     private final WbListCommandService wbListCommandService;
 
-    @Value("${kafka.topic.wblist.command}")
+    @Value("${kafka.topic.p2p.wblist.command}")
     public String topicCommand;
 
     @PostMapping(value = "/whiteList")
-    public ResponseEntity<List<String>> insertRowToWhite(@Validated @RequestBody List<PaymentListRecord> records) {
+    public ResponseEntity<List<String>> insertRowToWhite(@Validated @RequestBody List<P2pListRecord> records) {
         return insertInList(this::insertInWhiteList, records);
     }
 
@@ -57,60 +58,58 @@ public class WbListResource {
         }
     }
 
-    private String insertInWhiteList(PaymentListRecord record) {
-        Row row = paymentListRecordToRowConverter.convert(record);
+    private String insertInWhiteList(P2pListRecord record) {
+        Row row = p2pListRecordToRowConverter.convert(record);
         log.info("WbListResource whiteList add record {}", record);
         return wbListCommandService.sendCommandSync(topicCommand, row, ListType.white, Command.CREATE);
     }
 
     @DeleteMapping(value = "/whiteList")
-    public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody PaymentListRecord record) {
-        Row row = paymentListRecordToRowConverter.convert(record);
+    public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody P2pListRecord record) {
+        Row row = p2pListRecordToRowConverter.convert(record);
         log.info("WbListResource whiteList remove record {}", record);
         String idMessage = wbListCommandService.sendCommandSync(topicCommand, row, ListType.white, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
     @GetMapping(value = "/whiteList")
-    public ResponseEntity<List<ListRecord>> getWhiteList(@RequestParam(required = false) String partyId,
-                                                         @RequestParam(required = false) String shopId,
+    public ResponseEntity<List<ListRecord>> getWhiteList(@RequestParam(required = false) String identityId,
                                                          @RequestParam String listName) {
-        List<ListRecord> listRecords = selectConvertedList(partyId, shopId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.white);
+        List<ListRecord> listRecords = selectConvertedList(identityId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.white);
         return ResponseEntity.ok().body(listRecords);
     }
 
     @PostMapping(value = "/blackList")
-    public ResponseEntity<List<String>> insertRowToBlack(@RequestBody List<PaymentListRecord> records) {
+    public ResponseEntity<List<String>> insertRowToBlack(@RequestBody List<P2pListRecord> records) {
         return insertInList(this::insertBlackList, records);
     }
 
-    private String insertBlackList(PaymentListRecord record) {
-        Row row = paymentListRecordToRowConverter.convert(record);
+    private String insertBlackList(P2pListRecord record) {
+        Row row = p2pListRecordToRowConverter.convert(record);
         log.info("WbListResource blackList add record {}", record);
         return wbListCommandService.sendCommandSync(topicCommand, row, ListType.black, Command.CREATE);
     }
 
     @DeleteMapping(value = "/blackList")
-    public ResponseEntity<String> removeRowFromBlackList(@RequestBody PaymentListRecord record) {
-        Row row = paymentListRecordToRowConverter.convert(record);
+    public ResponseEntity<String> removeRowFromBlackList(@RequestBody P2pListRecord record) {
+        Row row = p2pListRecordToRowConverter.convert(record);
         log.info("WbListResource whiteList add record {}", record);
         String idMessage = wbListCommandService.sendCommandSync(topicCommand, row, ListType.black, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
     @GetMapping(value = "/blackList")
-    public ResponseEntity<List<ListRecord>> getBlackList(@RequestParam(required = false) String partyId,
-                                                         @RequestParam(required = false) String shopId,
+    public ResponseEntity<List<ListRecord>> getBlackList(@RequestParam(required = false) String identityId,
                                                          @RequestParam String listName) {
-        List<ListRecord> listRecords = selectConvertedList(partyId, shopId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);
+        List<ListRecord> listRecords = selectConvertedList(identityId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);
         return ResponseEntity.ok().body(listRecords);
     }
 
-    private List<ListRecord> selectConvertedList(String partyId, String shopId, String listName,
+    private List<ListRecord> selectConvertedList(String identityId, String listName,
                                                  com.rbkmoney.fraudbusters.management.domain.enums.ListType type) {
-        List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(partyId, shopId, type, listName);
+        List<P2pWbListRecords> filteredListRecords = p2PWbListDao.getFilteredListRecords(identityId, type, listName);
         return filteredListRecords.stream()
-                .map(wbListRecordsToListRecordConverter::destinationToSource)
+                .map(p2PWbListRecordsToListRecordConverter::destinationToSource)
                 .collect(Collectors.toList());
     }
 
@@ -134,12 +133,11 @@ public class WbListResource {
     }
 
     @GetMapping(value = "/greyList")
-    public ResponseEntity<List<CountInfoListRequest>> getGreyList(@RequestParam(required = false) String partyId,
-                                                                  @RequestParam(required = false) String shopId,
+    public ResponseEntity<List<CountInfoListRequest>> getGreyList(@RequestParam(required = false) String identityId,
                                                                   @RequestParam String listName) {
-        List<CountInfoListRequest> listRecords = wbListDao.getFilteredListRecords(partyId, shopId, com.rbkmoney.fraudbusters.management.domain.enums.ListType.grey, listName)
+        List<CountInfoListRequest> listRecords = p2PWbListDao.getFilteredListRecords(identityId, com.rbkmoney.fraudbusters.management.domain.enums.ListType.grey, listName)
                 .stream()
-                .map(wbListRecordsToListRecordWithRowConverter::convert)
+                .map(listRecordWithRowConverter::convert)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(listRecords);
     }

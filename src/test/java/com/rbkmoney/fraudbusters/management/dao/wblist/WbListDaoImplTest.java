@@ -1,22 +1,22 @@
 package com.rbkmoney.fraudbusters.management.dao.wblist;
 
-import com.rbkmoney.fraudbusters.management.converter.WbListRecordsToListRecordWithRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordWithRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
-import com.rbkmoney.fraudbusters.management.domain.CountInfoListRecord;
+import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
+import com.rbkmoney.fraudbusters.management.utils.CountInfoListRequestGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToListRecordWithRowConverter.class, JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToListRecordWithRowConverter.class, CountInfoListRequestGenerator.class, JacksonAutoConfiguration.class})
 public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY = "party";
@@ -89,7 +89,7 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         Assert.assertEquals(1, filteredListRecords.size());
         Assert.assertFalse(filteredListRecords.get(0).getRowInfo().isEmpty());
 
-        CountInfoListRecord countInfoListRecord = wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
+        CountInfoListRequest countInfoListRecord = wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
 
         Assert.assertEquals(5L, countInfoListRecord.getCount().longValue());
     }

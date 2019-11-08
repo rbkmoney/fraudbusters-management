@@ -1,9 +1,12 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.converter.payment;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rbkmoney.damsel.wb_list.P2pId;
+import com.rbkmoney.damsel.wb_list.PaymentId;
 import com.rbkmoney.damsel.wb_list.Row;
+import com.rbkmoney.fraudbusters.management.domain.P2pListRecord;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +22,18 @@ public class RowToWbListRecordsConverter implements Converter<Row, WbListRecords
     @Override
     public WbListRecords convert(Row destination) {
         WbListRecords wbListRecords = new WbListRecords();
-        wbListRecords.setPartyId(destination.getPartyId());
-        wbListRecords.setShopId(destination.getShopId());
+
+        if (destination.isSetId() && destination.getId().isSetPaymentId()) {
+            PaymentId paymentId = destination.getId().getPaymentId();
+            wbListRecords.setPartyId(paymentId.getPartyId());
+            wbListRecords.setShopId(paymentId.getShopId());
+        }
+
         wbListRecords.setListName(destination.getListName());
         wbListRecords.setListType(initListType(destination));
         wbListRecords.setValue(destination.getValue());
         wbListRecords.setRowInfo(initRowInfo(destination));
+
         return wbListRecords;
     }
 
@@ -36,6 +45,8 @@ public class RowToWbListRecordsConverter implements Converter<Row, WbListRecords
                 return ListType.black;
             case white:
                 return ListType.white;
+            case naming:
+                return ListType.naming;
             default:
                 throw new RuntimeException("Unknown list type!");
         }

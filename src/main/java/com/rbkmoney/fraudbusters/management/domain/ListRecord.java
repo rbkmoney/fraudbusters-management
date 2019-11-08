@@ -7,9 +7,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ListRecord {
 
-    private String partyId;
-
-    private String shopId;
     @NotNull
     private String listName;
     @NotNull

@@ -1,0 +1,1 @@
+ALTER TYPE af.list_type ADD VALUE 'naming';
