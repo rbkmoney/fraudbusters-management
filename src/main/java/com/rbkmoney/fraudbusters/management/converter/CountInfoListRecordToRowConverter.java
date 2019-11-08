@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
 import com.rbkmoney.fraudbusters.management.domain.P2pListRecord;
 import com.rbkmoney.fraudbusters.management.domain.PaymentListRecord;
+import com.rbkmoney.fraudbusters.management.exception.UnknownEventException;
 import io.micrometer.shaded.io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
@@ -48,6 +49,8 @@ public class CountInfoListRecordToRowConverter implements Converter<CountInfoLis
             row.setId(IdInfo.p2p_id(new P2pId()
                     .setIdentityId(p2pListRecord.getIdentityId()))
             );
+        } else {
+            throw new UnknownEventException("Unknown listRecord!");
         }
 
         return row;

@@ -1,11 +1,10 @@
 package com.rbkmoney.fraudbusters.management;
 
-import com.rbkmoney.damsel.fraudbusters.PriorityId;
 import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.group.GroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
-import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.template.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.*;
 import com.rbkmoney.fraudbusters.management.resource.GroupCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.TemplateCommandResource;
@@ -15,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;

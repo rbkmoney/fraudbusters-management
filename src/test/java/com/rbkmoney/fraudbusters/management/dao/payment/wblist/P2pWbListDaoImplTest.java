@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.dao.wblist;
+package com.rbkmoney.fraudbusters.management.dao.payment.wblist;
 
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pWbListRecordsToListRecordWithRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;

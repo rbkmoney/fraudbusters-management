@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.dao.reference;
+package com.rbkmoney.fraudbusters.management.dao.payment.reference;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;

@@ -1,6 +1,5 @@
-package com.rbkmoney.fraudbusters.management.dao.template;
+package com.rbkmoney.fraudbusters.management.dao.payment.template;
 
-import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import org.jetbrains.annotations.NotNull;

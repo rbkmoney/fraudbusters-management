@@ -1,11 +1,9 @@
 package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.wb_list.*;
-import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
-import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
-import com.rbkmoney.fraudbusters.management.resource.WbListResource;
 import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -17,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;

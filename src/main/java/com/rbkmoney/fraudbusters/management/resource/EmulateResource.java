@@ -2,8 +2,8 @@ package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.group.GroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.template.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

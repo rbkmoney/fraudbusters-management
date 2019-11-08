@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.converter.payment;
 
 
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;

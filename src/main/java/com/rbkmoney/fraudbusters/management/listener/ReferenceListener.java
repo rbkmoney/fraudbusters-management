@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.CommandToReferenceModelConverter;
-import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

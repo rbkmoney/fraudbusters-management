@@ -1,14 +1,12 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
-import com.rbkmoney.dao.DaoException;
-import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.template.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
