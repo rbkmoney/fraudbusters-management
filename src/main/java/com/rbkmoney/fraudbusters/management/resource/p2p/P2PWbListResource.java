@@ -37,7 +37,7 @@ public class P2PWbListResource {
     private final P2pWbListRecordsToListRecordWithRowConverter listRecordWithRowConverter;
     private final WbListCommandService wbListCommandService;
 
-    @Value("${kafka.topic.p2p.wblist.command}")
+    @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
 
     @PostMapping(value = "/whiteList")

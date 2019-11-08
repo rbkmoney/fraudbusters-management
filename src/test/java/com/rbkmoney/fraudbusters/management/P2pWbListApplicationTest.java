@@ -54,9 +54,9 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     TestRestTemplate restTemplate = new TestRestTemplate();
 
-    @Value("${kafka.topic.p2p.wblist.event.sink}")
+    @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
-    @Value("${kafka.topic.p2p.wblist.command}")
+    @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
 
     @MockBean
