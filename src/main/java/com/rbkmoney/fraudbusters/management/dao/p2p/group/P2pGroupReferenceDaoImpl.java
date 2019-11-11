@@ -67,7 +67,7 @@ public class P2pGroupReferenceDaoImpl extends AbstractDao implements P2pGroupRef
     }
 
     @Override
-    public List<P2pGroupReferenceModel> getByPartyIdAndShopId(String identityId) {
+    public List<P2pGroupReferenceModel> getByIdentityId(String identityId) {
         SelectConditionStep<Record3<Long, String, String>> where =
                 getDslContext()
                         .select(P2P_F_GROUP_REFERENCE.ID,

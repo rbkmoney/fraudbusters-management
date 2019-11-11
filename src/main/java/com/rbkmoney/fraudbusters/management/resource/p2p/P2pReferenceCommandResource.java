@@ -33,7 +33,7 @@ public class P2pReferenceCommandResource {
     @PostMapping(value = "/template/{id}/reference")
     public ResponseEntity<List<String>> insertReference(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
-        log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
+        log.info("P2pReferenceCommandResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.CREATE))
@@ -51,7 +51,7 @@ public class P2pReferenceCommandResource {
     @DeleteMapping(value = "/template/{id}/reference")
     public ResponseEntity<List<String>> deleteReference(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
-        log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
+        log.info("P2pReferenceCommandResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.DELETE))

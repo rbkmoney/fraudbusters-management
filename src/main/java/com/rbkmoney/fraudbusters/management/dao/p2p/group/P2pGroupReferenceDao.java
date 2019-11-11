@@ -9,6 +9,6 @@ public interface P2pGroupReferenceDao extends GroupReferenceDao<P2pGroupReferenc
 
     void remove(String identityId);
 
-    List<P2pGroupReferenceModel> getByPartyIdAndShopId(String identityId);
+    List<P2pGroupReferenceModel> getByIdentityId(String identityId);
 
 }

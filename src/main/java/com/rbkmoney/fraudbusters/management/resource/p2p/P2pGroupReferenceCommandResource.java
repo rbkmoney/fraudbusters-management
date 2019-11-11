@@ -26,7 +26,7 @@ public class P2pGroupReferenceCommandResource {
     @PostMapping(value = "/group/{id}/reference")
     public ResponseEntity<List<String>> insertGroupReference(@PathVariable(value = "id") String id,
                                                              @Validated @RequestBody List<P2pGroupReferenceModel> groupReferenceModels) {
-        log.info("GroupCommandResource insertReference referenceModels: {}", groupReferenceModels);
+        log.info("P2pGroupReferenceCommandResource insertReference referenceModels: {}", groupReferenceModels);
         List<String> ids = groupReferenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.CREATE))
@@ -44,7 +44,7 @@ public class P2pGroupReferenceCommandResource {
     @DeleteMapping(value = "/group/{id}/reference")
     public ResponseEntity<List<String>> deleteGroupReference(@PathVariable(value = "id") String id,
                                                              @Validated @RequestBody List<P2pGroupReferenceModel> groupModels) {
-        log.info("GroupCommandResource insertReference groupModels: {}", groupModels);
+        log.info("P2pGroupReferenceCommandResource insertReference groupModels: {}", groupModels);
         List<String> ids = groupModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.DELETE))
