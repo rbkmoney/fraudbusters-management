@@ -35,7 +35,7 @@
         <wb.list.proto.version>1.27-be77f75</wb.list.proto.version>
         <kafka.streams.version>2.1.0</kafka.streams.version>
         <kafka.clients.version>2.1.0</kafka.clients.version>
-        <fraudbusters.proto.version>1.12-0668b74</fraudbusters.proto.version>
+        <fraudbusters.proto.version>1.15-8f3babc</fraudbusters.proto.version>
         <kafka.common.lib.version>0.0.1-SNAPSHOT</kafka.common.lib.version>
         <fraudo.version>0.0.4-SNAPSHOT</fraudo.version>
         <db.common.lib.version>0.0.2-SNAPSHOT</db.common.lib.version>

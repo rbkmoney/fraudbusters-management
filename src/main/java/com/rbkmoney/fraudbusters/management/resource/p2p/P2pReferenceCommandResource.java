@@ -1,11 +1,13 @@
-package com.rbkmoney.fraudbusters.management.resource;
+package com.rbkmoney.fraudbusters.management.resource.p2p;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
-import com.rbkmoney.fraudbusters.management.converter.ReferenceToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.P2pReferenceToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
-import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.TemplateReferenceService;
 import lombok.RequiredArgsConstructor;
@@ -19,26 +21,18 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
+@RequestMapping("/p2p")
 @RequiredArgsConstructor
-public class TemplateCommandResource {
+public class P2pReferenceCommandResource {
 
     private final TemplateCommandService templateCommandService;
     private final TemplateReferenceService templateReferenceService;
     private final TemplateModelToCommandConverter templateModelToCommandConverter;
-    private final ReferenceToCommandConverter referenceToCommandConverter;
-
-    @PostMapping(value = "/template")
-    public ResponseEntity<String> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
-        log.info("TemplateManagementResource insertTemplate templateModel: {}", templateModel);
-        Command command = templateModelToCommandConverter.convert(templateModel);
-        command.setCommandType(CommandType.CREATE);
-        String idMessage = templateCommandService.sendCommandSync(command);
-        return ResponseEntity.ok().body(idMessage);
-    }
+    private final P2pReferenceToCommandConverter referenceToCommandConverter;
 
     @PostMapping(value = "/template/{id}/reference")
     public ResponseEntity<List<String>> insertReference(@PathVariable(value = "id") String id,
-                                                        @Validated @RequestBody List<ReferenceModel> referenceModels) {
+                                                        @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
@@ -48,24 +42,15 @@ public class TemplateCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
-    private Command convertReferenceModel(ReferenceModel referenceModel, String templateId) {
+    private Command convertReferenceModel(P2pReferenceModel referenceModel, String templateId) {
         Command command = referenceToCommandConverter.convert(referenceModel);
         command.getCommandBody().getReference().setTemplateId(templateId);
         return command;
     }
 
-    @DeleteMapping(value = "/template")
-    public ResponseEntity<String> removeTemplate(@Validated @RequestBody TemplateModel templateModel) {
-        log.info("TemplateManagementResource removeTemplate templateModel: {}", templateModel);
-        Command command = templateModelToCommandConverter.convert(templateModel);
-        command.setCommandType(CommandType.DELETE);
-        String idMessage = templateCommandService.sendCommandSync(command);
-        return ResponseEntity.ok().body(idMessage);
-    }
-
     @DeleteMapping(value = "/template/{id}/reference")
     public ResponseEntity<List<String>> deleteReference(@PathVariable(value = "id") String id,
-                                                        @Validated @RequestBody List<ReferenceModel> referenceModels) {
+                                                        @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))

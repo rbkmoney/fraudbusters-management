@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.dao.payment.template;
+package com.rbkmoney.fraudbusters.management.dao.template;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;

@@ -34,9 +34,10 @@ public class WbListEventListener {
         } else if (event.getRow().getId().isSetPaymentId()) {
             WbListRecords record = eventToListRecordConverter.convert(event);
             applyCommand(event, record, wbListDao);
+        } else {
+            log.error("Unknown event when wbListEventListener listen event: {}", event);
+            throw new UnknownEventException(String.format("Unknown event when wbListEventListener listen event: %s", event));
         }
-
-        throw new UnknownEventException();
     }
 
     private <T> void applyCommand(Event event, T record, CrudDao<T> crudDao) {

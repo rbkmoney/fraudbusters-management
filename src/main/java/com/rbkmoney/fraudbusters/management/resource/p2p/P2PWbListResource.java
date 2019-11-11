@@ -10,7 +10,7 @@ import com.rbkmoney.fraudbusters.management.converter.p2p.P2pWbListRecordsToList
 import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
 import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
-import com.rbkmoney.fraudbusters.management.domain.P2pListRecord;
+import com.rbkmoney.fraudbusters.management.domain.p2p.P2pListRecord;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import lombok.RequiredArgsConstructor;

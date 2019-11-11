@@ -1,8 +1,8 @@
-package com.rbkmoney.fraudbusters.management.dao.group;
+package com.rbkmoney.fraudbusters.management.dao.payment.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
-import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
 import org.jooq.impl.DSL;
@@ -16,17 +16,17 @@ import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference
 import static org.jooq.Comparator.EQUALS;
 
 @Component
-public class GroupReferenceDaoImpl extends AbstractDao implements GroupReferenceDao {
+public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupReferenceDao {
 
-    private final RowMapper<GroupReferenceModel> listRecordRowMapper;
+    private final RowMapper<PaymentGroupReferenceModel> listRecordRowMapper;
 
     public GroupReferenceDaoImpl(DataSource dataSource) {
         super(dataSource);
-        listRecordRowMapper = new RecordRowMapper<>(F_GROUP_REFERENCE, GroupReferenceModel.class);
+        listRecordRowMapper = new RecordRowMapper<>(F_GROUP_REFERENCE, PaymentGroupReferenceModel.class);
     }
 
     @Override
-    public void insert(GroupReferenceModel referenceModel) {
+    public void insert(PaymentGroupReferenceModel referenceModel) {
         Query query = getDslContext().insertInto(F_GROUP_REFERENCE)
                 .set(getDslContext().newRecord(F_GROUP_REFERENCE, referenceModel))
                 .onConflict(F_GROUP_REFERENCE.PARTY_ID, F_GROUP_REFERENCE.SHOP_ID)
@@ -44,7 +44,7 @@ public class GroupReferenceDaoImpl extends AbstractDao implements GroupReference
     }
 
     @Override
-    public void remove(GroupReferenceModel referenceModel) {
+    public void remove(PaymentGroupReferenceModel referenceModel) {
         Condition condition = DSL.trueCondition();
         execute(getDslContext()
                 .delete(F_GROUP_REFERENCE)
@@ -55,7 +55,7 @@ public class GroupReferenceDaoImpl extends AbstractDao implements GroupReference
     }
 
     @Override
-    public List<GroupReferenceModel> getByGroupId(String id) {
+    public List<PaymentGroupReferenceModel> getByGroupId(String id) {
         SelectConditionStep<Record4<Long, String, String, String>> where =
                 getDslContext()
                         .select(F_GROUP_REFERENCE.ID,
@@ -68,7 +68,7 @@ public class GroupReferenceDaoImpl extends AbstractDao implements GroupReference
     }
 
     @Override
-    public List<GroupReferenceModel> getByPartyIdAndShopId(String partyId, String shopId) {
+    public List<PaymentGroupReferenceModel> getByPartyIdAndShopId(String partyId, String shopId) {
         SelectConditionStep<Record4<Long, String, String, String>> where =
                 getDslContext()
                         .select(F_GROUP_REFERENCE.ID,

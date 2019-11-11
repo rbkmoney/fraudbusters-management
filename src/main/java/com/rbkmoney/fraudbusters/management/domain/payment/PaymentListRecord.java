@@ -1,5 +1,6 @@
-package com.rbkmoney.fraudbusters.management.domain;
+package com.rbkmoney.fraudbusters.management.domain.payment;
 
+import com.rbkmoney.fraudbusters.management.domain.ListRecord;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

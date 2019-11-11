@@ -1,10 +1,12 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
-import com.rbkmoney.fraudbusters.management.dao.group.GroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.template.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.*;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.misc.Pair;
@@ -27,8 +29,8 @@ public class EmulateResource {
 
     private final GroupDao groupDao;
     private final TemplateDao templateDao;
-    private final GroupReferenceDao groupReferenceDao;
-    private final ReferenceDao referenceDao;
+    private final PaymentGroupReferenceDao groupReferenceDao;
+    private final PaymentReferenceDao referenceDao;
 
     @GetMapping(value = "/rules")
     public ResponseEntity<List<TemplateModel>> getRulesByPartyAndShop(@Validated @RequestParam String partyId,
@@ -42,9 +44,9 @@ public class EmulateResource {
             resultModels.add(globalTemplate);
         }
 
-        List<GroupReferenceModel> groupReferenceModels = groupReferenceDao.getByPartyIdAndShopId(partyId, shopId);
+        List<PaymentGroupReferenceModel> groupReferenceModels = groupReferenceDao.getByPartyIdAndShopId(partyId, shopId);
         if (!CollectionUtils.isEmpty(groupReferenceModels)) {
-            for (GroupReferenceModel groupReferenceModel : groupReferenceModels) {
+            for (PaymentGroupReferenceModel groupReferenceModel : groupReferenceModels) {
                 GroupModel groupModel = groupDao.getById(groupReferenceModel.getGroupId());
                 if (groupModel != null) {
                     List<TemplateModel> groupsTemplates = groupModel.getPriorityTemplates().stream()
@@ -56,7 +58,7 @@ public class EmulateResource {
             }
         }
 
-        List<ReferenceModel> referenceModels = referenceDao.getByPartyAndShop(partyId, shopId);
+        List<PaymentReferenceModel> referenceModels = referenceDao.getByPartyAndShop(partyId, shopId);
         if (!CollectionUtils.isEmpty(referenceModels)) {
             List<TemplateModel> merchantTemplates = referenceModels.stream()
                     .map(model ->

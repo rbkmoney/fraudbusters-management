@@ -1,9 +1,9 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.converter.payment;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandBody;
 import com.rbkmoney.damsel.fraudbusters.GroupReference;
-import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class GroupReferenceToCommandConverter implements Converter<GroupReferenceModel, Command> {
+public class GroupReferenceToCommandConverter implements Converter<PaymentGroupReferenceModel, Command> {
 
     @Override
-    public Command convert(GroupReferenceModel groupReferenceModel) {
+    public Command convert(PaymentGroupReferenceModel groupReferenceModel) {
         Command command = new Command();
         GroupReference reference = new GroupReference();
         reference.setShopId(groupReferenceModel.getShopId());

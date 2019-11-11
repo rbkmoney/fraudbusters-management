@@ -1,9 +1,9 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
-import com.rbkmoney.fraudbusters.management.dao.group.GroupReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
-import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +21,13 @@ import java.util.List;
 public class GroupQueryResource {
 
     private final GroupDao groupDao;
-    private final GroupReferenceDao referenceDao;
+    private final PaymentGroupReferenceDao referenceDao;
 
     @GetMapping(value = "/group/{id}/reference")
-    public ResponseEntity<List<GroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
-                                                                   @Validated @RequestParam(required = false) int limit) {
+    public ResponseEntity<List<PaymentGroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
+                                                                          @Validated @RequestParam(required = false) int limit) {
         log.info("GroupQueryResource getGroupReferences id: {} limit: {}", id, limit);
-        List<GroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(id);
+        List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(id);
         return ResponseEntity.ok().body(listByTemplateId);
     }
 

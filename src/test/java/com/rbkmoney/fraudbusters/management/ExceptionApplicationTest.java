@@ -8,11 +8,11 @@ import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToLis
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
-import com.rbkmoney.fraudbusters.management.domain.PaymentListRecord;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
-import com.rbkmoney.fraudbusters.management.resource.WbListResource;
+import com.rbkmoney.fraudbusters.management.resource.payment.WbListResource;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

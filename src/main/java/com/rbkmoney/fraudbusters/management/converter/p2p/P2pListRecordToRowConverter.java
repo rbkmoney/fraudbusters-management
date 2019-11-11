@@ -5,7 +5,7 @@ import com.rbkmoney.damsel.wb_list.IdInfo;
 import com.rbkmoney.damsel.wb_list.P2pId;
 import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.domain.P2pListRecord;
+import com.rbkmoney.fraudbusters.management.domain.p2p.P2pListRecord;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

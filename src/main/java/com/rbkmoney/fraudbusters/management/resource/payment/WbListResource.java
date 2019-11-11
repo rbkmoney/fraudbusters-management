@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.resource;
+package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.damsel.wb_list.ListType;
@@ -10,7 +10,7 @@ import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordT
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
-import com.rbkmoney.fraudbusters.management.domain.PaymentListRecord;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import lombok.RequiredArgsConstructor;

@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.dao.payment.reference;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,12 +17,12 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY_ID = "party_id";
     @Autowired
-    ReferenceDao referenceDao;
+    PaymentReferenceDao referenceDao;
 
     @Test
     public void insert() {
         String id = "id";
-        ReferenceModel referenceModel = createReference(id);
+        PaymentReferenceModel referenceModel = createReference(id);
 
         referenceDao.insert(referenceModel);
 
@@ -35,8 +36,8 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @NotNull
-    private ReferenceModel createReference(String id) {
-        ReferenceModel referenceModel = new ReferenceModel();
+    private PaymentReferenceModel createReference(String id) {
+        PaymentReferenceModel referenceModel = new PaymentReferenceModel();
         referenceModel.setId(id);
         String templateId = "template_id";
         String shopId = "shop_id";
@@ -51,7 +52,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     @Test
     public void constraintTest() {
         String id = "id";
-        ReferenceModel referenceModel = createReference(id);
+        PaymentReferenceModel referenceModel = createReference(id);
 
         referenceDao.insert(referenceModel);
 
@@ -80,7 +81,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         byId = referenceDao.getById(firstGlobal);
         Assert.assertNull(byId);
 
-        List<ReferenceModel> listByTFilters = referenceDao.getListByTFilters(PARTY_ID, null, null, 10);
+        List<PaymentReferenceModel> listByTFilters = referenceDao.getListByTFilters(PARTY_ID, null, null, 10);
 
         Assert.assertEquals(2, listByTFilters.size());
 

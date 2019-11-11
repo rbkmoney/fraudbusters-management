@@ -7,9 +7,9 @@ import org.springframework.core.convert.converter.Converter;
 import java.util.function.Consumer;
 
 @Slf4j
-public abstract class CommandListener<R> {
+public abstract class CommandListener {
 
-    protected void handle(Command command, Converter<Command, R> converter, Consumer<R> createConsumer,
+    protected <R> void handle(Command command, Converter<Command, R> converter, Consumer<R> createConsumer,
                           Consumer<R> deleteConsumer) {
         R model = converter.convert(command);
         switch (command.getCommandType()) {

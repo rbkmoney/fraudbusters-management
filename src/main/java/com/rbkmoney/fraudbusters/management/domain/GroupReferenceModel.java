@@ -6,8 +6,6 @@ import lombok.Data;
 public class GroupReferenceModel {
 
     private String id;
-    private String partyId;
-    private String shopId;
     private String groupId;
 
 }

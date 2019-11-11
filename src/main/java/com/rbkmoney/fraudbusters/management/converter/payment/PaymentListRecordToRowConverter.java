@@ -5,7 +5,7 @@ import com.rbkmoney.damsel.wb_list.IdInfo;
 import com.rbkmoney.damsel.wb_list.PaymentId;
 import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.domain.PaymentListRecord;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

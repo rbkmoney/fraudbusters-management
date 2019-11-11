@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.converter.payment;
 
 
 import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
-import com.rbkmoney.fraudbusters.management.domain.PaymentListRecord;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoListRequestGenerator;
 import lombok.RequiredArgsConstructor;

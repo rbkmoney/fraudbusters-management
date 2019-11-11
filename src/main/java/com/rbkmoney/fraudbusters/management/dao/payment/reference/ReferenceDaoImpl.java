@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.dao.payment.reference;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
-import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FReferenceRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
@@ -17,18 +17,18 @@ import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_RE
 import static org.jooq.Comparator.EQUALS;
 
 @Component
-public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
+public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao {
 
     private static final int LIMIT_TOTAL = 100;
-    private final RowMapper<ReferenceModel> listRecordRowMapper;
+    private final RowMapper<PaymentReferenceModel> listRecordRowMapper;
 
     public ReferenceDaoImpl(DataSource dataSource) {
         super(dataSource);
-        listRecordRowMapper = new RecordRowMapper<>(F_REFERENCE, ReferenceModel.class);
+        listRecordRowMapper = new RecordRowMapper<>(F_REFERENCE, PaymentReferenceModel.class);
     }
 
     @Override
-    public void insert(ReferenceModel referenceModel) {
+    public void insert(PaymentReferenceModel referenceModel) {
         Query query = getDslContext().insertInto(F_REFERENCE)
                 .set(getDslContext().newRecord(F_REFERENCE, referenceModel))
                 .onConflict(F_REFERENCE.PARTY_ID, F_REFERENCE.SHOP_ID, F_REFERENCE.IS_GLOBAL)
@@ -46,7 +46,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public void remove(ReferenceModel referenceModel) {
+    public void remove(PaymentReferenceModel referenceModel) {
         Condition condition = DSL.trueCondition();
         DeleteConditionStep<FReferenceRecord> where = getDslContext()
                 .delete(F_REFERENCE)
@@ -59,7 +59,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public ReferenceModel getById(String id) {
+    public PaymentReferenceModel getById(String id) {
         SelectConditionStep<Record5<String, String, String, String, Boolean>> where =
                 getDslContext()
                         .select(F_REFERENCE.ID,
@@ -73,7 +73,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public List<ReferenceModel> getList(int limit) {
+    public List<PaymentReferenceModel> getList(int limit) {
         SelectLimitPercentStep<Record5<String, String, String, String, Boolean>> query =
                 getDslContext()
                         .select(F_REFERENCE.ID,
@@ -87,7 +87,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public List<ReferenceModel> getListByTemplateId(String templateId, int limit) {
+    public List<PaymentReferenceModel> getListByTemplateId(String templateId, int limit) {
         SelectLimitPercentStep<Record5<String, String, String, String, Boolean>> query =
                 getDslContext()
                         .select(F_REFERENCE.ID,
@@ -102,7 +102,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public List<ReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, int limit) {
+    public List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, int limit) {
         Condition condition = DSL.trueCondition();
         SelectLimitPercentStep<Record5<String, String, String, String, Boolean>> query =
                 getDslContext()
@@ -122,7 +122,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
     }
 
     @Override
-    public ReferenceModel getGlobalReference() {
+    public PaymentReferenceModel getGlobalReference() {
         return fetchOne(getDslContext()
                         .select(F_REFERENCE.ID,
                                 F_REFERENCE.PARTY_ID,
@@ -136,7 +136,7 @@ public class ReferenceDaoImpl extends AbstractDao implements ReferenceDao {
 
 
     @Override
-    public List<ReferenceModel> getByPartyAndShop(String partyId, String shopId) {
+    public List<PaymentReferenceModel> getByPartyAndShop(String partyId, String shopId) {
         SelectConditionStep<Record5<String, String, String, String, Boolean>> where = getDslContext()
                 .select(F_REFERENCE.ID,
                         F_REFERENCE.PARTY_ID,
