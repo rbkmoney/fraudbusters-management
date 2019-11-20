@@ -4,7 +4,7 @@ import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pEventToListRecordConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.EventToListRecordConverter;
-import com.rbkmoney.fraudbusters.management.dao.CrudDao;
+import com.rbkmoney.fraudbusters.management.dao.CdDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
@@ -40,13 +40,13 @@ public class WbListEventListener {
         }
     }
 
-    private <T> void applyCommand(Event event, T record, CrudDao<T> crudDao) {
+    private <T> void applyCommand(Event event, T record, CdDao<T> cdDao) {
         switch (event.getEventType()) {
             case CREATED:
-                crudDao.saveListRecord(record);
+                cdDao.saveListRecord(record);
                 break;
             case DELETED:
-                crudDao.removeRecord(record);
+                cdDao.removeRecord(record);
                 break;
             default:
                 log.warn("WbListListener event for list not found! event: {}", event);

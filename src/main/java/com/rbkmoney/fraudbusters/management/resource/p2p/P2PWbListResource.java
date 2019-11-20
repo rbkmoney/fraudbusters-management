@@ -3,7 +3,7 @@ package com.rbkmoney.fraudbusters.management.resource.p2p;
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.damsel.wb_list.Row;
-import com.rbkmoney.fraudbusters.management.converter.CountInfoListRecordToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.CountInfoListRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2PWbListRecordsToListRecordConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pWbListRecordsToListRecordWithRowConverter;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class P2PWbListResource {
 
     private final P2pListRecordToRowConverter p2pListRecordToRowConverter;
-    private final CountInfoListRecordToRowConverter countInfoListRecordToRowConverter;
+    private final CountInfoListRequestToRowConverter countInfoListRecordToRowConverter;
     private final P2PWbListDao p2PWbListDao;
     private final P2PWbListRecordsToListRecordConverter p2PWbListRecordsToListRecordConverter;
     private final P2pWbListRecordsToListRecordWithRowConverter listRecordWithRowConverter;

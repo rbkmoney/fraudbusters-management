@@ -2,9 +2,9 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.controller.ErrorController;
-import com.rbkmoney.fraudbusters.management.converter.CountInfoListRecordToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.CountInfoListRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordWithRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
@@ -76,9 +76,9 @@ public class ExceptionApplicationTest {
     @MockBean
     public WbListRecordsToListRecordConverter wbListRecordsToListRecordConverter;
     @MockBean
-    public CountInfoListRecordToRowConverter countInfoListRecordToRowConverter;
+    public CountInfoListRequestToRowConverter countInfoListRecordToRowConverter;
     @MockBean
-    public WbListRecordsToListRecordWithRowConverter wbListRecordsToListRecordWithRowConverter;
+    public WbListRecordsToCountInfoListRequestConverter wbListRecordsToListRecordWithRowConverter;
 
     @Autowired
     RestTemplateBuilder restTemplateBuilder;

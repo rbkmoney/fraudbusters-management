@@ -3,7 +3,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.fraudbusters.management.converter.GroupModelToCommandConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.GroupReferenceToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentGroupReferenceModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
@@ -25,7 +25,7 @@ public class GroupCommandResource {
     private final GroupReferenceService groupReferenceService;
     private final GroupCommandService groupCommandService;
     private final GroupModelToCommandConverter groupModelToCommandConverter;
-    private final GroupReferenceToCommandConverter groupReferenceToCommandConverter;
+    private final PaymentGroupReferenceModelToCommandConverter groupReferenceToCommandConverter;
 
     @PostMapping(value = "/group")
     public ResponseEntity<String> insertGroup(@RequestBody GroupModel groupModel) {

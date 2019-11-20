@@ -3,9 +3,9 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.damsel.wb_list.Row;
-import com.rbkmoney.fraudbusters.management.converter.CountInfoListRecordToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.CountInfoListRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordWithRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 public class WbListResource {
 
     private final PaymentListRecordToRowConverter paymentListRecordToRowConverter;
-    private final CountInfoListRecordToRowConverter countInfoListRecordToRowConverter;
+    private final CountInfoListRequestToRowConverter countInfoListRecordToRowConverter;
     private final WbListDao wbListDao;
     private final WbListRecordsToListRecordConverter wbListRecordsToListRecordConverter;
-    private final WbListRecordsToListRecordWithRowConverter wbListRecordsToListRecordWithRowConverter;
+    private final WbListRecordsToCountInfoListRequestConverter wbListRecordsToListRecordWithRowConverter;
     private final WbListCommandService wbListCommandService;
 
     @Value("${kafka.topic.wblist.command}")

@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.wblist;
 
-import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordWithRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
@@ -16,7 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToListRecordWithRowConverter.class, CountInfoListRequestGenerator.class, JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class, CountInfoListRequestGenerator.class, JacksonAutoConfiguration.class})
 public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY = "party";
@@ -26,7 +26,7 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     WbListDao wbListDao;
 
     @Autowired
-    WbListRecordsToListRecordWithRowConverter wbListRecordsToListRecordWithRowConverter;
+    WbListRecordsToCountInfoListRequestConverter wbListRecordsToListRecordWithRowConverter;
 
     @Test
     public void saveListRecord() {

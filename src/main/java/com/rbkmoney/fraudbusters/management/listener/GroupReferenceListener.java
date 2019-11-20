@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.p2p.CommandToP2pGroupReferenceModelConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.CommandToGroupReferenceModelConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.CommandToPaymentGroupReferenceModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.exception.UnknownReferenceException;
@@ -19,7 +19,7 @@ public class GroupReferenceListener extends CommandListener {
     private final PaymentGroupReferenceDao groupReferenceDao;
     private final P2pGroupReferenceDao p2pGroupReferenceDao;
 
-    private final CommandToGroupReferenceModelConverter groupReferenceModelConverter;
+    private final CommandToPaymentGroupReferenceModelConverter groupReferenceModelConverter;
     private final CommandToP2pGroupReferenceModelConverter commandToP2pGroupReferenceModelConverter;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.group.reference}", containerFactory = "kafkaGroupReferenceListenerContainerFactory")

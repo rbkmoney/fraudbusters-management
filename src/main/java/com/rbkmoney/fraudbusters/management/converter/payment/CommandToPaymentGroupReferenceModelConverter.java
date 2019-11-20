@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CommandToGroupReferenceModelConverter implements Converter<Command, PaymentGroupReferenceModel> {
+public class CommandToPaymentGroupReferenceModelConverter implements Converter<Command, PaymentGroupReferenceModel> {
 
     @Override
     public PaymentGroupReferenceModel convert(Command command) {

@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class CommandToReferenceModelConverter implements Converter<Command, PaymentReferenceModel> {
+public class CommandToPaymentReferenceModelConverter implements Converter<Command, PaymentReferenceModel> {
 
     @Override
     public PaymentReferenceModel convert(Command command) {

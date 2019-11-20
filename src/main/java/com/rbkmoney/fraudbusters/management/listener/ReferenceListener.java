@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.p2p.CommandToP2pReferenceModelConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.CommandToReferenceModelConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.CommandToPaymentReferenceModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
@@ -19,7 +19,7 @@ public class ReferenceListener extends CommandListener {
 
     private final ReferenceDao<PaymentReferenceModel> referenceDao;
     private final ReferenceDao<P2pReferenceModel> p2pReferenceDao;
-    private final CommandToReferenceModelConverter paymentReferenceConverter;
+    private final CommandToPaymentReferenceModelConverter paymentReferenceConverter;
     private final CommandToP2pReferenceModelConverter p2pReferenceModelConverter;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.reference}", containerFactory = "kafkaReferenceListenerContainerFactory")

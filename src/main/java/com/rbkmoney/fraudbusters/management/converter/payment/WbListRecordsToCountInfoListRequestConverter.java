@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class WbListRecordsToListRecordWithRowConverter implements Converter<WbListRecords, CountInfoListRequest> {
+public class WbListRecordsToCountInfoListRequestConverter implements Converter<WbListRecords, CountInfoListRequest> {
 
     private final CountInfoListRequestGenerator countInfoListRequestGenerator;
 

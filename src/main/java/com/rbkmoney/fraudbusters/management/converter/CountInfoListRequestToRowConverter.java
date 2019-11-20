@@ -16,7 +16,7 @@ import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
-public class CountInfoListRecordToRowConverter implements Converter<CountInfoListRequest, Row> {
+public class CountInfoListRequestToRowConverter implements Converter<CountInfoListRequest, Row> {
 
     private final ListRecordToRowConverter listRecordToRowConverter;
 

@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.dao;
 
-public interface CrudDao<T> {
+public interface CdDao<T> {
 
     void saveListRecord(T listRecord);
 
