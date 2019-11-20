@@ -31,7 +31,7 @@
         <db.user>postgres</db.user>
         <db.password>postgres</db.password>
         <db.schema>af</db.schema>
-        <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
         <wb.list.proto.version>1.27-be77f75</wb.list.proto.version>
         <kafka.streams.version>2.1.0</kafka.streams.version>
         <kafka.clients.version>2.1.0</kafka.clients.version>
