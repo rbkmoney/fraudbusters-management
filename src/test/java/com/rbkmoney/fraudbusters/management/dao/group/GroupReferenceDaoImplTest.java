@@ -1,7 +1,9 @@
 package com.rbkmoney.fraudbusters.management.dao.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
-import com.rbkmoney.fraudbusters.management.domain.GroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +18,19 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     public static final String SHOP_ID = "shopId";
     public static final String GROUP_ID = "groupId";
     @Autowired
-    GroupReferenceDao groupReferenceDao;
+    PaymentGroupReferenceDao groupReferenceDao;
 
     @Test
     public void insert() {
         String id = "id";
 
-        GroupReferenceModel referenceModel = new GroupReferenceModel();
+        PaymentGroupReferenceModel referenceModel = new PaymentGroupReferenceModel();
         referenceModel.setPartyId(PARTY_ID);
         referenceModel.setShopId(SHOP_ID);
         referenceModel.setGroupId(GROUP_ID);
         groupReferenceDao.insert(referenceModel);
 
-        List<GroupReferenceModel> byId = groupReferenceDao.getByGroupId(GROUP_ID);
+        List<PaymentGroupReferenceModel> byId = groupReferenceDao.getByGroupId(GROUP_ID);
         Assert.assertEquals(PARTY_ID, byId.get(0).getPartyId());
 
         groupReferenceDao.remove(referenceModel);

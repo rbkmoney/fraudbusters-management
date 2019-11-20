@@ -1,11 +1,9 @@
 package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.wb_list.*;
-import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
-import com.rbkmoney.fraudbusters.management.domain.ListRecord;
+import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
-import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
-import com.rbkmoney.fraudbusters.management.resource.WbListResource;
 import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -17,16 +15,20 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 @Slf4j
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@SpringBootTest(classes = FraudbustersManagementApplication.class)
+@SpringBootTest(classes = FraudbustersManagementApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     private static final String VALUE = "value";
@@ -47,6 +49,11 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
     private static final String PARTY_ID = "partyId";
     private static final String LIST_NAME = "listName";
 
+    @LocalServerPort
+    private int port;
+
+    TestRestTemplate restTemplate = new TestRestTemplate();
+
     @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
     @Value("${kafka.topic.wblist.command}")
@@ -54,12 +61,6 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     @MockBean
     public WbListDao wbListDao;
-
-    @Autowired
-    WbListEventListener wbListEventListener;
-
-    @Autowired
-    WbListResource wbListResource;
 
     @Test
     public void listenCreated() throws ExecutionException, InterruptedException {
@@ -126,8 +127,10 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
     @NotNull
     private Row createRow(ListType listType) {
         Row row = new Row();
-        row.setShopId(SHOP_ID);
-        row.setPartyId(PARTY_ID);
+        row.setId(IdInfo.payment_id(new PaymentId()
+                .setPartyId(PARTY_ID)
+                .setShopId(SHOP_ID))
+        );
         row.setListName(LIST_NAME);
         row.setListType(listType);
         row.setValue(VALUE);
@@ -135,22 +138,22 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void executeTest() {
+    public void executeTest() throws IOException {
         Mockito.doNothing().when(wbListDao).saveListRecord(any());
 
-        ListRecord record = new ListRecord();
+        PaymentListRecord record = new PaymentListRecord();
         record.setListName(LIST_NAME);
         record.setPartyId(PARTY_ID);
         record.setShopId(SHOP_ID);
         record.setValue(VALUE);
 
-        ListRecord recordSecond = new ListRecord();
+        PaymentListRecord recordSecond = new PaymentListRecord();
         recordSecond.setListName(LIST_NAME);
         recordSecond.setPartyId(PARTY_ID);
         recordSecond.setShopId(SHOP_ID);
         recordSecond.setValue(VALUE + 2);
 
-        ResponseEntity<List<String>> stringResponseEntity = wbListResource.insertRowToBlack(List.of(record, recordSecond));
+        insertToBlackList(record, recordSecond);
 
         Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class);
         consumer.subscribe(Collections.singletonList(topicCommand));
@@ -160,7 +163,8 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         Assert.assertEquals(eventList.get(0).command, Command.CREATE);
         Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
 
-        ResponseEntity<String> result = wbListResource.removeRowFromWhiteList(record);
+        deleteFromWhiteList(record);
+
         consumer = createConsumer(CommandChangeDeserializer.class);
         consumer.subscribe(Collections.singletonList(topicCommand));
         eventList = consumeCommand(consumer);
@@ -168,6 +172,22 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         Assert.assertEquals(1, eventList.size());
         Assert.assertEquals(eventList.get(0).command, Command.DELETE);
         Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.white);
+    }
+
+    private void insertToBlackList(PaymentListRecord... values) {
+        HttpEntity<List<PaymentListRecord>> entity = new HttpEntity<>(List.of(values), new org.springframework.http.HttpHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(
+                "http://localhost:" + port + "/fb-management/v1/blackList",
+                HttpMethod.POST, entity, String.class);
+        System.out.println(response);
+    }
+
+    private void deleteFromWhiteList(PaymentListRecord value) {
+        HttpEntity<PaymentListRecord> entity = new HttpEntity<>(value, new org.springframework.http.HttpHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(
+                "http://localhost:" + port + "/fb-management/v1/whiteList",
+                HttpMethod.DELETE, entity, String.class);
+        System.out.println(response);
     }
 
     @NotNull

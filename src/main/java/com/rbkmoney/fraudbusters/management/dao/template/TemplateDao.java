@@ -3,7 +3,6 @@ package com.rbkmoney.fraudbusters.management.dao.template;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 
 import java.util.List;
-import java.util.Set;
 
 public interface TemplateDao {
 

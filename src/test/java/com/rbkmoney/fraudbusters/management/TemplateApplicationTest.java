@@ -1,21 +1,21 @@
 package com.rbkmoney.fraudbusters.management;
 
-import com.rbkmoney.damsel.fraudbusters.PriorityId;
 import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
-import com.rbkmoney.fraudbusters.management.dao.group.GroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.reference.ReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
-import com.rbkmoney.fraudbusters.management.dao.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.*;
-import com.rbkmoney.fraudbusters.management.resource.GroupCommandResource;
-import com.rbkmoney.fraudbusters.management.resource.TemplateCommandResource;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.resource.payment.GroupCommandResource;
+import com.rbkmoney.fraudbusters.management.resource.payment.TemplateCommandResource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
@@ -43,9 +43,9 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @MockBean
     public WbListDao wbListDao;
     @MockBean
-    public ReferenceDao referenceDao;
+    public PaymentReferenceDao referenceDao;
     @MockBean
-    public GroupReferenceDao groupReferenceDao;
+    public PaymentGroupReferenceDao groupReferenceDao;
 
     @Autowired
     TemplateCommandResource templateCommandResource;
@@ -92,7 +92,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void referenceTest() throws InterruptedException {
-        ReferenceModel referenceModel = new ReferenceModel();
+        PaymentReferenceModel referenceModel = new PaymentReferenceModel();
         referenceModel.setId("id");
         referenceModel.setTemplateId("template_id");
         referenceModel.setIsGlobal(false);
@@ -103,12 +103,12 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         Thread.sleep(200L);
 
         Mockito.verify(referenceDao, Mockito.times(1)).insert(any());
-        Mockito.verify(referenceDao, Mockito.times(1)).remove((ReferenceModel) any());
+        Mockito.verify(referenceDao, Mockito.times(1)).remove((PaymentReferenceModel) any());
     }
 
     @Test
     public void groupReferenceTest() throws InterruptedException {
-        GroupReferenceModel groupReferenceModel = new GroupReferenceModel();
+        PaymentGroupReferenceModel groupReferenceModel = new PaymentGroupReferenceModel();
         groupReferenceModel.setId("id");
         groupReferenceModel.setPartyId("party_id");
         groupReferenceModel.setShopId("shop_id");

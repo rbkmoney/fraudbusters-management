@@ -9,4 +9,5 @@ import org.mapstruct.Mapper;
 public interface ListRecordToRowConverter {
 
     Row destinationToSource(ListRecord destination);
+
 }

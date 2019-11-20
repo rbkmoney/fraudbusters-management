@@ -3,7 +3,6 @@ package com.rbkmoney.fraudbusters.management.listener;
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.CommandToTemplateModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
-import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TemplateListener extends CommandListener<TemplateModel> {
+public class TemplateListener extends CommandListener {
 
     private final TemplateDao templateDao;
     private final CommandToTemplateModelConverter converter;
