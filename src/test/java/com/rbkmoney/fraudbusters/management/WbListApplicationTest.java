@@ -127,10 +127,8 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
     @NotNull
     private Row createRow(ListType listType) {
         Row row = new Row();
-        row.setId(IdInfo.payment_id(new PaymentId()
-                .setPartyId(PARTY_ID)
-                .setShopId(SHOP_ID))
-        );
+        row.setPartyId(PARTY_ID);
+        row.setShopId(SHOP_ID);
         row.setListName(LIST_NAME);
         row.setListType(listType);
         row.setValue(VALUE);

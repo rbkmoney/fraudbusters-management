@@ -4,7 +4,6 @@ package com.rbkmoney.fraudbusters.management.converter.payment;
 import com.rbkmoney.damsel.wb_list.PaymentId;
 import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
-import com.rbkmoney.fraudbusters.management.exception.UnknownEventException;
 import com.rbkmoney.fraudbusters.management.utils.RowUtilsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
@@ -24,15 +23,16 @@ public class RowToWbListRecordsConverter implements Converter<Row, WbListRecords
             PaymentId paymentId = destination.getId().getPaymentId();
             wbListRecords.setPartyId(paymentId.getPartyId());
             wbListRecords.setShopId(paymentId.getShopId());
-
-            wbListRecords.setListName(destination.getListName());
-            wbListRecords.setListType(rowUtilsService.initListType(destination));
-            wbListRecords.setValue(destination.getValue());
-            wbListRecords.setRowInfo(rowUtilsService.initRowInfo(destination));
-
-            return wbListRecords;
+        } else {
+            wbListRecords.setPartyId(wbListRecords.getPartyId());
+            wbListRecords.setShopId(wbListRecords.getShopId());
         }
-        throw new UnknownEventException();
+
+        wbListRecords.setListName(destination.getListName());
+        wbListRecords.setListType(rowUtilsService.initListType(destination));
+        wbListRecords.setValue(destination.getValue());
+        wbListRecords.setRowInfo(rowUtilsService.initRowInfo(destination));
+        return wbListRecords;
     }
 
 }
