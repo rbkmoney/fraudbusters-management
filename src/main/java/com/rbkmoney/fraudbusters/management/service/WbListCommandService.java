@@ -7,7 +7,7 @@ import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.thrift.TBase;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,14 +18,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class WbListCommandService {
 
-    private final KafkaTemplate kafkaTemplate;
+    private final KafkaTemplate<String, TBase> kafkaTemplate;
 
     public String sendCommandSync(String topicCommand, Row row, ListType type, Command command) {
         row.setListType(type);
         String uuid = UUID.randomUUID().toString();
         try {
-            kafkaTemplate.send(topicCommand, uuid, createChangeCommand(row, command))
+            ChangeCommand changeCommand = createChangeCommand(row, command);
+            kafkaTemplate.send(topicCommand, uuid, changeCommand)
                     .get();
+            log.info("WbListCommandService sent command: {}", changeCommand);
         } catch (InterruptedException e) {
             log.error("InterruptedException e: ", e);
             Thread.currentThread().interrupt();
