@@ -50,7 +50,7 @@ public class KafkaConfig {
     @Value("${kafka.ssl.enable}")
     private boolean kafkaSslEnable;
     @Value("${kafka.consumer-group.wb-list}")
-    private boolean consumerGroupWbList;
+    private String consumerGroupWbList;
 
     @Bean
     public Map<String, Object> consumerConfigs() {
