@@ -52,12 +52,16 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
     public void removeRecord(WbListRecords listRecord) {
         DeleteConditionStep<WbListRecordsRecord> where = getDslContext()
                 .delete(WB_LIST_RECORDS)
-                .where(WB_LIST_RECORDS.PARTY_ID.eq(listRecord.getPartyId())
-                        .and(WB_LIST_RECORDS.SHOP_ID.eq(listRecord.getShopId()))
-                        .and(WB_LIST_RECORDS.LIST_TYPE.eq(listRecord.getListType()))
-                        .and(WB_LIST_RECORDS.LIST_NAME.eq(listRecord.getListName()))
-                        .and(WB_LIST_RECORDS.VALUE.eq(listRecord.getValue())));
+                .where(isNullOrValueCondition(WB_LIST_RECORDS.PARTY_ID, listRecord.getPartyId())
+                        .and(isNullOrValueCondition(WB_LIST_RECORDS.SHOP_ID, listRecord.getShopId())
+                                .and(WB_LIST_RECORDS.LIST_TYPE.eq(listRecord.getListType()))
+                                .and(WB_LIST_RECORDS.LIST_NAME.eq(listRecord.getListName()))
+                                .and(WB_LIST_RECORDS.VALUE.eq(listRecord.getValue()))));
         execute(where);
+    }
+
+    private Condition isNullOrValueCondition(TableField<WbListRecordsRecord, String> key, String value) {
+        return value == null ? key.isNull() : key.eq(value);
     }
 
     @Override
