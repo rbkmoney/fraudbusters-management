@@ -49,6 +49,8 @@ public class KafkaConfig {
     private String clientStoreCertPath;
     @Value("${kafka.ssl.enable}")
     private boolean kafkaSslEnable;
+    @Value("${kafka.consumer-group.wb-list}")
+    private String consumerGroupWbList;
 
     @Bean
     public Map<String, Object> consumerConfigs() {
@@ -66,6 +68,7 @@ public class KafkaConfig {
     public ConsumerFactory<String, Event> consumerFactory() {
         Map<String, Object> configs = consumerConfigs();
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EventDeserializer.class);
+        configs.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroupWbList);
         return new DefaultKafkaConsumerFactory<>(configs);
     }
 

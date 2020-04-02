@@ -40,7 +40,22 @@ public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
         P2pWbListRecords byId = p2PWbListDao.getById(id);
         Assert.assertEquals(listRecord, byId);
 
-        p2PWbListDao.removeRecord(id);
+        p2PWbListDao.removeRecord(listRecord);
+        byId = p2PWbListDao.getById(id);
+        Assert.assertNull(byId);
+    }
+
+    @Test
+    public void saveEmptyIdentityListRecord() {
+        String id = "id";
+        P2pWbListRecords listRecord = createListRecord(id);
+        listRecord.setIdentityId(null);
+
+        p2PWbListDao.saveListRecord(listRecord);
+        P2pWbListRecords byId = p2PWbListDao.getById(id);
+        Assert.assertEquals(listRecord, byId);
+
+        p2PWbListDao.removeRecord(listRecord);
         byId = p2PWbListDao.getById(id);
         Assert.assertNull(byId);
     }

@@ -1,7 +1,7 @@
 server:
   port: @server.port@
   servlet:
-      context-path: "/fb-management/v1"
+    context-path: "/fb-management/v1"
 management:
   security:
     flag: false
@@ -33,6 +33,8 @@ info:
 
 kafka:
   bootstrap.servers: "localhost:29092"
+  consumer-group:
+    wb-list: FraudBusterListenerWbList
   topic:
     wblist:
       command: "wb-list-command"

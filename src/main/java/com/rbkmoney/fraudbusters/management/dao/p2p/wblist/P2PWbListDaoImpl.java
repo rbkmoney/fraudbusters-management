@@ -52,11 +52,15 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
     public void removeRecord(P2pWbListRecords listRecord) {
         DeleteConditionStep<P2pWbListRecordsRecord> where = getDslContext()
                 .delete(P2P_WB_LIST_RECORDS)
-                .where(P2P_WB_LIST_RECORDS.IDENTITY_ID.eq(listRecord.getIdentityId())
+                .where(isNullOrValueCondition(P2P_WB_LIST_RECORDS.IDENTITY_ID, listRecord.getIdentityId())
                         .and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listRecord.getListType()))
                         .and(P2P_WB_LIST_RECORDS.LIST_NAME.eq(listRecord.getListName()))
                         .and(P2P_WB_LIST_RECORDS.VALUE.eq(listRecord.getValue())));
         execute(where);
+    }
+
+    private Condition isNullOrValueCondition(TableField<P2pWbListRecordsRecord, String> key, String value) {
+        return value == null ? key.isNull() : key.eq(value);
     }
 
     @Override

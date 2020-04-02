@@ -28,12 +28,12 @@ public class WbListEventListener {
     @KafkaListener(topics = "${kafka.topic.wblist.event.sink}", containerFactory = "kafkaListenerContainerFactory")
     public void listen(Event event) throws DaoException {
         log.info("WbListListener event: {}", event);
-        if (event.getRow().getId().isSetP2pId()) {
-            P2pWbListRecords p2pWbListRecords = p2pEventToListRecordConverter.convert(event);
-            applyCommand(event, p2pWbListRecords, p2PWbListDao);
-        } else if (event.getRow().getId().isSetPaymentId()) {
+        if (!event.getRow().isSetId() || event.getRow().getId().isSetPaymentId()) {
             WbListRecords record = eventToListRecordConverter.convert(event);
             applyCommand(event, record, wbListDao);
+        } else if (event.getRow().getId().isSetP2pId()) {
+            P2pWbListRecords p2pWbListRecords = p2pEventToListRecordConverter.convert(event);
+            applyCommand(event, p2pWbListRecords, p2PWbListDao);
         } else {
             log.error("Unknown event when wbListEventListener listen event: {}", event);
             throw new UnknownEventException(String.format("Unknown event when wbListEventListener listen event: %s", event));
