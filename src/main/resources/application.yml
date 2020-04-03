@@ -1,7 +1,5 @@
 server:
   port: @server.port@
-  rest:
-    port: '@server.rest.port@'
   servlet:
     context-path: "/fb-management/v1"
 management:
