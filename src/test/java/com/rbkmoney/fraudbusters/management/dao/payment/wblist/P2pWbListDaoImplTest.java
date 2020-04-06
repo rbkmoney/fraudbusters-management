@@ -4,10 +4,11 @@ import com.rbkmoney.fraudbusters.management.converter.p2p.P2pWbListRecordsToList
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDaoImpl;
-import com.rbkmoney.fraudbusters.management.domain.CountInfoListRequest;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
+import com.rbkmoney.fraudbusters.management.domain.p2p.P2pCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
-import com.rbkmoney.fraudbusters.management.utils.CountInfoListRequestGenerator;
+import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
+import com.rbkmoney.fraudbusters.management.utils.P2pCountInfoGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @ContextConfiguration(classes = {P2PWbListDaoImpl.class, P2pWbListRecordsToListRecordWithRowConverter.class,
-        CountInfoListRequestGenerator.class, JacksonAutoConfiguration.class})
+        P2pCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
 public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String LIST_NAME = "ip";
@@ -106,8 +107,8 @@ public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
         Assert.assertEquals(1, filteredListRecords.size());
         Assert.assertFalse(filteredListRecords.get(0).getRowInfo().isEmpty());
 
-        CountInfoListRequest countInfoListRecord = rowConverter.convert(filteredListRecords.get(0));
+        P2pCountInfo countInfoListRecord = rowConverter.convert(filteredListRecords.get(0));
 
-        Assert.assertEquals(5L, countInfoListRecord.getCount().longValue());
+        Assert.assertEquals(5L, countInfoListRecord.getCountInfo().getCount().longValue());
     }
 }

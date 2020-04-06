@@ -2,10 +2,10 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.controller.ErrorController;
-import com.rbkmoney.fraudbusters.management.converter.CountInfoListRequestToRowConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
@@ -76,7 +76,7 @@ public class ExceptionApplicationTest {
     @MockBean
     public WbListRecordsToListRecordConverter wbListRecordsToListRecordConverter;
     @MockBean
-    public CountInfoListRequestToRowConverter countInfoListRecordToRowConverter;
+    public PaymentCountInfoRequestToRowConverter countInfoListRecordToRowConverter;
     @MockBean
     public WbListRecordsToCountInfoListRequestConverter wbListRecordsToListRecordWithRowConverter;
 
@@ -156,8 +156,7 @@ public class ExceptionApplicationTest {
         HashMap<String, Object> uriVariables = new HashMap<>();
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(String.format(SERVICE_URL, serverPort) + "/whiteList")
                 .queryParam("partyId", PARTY_ID)
-                .queryParam("shopId", SHOP_ID)
-        ;
+                .queryParam("shopId", SHOP_ID);
         uriVariables.put("partyId", PARTY_ID);
         uriVariables.put("shopId", SHOP_ID);
         restTemplate.getForEntity(builder.buildAndExpand(uriVariables).toUri(), ErrorResponse.class);

@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.P2pWbListRecordsRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,6 +19,7 @@ import java.util.List;
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pWbListRecords.P2P_WB_LIST_RECORDS;
 import static org.jooq.Comparator.EQUALS;
 
+@Slf4j
 @Component
 public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
 
@@ -31,6 +33,7 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
 
     @Override
     public void saveListRecord(P2pWbListRecords listRecord) {
+        log.info("P2PWbListDaoImpl saveListRecord listRecord: {}", listRecord);
         Query query = getDslContext()
                 .insertInto(P2P_WB_LIST_RECORDS)
                 .set(getDslContext().newRecord(P2P_WB_LIST_RECORDS, listRecord))
@@ -42,6 +45,7 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
 
     @Override
     public void removeRecord(String id) {
+        log.info("P2PWbListDaoImpl removeRecord id: {}", id);
         DeleteConditionStep<P2pWbListRecordsRecord> where = getDslContext()
                 .delete(P2P_WB_LIST_RECORDS)
                 .where(P2P_WB_LIST_RECORDS.ID.eq(id));
@@ -50,6 +54,7 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
 
     @Override
     public void removeRecord(P2pWbListRecords listRecord) {
+        log.info("P2PWbListDaoImpl removeRecord listRecord: {}", listRecord);
         DeleteConditionStep<P2pWbListRecordsRecord> where = getDslContext()
                 .delete(P2P_WB_LIST_RECORDS)
                 .where(isNullOrValueCondition(P2P_WB_LIST_RECORDS.IDENTITY_ID, listRecord.getIdentityId())
@@ -65,6 +70,7 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
 
     @Override
     public P2pWbListRecords getById(String id) {
+        log.info("P2PWbListDaoImpl getById id: {}", id);
         SelectConditionStep<Record6<String, String, ListType, String, String, LocalDateTime>> query =
                 getDslContext()
                         .select(P2P_WB_LIST_RECORDS.ID,
@@ -80,6 +86,7 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
 
     @Override
     public List<P2pWbListRecords> getFilteredListRecords(String identityId, ListType listType, String listName) {
+        log.info("WbListDaoImpl getFilteredListRecords identityId: {} listType: {} listName: {}", identityId, listType, listName);
         Condition condition = DSL.trueCondition();
         SelectLimitPercentStep<Record7<String, String, ListType, String, String, LocalDateTime, String>> query = getDslContext()
                 .select(P2P_WB_LIST_RECORDS.ID,
