@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,6 +19,7 @@ import java.util.List;
 import static com.rbkmoney.fraudbusters.management.domain.tables.WbListRecords.WB_LIST_RECORDS;
 import static org.jooq.Comparator.EQUALS;
 
+@Slf4j
 @Component
 public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
@@ -31,6 +33,7 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
     @Override
     public void saveListRecord(WbListRecords listRecord) {
+        log.info("WbListDaoImpl saveListRecord listRecord: {}", listRecord);
         Query query = getDslContext()
                 .insertInto(WB_LIST_RECORDS)
                 .set(getDslContext().newRecord(WB_LIST_RECORDS, listRecord))
@@ -42,6 +45,7 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
     @Override
     public void removeRecord(String id) {
+        log.info("WbListDaoImpl removeRecord id: {}", id);
         DeleteConditionStep<WbListRecordsRecord> where = getDslContext()
                 .delete(WB_LIST_RECORDS)
                 .where(WB_LIST_RECORDS.ID.eq(id));
@@ -50,6 +54,7 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
     @Override
     public void removeRecord(WbListRecords listRecord) {
+        log.info("WbListDaoImpl removeRecord listRecord: {}", listRecord);
         DeleteConditionStep<WbListRecordsRecord> where = getDslContext()
                 .delete(WB_LIST_RECORDS)
                 .where(isNullOrValueCondition(WB_LIST_RECORDS.PARTY_ID, listRecord.getPartyId())
@@ -66,6 +71,7 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
     @Override
     public WbListRecords getById(String id) {
+        log.info("WbListDaoImpl getById id: {}", id);
         SelectConditionStep<Record7<String, String, String, ListType, String, String, LocalDateTime>> query =
                 getDslContext()
                         .select(WB_LIST_RECORDS.ID,
@@ -82,6 +88,7 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
 
     @Override
     public List<WbListRecords> getFilteredListRecords(String partyId, String shopId, ListType listType, String listName) {
+        log.info("WbListDaoImpl getFilteredListRecords partyId: {} shopId: {} listType: {} listName: {}", partyId, shopId, listType, listName);
         Condition condition = DSL.trueCondition();
         SelectLimitPercentStep<Record8<String, String, String, ListType, String, String, LocalDateTime, String>> query = getDslContext()
                 .select(WB_LIST_RECORDS.ID,
