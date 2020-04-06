@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentCountInfoListRequestGenerator {
 
-    private final CountInfoGenerator countInfoGenerator;
+    private final CountInfoUtils countInfoGenerator;
 
     public PaymentCountInfo initDestination(String rowInfo, PaymentListRecord listRecord) {
         PaymentCountInfo paymentCountInfo = new PaymentCountInfo();
         paymentCountInfo.setListRecord(listRecord);
         if (!StringUtil.isNullOrEmpty(rowInfo)) {
-            CountInfo countInfoValue = countInfoGenerator.initCountInfo(rowInfo);
+            CountInfo countInfoValue = countInfoGenerator.initRowCountInfo(rowInfo);
             paymentCountInfo.setCountInfo(countInfoValue);
         }
         return paymentCountInfo;

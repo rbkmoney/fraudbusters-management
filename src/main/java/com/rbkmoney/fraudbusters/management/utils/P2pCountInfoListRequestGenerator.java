@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class P2pCountInfoListRequestGenerator {
 
-    private final CountInfoGenerator countInfoGenerator;
+    private final CountInfoUtils countInfoGenerator;
 
     public P2pCountInfo initDestination(String rowInfo, P2pListRecord listRecord) {
         P2pCountInfo p2PCountInfo = new P2pCountInfo();
         p2PCountInfo.setListRecord(listRecord);
         if (!StringUtil.isNullOrEmpty(rowInfo)) {
-            CountInfo countInfoValue = countInfoGenerator.initCountInfo(rowInfo);
+            CountInfo countInfoValue = countInfoGenerator.initRowCountInfo(rowInfo);
             p2PCountInfo.setCountInfo(countInfoValue);
         }
         return p2PCountInfo;
