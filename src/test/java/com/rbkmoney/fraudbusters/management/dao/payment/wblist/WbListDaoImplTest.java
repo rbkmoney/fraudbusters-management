@@ -6,7 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
-import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoListRequestGenerator;
+import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class,
-        PaymentCountInfoListRequestGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
+        PaymentCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
 public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY = "party";

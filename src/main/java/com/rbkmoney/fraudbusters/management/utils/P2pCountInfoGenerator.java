@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class P2pCountInfoListRequestGenerator {
+public class P2pCountInfoGenerator {
 
     private final CountInfoUtils countInfoGenerator;
 

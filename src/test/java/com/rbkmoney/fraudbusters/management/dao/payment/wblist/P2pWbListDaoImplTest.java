@@ -8,7 +8,7 @@ import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
-import com.rbkmoney.fraudbusters.management.utils.P2pCountInfoListRequestGenerator;
+import com.rbkmoney.fraudbusters.management.utils.P2pCountInfoGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @ContextConfiguration(classes = {P2PWbListDaoImpl.class, P2pWbListRecordsToListRecordWithRowConverter.class,
-        P2pCountInfoListRequestGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
+        P2pCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
 public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String LIST_NAME = "ip";

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentCountInfoListRequestGenerator {
+public class PaymentCountInfoGenerator {
 
     private final CountInfoUtils countInfoGenerator;
 
