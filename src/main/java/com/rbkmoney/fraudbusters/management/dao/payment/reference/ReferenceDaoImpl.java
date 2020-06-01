@@ -35,7 +35,6 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
                 .doUpdate()
                 .set(getDslContext().newRecord(F_REFERENCE, referenceModel));
         execute(query);
-        System.out.println("insert of " + referenceModel);;
     }
 
     @Override
