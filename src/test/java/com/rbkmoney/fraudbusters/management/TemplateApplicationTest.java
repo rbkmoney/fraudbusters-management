@@ -21,6 +21,9 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -104,6 +107,30 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         Mockito.verify(referenceDao, Mockito.times(1)).insert(any());
         Mockito.verify(referenceDao, Mockito.times(1)).remove((PaymentReferenceModel) any());
+    }
+
+    private PaymentReferenceModel buildDefaulReference(){
+        PaymentReferenceModel paymentReferenceModel = new PaymentReferenceModel();
+        paymentReferenceModel.setTemplateId("default_template_id");
+        paymentReferenceModel.setIsGlobal(false);
+        paymentReferenceModel.setIsDefault(true);
+        return paymentReferenceModel;
+    }
+
+    @Test
+    public void defaultReferenceTest() throws InterruptedException {
+
+        Mockito.when(referenceDao.getDefaultReference()).thenReturn(buildDefaulReference());
+
+        PaymentReferenceModel referenceModel = new PaymentReferenceModel();
+        referenceModel.setId("id");
+        referenceModel.setIsGlobal(false);
+        referenceModel.setPartyId("party_id");
+        referenceModel.setShopId("shop_id");
+        templateCommandResource.insertDefaultReference(Collections.singletonList(referenceModel));
+        Thread.sleep(200L);
+
+        Mockito.verify(referenceDao, Mockito.times(1)).insert(any());
     }
 
     @Test

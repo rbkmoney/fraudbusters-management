@@ -46,6 +46,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceModel.setShopId(shopId);
         referenceModel.setPartyId(partyId);
         referenceModel.setIsGlobal(false);
+        referenceModel.setIsDefault(false);
         return referenceModel;
     }
 
@@ -81,12 +82,23 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         byId = referenceDao.getById(firstGlobal);
         Assert.assertNull(byId);
 
-        List<PaymentReferenceModel> listByTFilters = referenceDao.getListByTFilters(PARTY_ID, null, null, 10);
+        List<PaymentReferenceModel> listByTFilters = referenceDao.getListByTFilters(PARTY_ID, null, null, null, 10);
 
         Assert.assertEquals(2, listByTFilters.size());
 
-        listByTFilters = referenceDao.getListByTFilters(null, null, true, 10);
+        listByTFilters = referenceDao.getListByTFilters(null, null, true, false, 10);
 
         Assert.assertEquals(1, listByTFilters.size());
+    }
+
+    @Test
+    public void testDefault() {
+        String id = "id";
+        PaymentReferenceModel referenceModel = createReference(id);
+        referenceModel.setIsDefault(true);
+        referenceDao.insert(referenceModel);
+        PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
+        PaymentReferenceModel byId = referenceDao.getById(id);
+        Assert.assertEquals(byId, defaultReference);
     }
 }

@@ -23,9 +23,10 @@ public class ReferenceQueryResource {
     public ResponseEntity<List<PaymentReferenceModel>> getReferencesByFilters(@RequestParam(value = "partyId") String partyId,
                                                                        @RequestParam(value = "shopId") String shopId,
                                                                        @RequestParam(value = "isGlobal") Boolean isGlobal,
+                                                                       @RequestParam(value = "isDefault") Boolean isDefault,
                                                                        @Validated @RequestParam(required = false) int limit) {
-        log.info("TemplateManagementResource getReferences partyId: {} shopId: {} isGlobal: {} limit: {}", partyId, shopId, isGlobal, limit);
-        List<PaymentReferenceModel> listByTemplateId = referenceDao.getListByTFilters(partyId, shopId, isGlobal, limit);
+        log.info("TemplateManagementResource getReferences partyId: {} shopId: {} isGlobal: {} limit: {}", partyId, shopId, isGlobal, isDefault, limit);
+        List<PaymentReferenceModel> listByTemplateId = referenceDao.getListByTFilters(partyId, shopId, isGlobal, isDefault, limit);
         return ResponseEntity.ok().body(listByTemplateId);
     }
 

@@ -4,8 +4,10 @@ import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.TemplateReferenceService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class TemplateCommandResource {
     private final TemplateReferenceService templateReferenceService;
     private final TemplateModelToCommandConverter templateModelToCommandConverter;
     private final ReferenceToCommandConverter referenceToCommandConverter;
+    private final PaymentReferenceDao referenceDao;
 
     @PostMapping(value = "/template")
     public ResponseEntity<String> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
@@ -40,6 +43,22 @@ public class TemplateCommandResource {
     public ResponseEntity<List<String>> insertReference(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
+        List<String> ids = referenceModels.stream()
+                .map(reference -> convertReferenceModel(reference, id))
+                .map(command -> command.setCommandType(CommandType.CREATE))
+                .map(templateReferenceService::sendCommandSync)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(ids);
+    }
+
+    @PostMapping(value = "/template/default")
+    public ResponseEntity<List<String>> insertDefaultReference(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
+        log.info("TemplateManagementResource insertDefaultReference referenceModels: {}", referenceModels);
+        PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
+        if (defaultReference == null) {
+            throw new NotFoundException("Couldn't insert default reference: Default template not found");
+        }
+        String id = defaultReference.getTemplateId();
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.CREATE))

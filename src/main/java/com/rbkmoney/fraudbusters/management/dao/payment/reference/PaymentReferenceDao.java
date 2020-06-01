@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface PaymentReferenceDao extends ReferenceDao<PaymentReferenceModel> {
 
-    List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, int limit);
+    List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, Boolean isDefault, int limit);
 
     List<PaymentReferenceModel> getByPartyAndShop(String partyId, String shopId);
+
+    PaymentReferenceModel getDefaultReference();
 
 }

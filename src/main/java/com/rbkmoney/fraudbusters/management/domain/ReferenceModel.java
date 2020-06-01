@@ -8,5 +8,6 @@ public class ReferenceModel {
     private String id;
     private String templateId;
     private Boolean isGlobal;
+    private Boolean isDefault;
 
 }

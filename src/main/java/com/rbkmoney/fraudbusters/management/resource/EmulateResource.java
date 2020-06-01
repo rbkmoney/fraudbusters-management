@@ -38,10 +38,16 @@ public class EmulateResource {
         log.info("EmulateResource getRulesByPartyAndShop partyId: {} shopId: {}", partyId, shopId);
         List<TemplateModel> resultModels = new ArrayList<>();
         ReferenceModel globalReference = referenceDao.getGlobalReference();
+        ReferenceModel defaultReference = referenceDao.getDefaultReference();
 
         if (globalReference != null) {
             TemplateModel globalTemplate = templateDao.getById(globalReference.getTemplateId());
             resultModels.add(globalTemplate);
+        }
+
+        if (defaultReference != null) {
+            TemplateModel defaultTemplate = templateDao.getById(defaultReference.getTemplateId());
+            resultModels.add(defaultTemplate);
         }
 
         List<PaymentGroupReferenceModel> groupReferenceModels = groupReferenceDao.getByPartyIdAndShopId(partyId, shopId);
