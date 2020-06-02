@@ -117,4 +117,12 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
                 .where(F_REFERENCE.IS_DEFAULT.eq(true));
         return fetchOne(query, listRecordRowMapper);
     }
+
+    @Override
+    public void updateDefaultReference(String id) {
+        Query query = getDslContext().update(F_REFERENCE)
+                .set(F_REFERENCE.IS_DEFAULT, true)
+                .where(F_REFERENCE.ID.eq(id));
+        executeOne(query);
+    }
 }

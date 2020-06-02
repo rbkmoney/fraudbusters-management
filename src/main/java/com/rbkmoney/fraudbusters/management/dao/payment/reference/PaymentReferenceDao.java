@@ -13,4 +13,6 @@ public interface PaymentReferenceDao extends ReferenceDao<PaymentReferenceModel>
 
     PaymentReferenceModel getDefaultReference();
 
+    void updateDefaultReference(String id);
+
 }

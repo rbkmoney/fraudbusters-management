@@ -51,6 +51,13 @@ public class TemplateCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
+    @PostMapping(value = "/template/{id}/default")
+    public ResponseEntity<String> updateDefaultReference(@PathVariable(value = "id") String id) {
+        log.info("TemplateManagementResource updateDefaultReference id: {}", id);
+        referenceDao.updateDefaultReference(id);
+        return ResponseEntity.ok().body(id);
+    }
+
     @PostMapping(value = "/template/default")
     public ResponseEntity<List<String>> insertDefaultReference(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertDefaultReference referenceModels: {}", referenceModels);
