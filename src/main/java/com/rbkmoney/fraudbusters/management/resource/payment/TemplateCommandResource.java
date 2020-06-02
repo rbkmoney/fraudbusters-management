@@ -52,9 +52,9 @@ public class TemplateCommandResource {
     }
 
     @PostMapping(value = "/template/{id}/default")
-    public ResponseEntity<String> updateDefaultReference(@PathVariable(value = "id") String id) {
-        log.info("TemplateManagementResource updateDefaultReference id: {}", id);
-        referenceDao.updateDefaultReference(id);
+    public ResponseEntity<String> markReferenceAsDefault(@PathVariable(value = "id") String id) {
+        log.info("TemplateManagementResource markReferenceAsDefault id: {}", id);
+        referenceDao.markReferenceAsDefault(id);
         return ResponseEntity.ok().body(id);
     }
 

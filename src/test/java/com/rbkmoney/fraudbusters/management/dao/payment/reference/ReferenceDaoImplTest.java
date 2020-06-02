@@ -96,7 +96,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         String id = "id";
         PaymentReferenceModel referenceModel = createReference(id);
         referenceDao.insert(referenceModel);
-        referenceDao.updateDefaultReference(id);
+        referenceDao.markReferenceAsDefault(id);
         PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
         PaymentReferenceModel byId = referenceDao.getById(id);
         Assert.assertEquals(byId, defaultReference);

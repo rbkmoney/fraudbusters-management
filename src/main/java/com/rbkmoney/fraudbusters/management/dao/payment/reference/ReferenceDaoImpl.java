@@ -119,7 +119,7 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
     }
 
     @Override
-    public void updateDefaultReference(String id) {
+    public void markReferenceAsDefault(String id) {
         Query query = getDslContext().update(F_REFERENCE)
                 .set(F_REFERENCE.IS_DEFAULT, true)
                 .where(F_REFERENCE.ID.eq(id));
