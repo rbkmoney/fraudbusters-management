@@ -60,93 +60,69 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
 
     @Override
     public PaymentReferenceModel getById(String id) {
-        SelectConditionStep<Record5<String, String, String, String, Boolean>> where =
-                getDslContext()
-                        .select(F_REFERENCE.ID,
-                                F_REFERENCE.PARTY_ID,
-                                F_REFERENCE.SHOP_ID,
-                                F_REFERENCE.TEMPLATE_ID,
-                                F_REFERENCE.IS_GLOBAL)
-                        .from(F_REFERENCE)
-                        .where(F_REFERENCE.ID.eq(id));
-        return fetchOne(where, listRecordRowMapper);
+        Query query = getDslContext().selectFrom(F_REFERENCE)
+                .where(F_REFERENCE.ID.eq(id));
+        return fetchOne(query, listRecordRowMapper);
     }
 
     @Override
     public List<PaymentReferenceModel> getList(int limit) {
-        SelectLimitPercentStep<Record5<String, String, String, String, Boolean>> query =
-                getDslContext()
-                        .select(F_REFERENCE.ID,
-                                F_REFERENCE.PARTY_ID,
-                                F_REFERENCE.SHOP_ID,
-                                F_REFERENCE.TEMPLATE_ID,
-                                F_REFERENCE.IS_GLOBAL)
-                        .from(F_REFERENCE)
-                        .limit(limit != 0 ? limit : LIMIT_TOTAL);
+        Query query = getDslContext().selectFrom(F_REFERENCE)
+                .limit(limit != 0 ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
     @Override
     public List<PaymentReferenceModel> getListByTemplateId(String templateId, int limit) {
-        SelectLimitPercentStep<Record5<String, String, String, String, Boolean>> query =
-                getDslContext()
-                        .select(F_REFERENCE.ID,
-                                F_REFERENCE.PARTY_ID,
-                                F_REFERENCE.SHOP_ID,
-                                F_REFERENCE.TEMPLATE_ID,
-                                F_REFERENCE.IS_GLOBAL)
-                        .from(F_REFERENCE)
-                        .where(F_REFERENCE.TEMPLATE_ID.eq(templateId))
-                        .limit(limit != 0 ? limit : LIMIT_TOTAL);
+        Query query = getDslContext().selectFrom(F_REFERENCE)
+                .where(F_REFERENCE.TEMPLATE_ID.eq(templateId))
+                .limit(limit != 0 ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
     @Override
-    public List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, int limit) {
+    public List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, Boolean isDefault, int limit) {
         Condition condition = DSL.trueCondition();
-        SelectLimitPercentStep<Record5<String, String, String, String, Boolean>> query =
-                getDslContext()
-                        .select(F_REFERENCE.ID,
-                                F_REFERENCE.PARTY_ID,
-                                F_REFERENCE.SHOP_ID,
-                                F_REFERENCE.TEMPLATE_ID,
-                                F_REFERENCE.IS_GLOBAL)
-                        .from(F_REFERENCE)
-                        .where(appendConditions(condition, Operator.AND,
-                                new ConditionParameterSource()
-                                        .addValue(F_REFERENCE.PARTY_ID, partyId, EQUALS)
-                                        .addValue(F_REFERENCE.SHOP_ID, shopId, EQUALS)
-                                        .addValue(F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)))
-                        .limit(limit != 0 ? limit : LIMIT_TOTAL);
+        Query query = getDslContext().selectFrom(F_REFERENCE)
+                .where(appendConditions(condition, Operator.AND,
+                        new ConditionParameterSource()
+                                .addValue(F_REFERENCE.PARTY_ID, partyId, EQUALS)
+                                .addValue(F_REFERENCE.SHOP_ID, shopId, EQUALS)
+                                .addValue(F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)
+                                .addValue(F_REFERENCE.IS_DEFAULT, isDefault, EQUALS)))
+                .limit(limit != 0 ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
     @Override
     public PaymentReferenceModel getGlobalReference() {
-        return fetchOne(getDslContext()
-                        .select(F_REFERENCE.ID,
-                                F_REFERENCE.PARTY_ID,
-                                F_REFERENCE.SHOP_ID,
-                                F_REFERENCE.TEMPLATE_ID,
-                                F_REFERENCE.IS_GLOBAL)
-                        .from(F_REFERENCE)
-                        .where(F_REFERENCE.IS_GLOBAL.eq(true)),
-                listRecordRowMapper);
+        Query query = getDslContext().selectFrom(F_REFERENCE)
+                .where(F_REFERENCE.IS_GLOBAL.eq(true));
+        return fetchOne(query, listRecordRowMapper);
     }
 
 
     @Override
     public List<PaymentReferenceModel> getByPartyAndShop(String partyId, String shopId) {
-        SelectConditionStep<Record5<String, String, String, String, Boolean>> where = getDslContext()
-                .select(F_REFERENCE.ID,
-                        F_REFERENCE.PARTY_ID,
-                        F_REFERENCE.SHOP_ID,
-                        F_REFERENCE.TEMPLATE_ID,
-                        F_REFERENCE.IS_GLOBAL)
-                .from(F_REFERENCE)
+        Query query = getDslContext().selectFrom(F_REFERENCE)
                 .where(F_REFERENCE.PARTY_ID.eq(partyId)
                         .and(F_REFERENCE.SHOP_ID.eq(shopId).or(F_REFERENCE.SHOP_ID.isNull()))
                         .and(F_REFERENCE.IS_GLOBAL.eq(false)));
-        return fetch(where, listRecordRowMapper);
+        return fetch(query, listRecordRowMapper);
+    }
+
+    @Override
+    public PaymentReferenceModel getDefaultReference() {
+        Query query = getDslContext().selectFrom(F_REFERENCE)
+                .where(F_REFERENCE.IS_DEFAULT.eq(true));
+        return fetchOne(query, listRecordRowMapper);
+    }
+
+    @Override
+    public void markReferenceAsDefault(String id) {
+        Query query = getDslContext().update(F_REFERENCE)
+                .set(F_REFERENCE.IS_DEFAULT, true)
+                .where(F_REFERENCE.ID.eq(id));
+        executeOne(query);
     }
 }
