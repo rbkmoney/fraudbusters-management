@@ -24,7 +24,7 @@ public class P2pReferenceQueryResource {
     @GetMapping(value = "/reference")
     public ResponseEntity<List<P2pReferenceModel>> getReferencesByFilters(@RequestParam(value = "identityId") String identityId,
                                                                           @RequestParam(value = "isGlobal") Boolean isGlobal,
-                                                                          @Validated @RequestParam(required = false) int limit) {
+                                                                          @Validated @RequestParam(required = false) Integer limit) {
         log.info("P2pReferenceQueryResource getReferences partyId: {} isGlobal: {} limit: {}", identityId, isGlobal, limit);
         List<P2pReferenceModel> listByTemplateId = referenceDao.getListByTFilters(identityId, isGlobal, limit);
         return ResponseEntity.ok().body(listByTemplateId);

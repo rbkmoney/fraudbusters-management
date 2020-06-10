@@ -61,11 +61,11 @@ public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public List<TemplateModel> getList(int limit) {
+    public List<TemplateModel> getList(Integer limit) {
         SelectLimitPercentStep<Record2<String, String>> query = getDslContext()
                 .select(F_TEMPLATE.ID, F_TEMPLATE.TEMPLATE)
                 .from(F_TEMPLATE)
-                .limit(limit != 0 ? limit : LIMIT_TOTAL);
+                .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 

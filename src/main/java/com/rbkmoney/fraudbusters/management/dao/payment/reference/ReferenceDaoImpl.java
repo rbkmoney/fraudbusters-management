@@ -66,22 +66,22 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
     }
 
     @Override
-    public List<PaymentReferenceModel> getList(int limit) {
+    public List<PaymentReferenceModel> getList(Integer limit) {
         Query query = getDslContext().selectFrom(F_REFERENCE)
-                .limit(limit != 0 ? limit : LIMIT_TOTAL);
+                .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
     @Override
-    public List<PaymentReferenceModel> getListByTemplateId(String templateId, int limit) {
+    public List<PaymentReferenceModel> getListByTemplateId(String templateId, Integer limit) {
         Query query = getDslContext().selectFrom(F_REFERENCE)
                 .where(F_REFERENCE.TEMPLATE_ID.eq(templateId))
-                .limit(limit != 0 ? limit : LIMIT_TOTAL);
+                .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
     @Override
-    public List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, Boolean isDefault, int limit) {
+    public List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, Boolean isDefault, Integer limit) {
         Condition condition = DSL.trueCondition();
         Query query = getDslContext().selectFrom(F_REFERENCE)
                 .where(appendConditions(condition, Operator.AND,
@@ -90,7 +90,7 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
                                 .addValue(F_REFERENCE.SHOP_ID, shopId, EQUALS)
                                 .addValue(F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)
                                 .addValue(F_REFERENCE.IS_DEFAULT, isDefault, EQUALS)))
-                .limit(limit != 0 ? limit : LIMIT_TOTAL);
+                .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 

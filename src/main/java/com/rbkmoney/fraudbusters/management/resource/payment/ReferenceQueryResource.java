@@ -24,7 +24,7 @@ public class ReferenceQueryResource {
                                                                        @RequestParam(value = "shopId") String shopId,
                                                                        @RequestParam(value = "isGlobal") Boolean isGlobal,
                                                                        @RequestParam(value = "isDefault") Boolean isDefault,
-                                                                       @Validated @RequestParam(required = false) int limit) {
+                                                                       @Validated @RequestParam(required = false) Integer limit) {
         log.info("TemplateManagementResource getReferences partyId: {} shopId: {} isGlobal: {} limit: {}", partyId, shopId, isGlobal, isDefault, limit);
         List<PaymentReferenceModel> listByTemplateId = referenceDao.getListByTFilters(partyId, shopId, isGlobal, isDefault, limit);
         return ResponseEntity.ok().body(listByTemplateId);

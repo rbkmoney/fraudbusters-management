@@ -25,7 +25,7 @@ public class TemplateQueryResource {
 
     @GetMapping(value = "/template/{id}/reference")
     public ResponseEntity<List<PaymentReferenceModel>> getReferences(@PathVariable(value = "id") String id,
-                                                              @Validated @RequestParam(required = false) int limit) {
+                                                              @Validated @RequestParam(required = false) Integer limit) {
         log.info("TemplateManagementResource getReferences id: {} limit: {}", id, limit);
         List<PaymentReferenceModel> listByTemplateId = referenceDao.getListByTemplateId(id, limit);
         return ResponseEntity.ok().body(listByTemplateId);
@@ -33,7 +33,7 @@ public class TemplateQueryResource {
 
     @GetMapping(value = "/template")
     public ResponseEntity<List<TemplateModel>> getListTemplate(
-            @Validated @RequestParam(required = false) int limit) {
+            @Validated @RequestParam(required = false) Integer limit) {
         log.info("TemplateManagementResource getListTemplate limit: {}", limit);
         List<TemplateModel> list = templateDao.getList(limit);
         return ResponseEntity.ok().body(list);
