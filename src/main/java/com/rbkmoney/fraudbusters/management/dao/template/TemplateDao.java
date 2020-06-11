@@ -14,5 +14,5 @@ public interface TemplateDao {
 
     TemplateModel getById(String id);
 
-    List<TemplateModel> getList(int limit);
+    List<TemplateModel> getList(Integer limit);
 }

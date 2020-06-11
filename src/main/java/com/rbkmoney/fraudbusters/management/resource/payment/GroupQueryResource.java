@@ -25,7 +25,7 @@ public class GroupQueryResource {
 
     @GetMapping(value = "/group/{id}/reference")
     public ResponseEntity<List<PaymentGroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
-                                                                          @Validated @RequestParam(required = false) int limit) {
+                                                                          @Validated @RequestParam(required = false) Integer limit) {
         log.info("GroupQueryResource getGroupReferences id: {} limit: {}", id, limit);
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(id);
         return ResponseEntity.ok().body(listByTemplateId);

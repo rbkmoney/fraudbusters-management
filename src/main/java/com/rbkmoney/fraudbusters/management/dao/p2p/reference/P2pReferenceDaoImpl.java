@@ -71,7 +71,7 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
     }
 
     @Override
-    public List<P2pReferenceModel> getList(int limit) {
+    public List<P2pReferenceModel> getList(Integer limit) {
         SelectLimitPercentStep<Record4<String, String, String, Boolean>> query =
                 getDslContext()
                         .select(P2P_F_REFERENCE.ID,
@@ -79,12 +79,12 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
                                 P2P_F_REFERENCE.TEMPLATE_ID,
                                 P2P_F_REFERENCE.IS_GLOBAL)
                         .from(P2P_F_REFERENCE)
-                        .limit(limit != 0 ? limit : LIMIT_TOTAL);
+                        .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
     @Override
-    public List<P2pReferenceModel> getListByTemplateId(String templateId, int limit) {
+    public List<P2pReferenceModel> getListByTemplateId(String templateId, Integer limit) {
         SelectLimitPercentStep<Record4<String, String, String, Boolean>> query =
                 getDslContext()
                         .select(P2P_F_REFERENCE.ID,
@@ -93,12 +93,12 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
                                 P2P_F_REFERENCE.IS_GLOBAL)
                         .from(P2P_F_REFERENCE)
                         .where(P2P_F_REFERENCE.TEMPLATE_ID.eq(templateId))
-                        .limit(limit != 0 ? limit : LIMIT_TOTAL);
+                        .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
     @Override
-    public List<P2pReferenceModel> getListByTFilters(String identityId, Boolean isGlobal, int limit) {
+    public List<P2pReferenceModel> getListByTFilters(String identityId, Boolean isGlobal, Integer limit) {
         Condition condition = DSL.trueCondition();
         SelectLimitPercentStep<Record4<String, String, String, Boolean>> query =
                 getDslContext()
@@ -111,7 +111,7 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
                                 new ConditionParameterSource()
                                         .addValue(P2P_F_REFERENCE.IDENTITY_ID, identityId, EQUALS)
                                         .addValue(P2P_F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)))
-                        .limit(limit != 0 ? limit : LIMIT_TOTAL);
+                        .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 

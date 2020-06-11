@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface P2pReferenceDao extends ReferenceDao<P2pReferenceModel> {
 
-    List<P2pReferenceModel> getListByTFilters(String identityId, Boolean isGlobal, int limit);
+    List<P2pReferenceModel> getListByTFilters(String identityId, Boolean isGlobal, Integer limit);
 
     List<P2pReferenceModel> getByIdentity(String identityId);
 

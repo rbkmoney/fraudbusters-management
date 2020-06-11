@@ -25,7 +25,7 @@ public class P2pGroupQueryResource {
 
     @GetMapping(value = "/group/{id}/reference")
     public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
-                                                                      @Validated @RequestParam(required = false) int limit) {
+                                                                      @Validated @RequestParam(required = false) Integer limit) {
         log.info("P2pGroupQueryResource getGroupReferences id: {} limit: {}", id, limit);
         List<P2pGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(id);
         return ResponseEntity.ok().body(listByTemplateId);
