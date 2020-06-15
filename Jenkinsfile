@@ -1,5 +1,5 @@
 #!groovy
-build('fraudbusters', 'java-maven') {
+build('fraudbusters-management', 'java-maven') {
     checkoutRepo()
     loadBuildUtils()
 
