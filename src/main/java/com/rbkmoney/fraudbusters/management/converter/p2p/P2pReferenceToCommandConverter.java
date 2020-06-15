@@ -8,6 +8,7 @@ import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class P2pReferenceToCommandConverter implements Converter<P2pReferenceModel, Command> {
 
+    @NonNull
     @Override
     public Command convert(P2pReferenceModel referenceModel) {
         Command command = new Command();

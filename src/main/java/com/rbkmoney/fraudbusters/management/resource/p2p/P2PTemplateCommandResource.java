@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.resource.p2p;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
+import com.rbkmoney.damsel.fraudbusters.Template;
 import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pReferenceToCommandConverter;
@@ -52,6 +53,18 @@ public class P2PTemplateCommandResource {
                 .template(templateModel.getTemplate())
                 .build()
         );
+    }
+
+    @PostMapping(value = "/validateTemplate")
+    public ResponseEntity<List<String>> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
+        log.info("P2PTemplateCommandResource validateTemplate templateModels: {}", templateModels);
+        List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(templateModels.stream()
+                .map(templateModel -> new Template()
+                        .setId(templateModel.getId())
+                        .setTemplate(templateModel.getTemplate().getBytes()))
+                .collect(Collectors.toList()));
+        log.info("P2PTemplateCommandResource validateTemplate result: {}", templateValidateErrors);
+        return ResponseEntity.ok().body(templateValidateErrors.get(0).getReason());
     }
 
     @PostMapping(value = "/template/{id}/reference")

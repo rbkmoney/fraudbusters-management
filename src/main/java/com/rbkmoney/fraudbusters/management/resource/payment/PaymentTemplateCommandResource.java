@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
+import com.rbkmoney.damsel.fraudbusters.Template;
 import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
@@ -11,8 +12,8 @@ import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
-import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
 import com.rbkmoney.fraudbusters.management.service.ValidationTemplateService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,18 @@ public class PaymentTemplateCommandResource {
                 .template(templateModel.getTemplate())
                 .build()
         );
+    }
+
+    @PostMapping(value = "/validateTemplate")
+    public ResponseEntity<List<String>> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
+        log.info("TemplateManagementResource validateTemplate templateModels: {}", templateModels);
+        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(templateModels.stream()
+                .map(templateModel -> new Template()
+                        .setId(templateModel.getId())
+                        .setTemplate(templateModel.getTemplate().getBytes()))
+                .collect(Collectors.toList()));
+        log.info("TemplateManagementResource validateTemplate result: {}", templateValidateErrors);
+        return ResponseEntity.ok().body(templateValidateErrors.get(0).getReason());
     }
 
     @PostMapping(value = "/template/{id}/reference")
