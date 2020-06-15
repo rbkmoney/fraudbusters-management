@@ -7,14 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class GroupCommandService {
 
     private final CommandSender commandSender;
-
-    @Value("${kafka.topic.fraudbusters.group.list}")
-    public String topic;
+    public final String topic;
 
     public String sendCommandSync(Command command) {
         String key = command.getCommandBody().getGroup().getGroupId();

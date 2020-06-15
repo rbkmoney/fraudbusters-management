@@ -32,6 +32,7 @@ public class ErrorController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleBadRequest(KafkaSerializationException e) {
+        log.error("KafkaSerializationException exception e: ", e);
         return ErrorResponse.builder()
                 .code(FORMAT_DATA_EXCEPTION)
                 .message(e.getMessage())
@@ -42,6 +43,7 @@ public class ErrorController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleBadRequest(DaoException e) {
+        log.error("DaoException exception e: ", e);
         return ErrorResponse.builder()
                 .code(DATA_BASE_INVOCATION_EXCEPTION)
                 .message(e.getMessage())
@@ -52,6 +54,7 @@ public class ErrorController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleBadRequest(HttpClientErrorException.BadRequest e) {
+        log.error("HttpClientErrorException.BadRequest exception e: ", e);
         return ErrorResponse.builder()
                 .code(INVALID_PARAMETERS)
                 .message(e.getMessage())
@@ -62,6 +65,7 @@ public class ErrorController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleBadRequest(KafkaProduceException e) {
+        log.error("KafkaProduceException exception e: ", e);
         return ErrorResponse.builder()
                 .code(KAFKA_PRODUCE_ERROR)
                 .message(e.getMessage())

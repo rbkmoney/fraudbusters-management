@@ -12,6 +12,7 @@ import com.rbkmoney.fraudbusters.management.dao.template.TemplateDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.*;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.resource.payment.EmulateResource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

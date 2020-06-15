@@ -6,6 +6,7 @@ import com.rbkmoney.damsel.fraudbusters.TemplateReference;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ReferenceToCommandConverter implements Converter<PaymentReferenceModel, Command> {
 
+    @NonNull
     @Override
     public Command convert(PaymentReferenceModel referenceModel) {
         Command command = new Command();

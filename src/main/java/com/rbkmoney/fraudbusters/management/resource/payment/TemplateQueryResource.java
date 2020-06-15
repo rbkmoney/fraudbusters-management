@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.resource;
+package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;

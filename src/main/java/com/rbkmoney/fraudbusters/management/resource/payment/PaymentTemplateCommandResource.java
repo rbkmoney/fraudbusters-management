@@ -2,17 +2,21 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
-import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
+import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
-import com.rbkmoney.fraudbusters.management.service.TemplateReferenceService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
+import com.rbkmoney.fraudbusters.management.service.ValidationTemplateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,21 +26,33 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class TemplateCommandResource {
+public class PaymentTemplateCommandResource {
 
-    private final TemplateCommandService templateCommandService;
-    private final TemplateReferenceService templateReferenceService;
+    private final TemplateCommandService paymentTemplateCommandService;
+    private final PaymentTemplateReferenceService paymentTemplateReferenceService;
     private final TemplateModelToCommandConverter templateModelToCommandConverter;
     private final ReferenceToCommandConverter referenceToCommandConverter;
     private final PaymentReferenceDao referenceDao;
+    private final ValidationTemplateService paymentValidationService;
 
     @PostMapping(value = "/template")
-    public ResponseEntity<String> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
+    public ResponseEntity<CreateTemplateResponse> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
         log.info("TemplateManagementResource insertTemplate templateModel: {}", templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
+        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(List.of(command.getCommandBody().getTemplate()));
+        if (!CollectionUtils.isEmpty(templateValidateErrors)) {
+            return ResponseEntity.ok().body(CreateTemplateResponse.builder()
+                    .template(templateModel.getTemplate())
+                    .errors(templateValidateErrors.get(0).getReason())
+                    .build());
+        }
         command.setCommandType(CommandType.CREATE);
-        String idMessage = templateCommandService.sendCommandSync(command);
-        return ResponseEntity.ok().body(idMessage);
+        String idMessage = paymentTemplateCommandService.sendCommandSync(command);
+        return ResponseEntity.ok().body(CreateTemplateResponse.builder()
+                .id(idMessage)
+                .template(templateModel.getTemplate())
+                .build()
+        );
     }
 
     @PostMapping(value = "/template/{id}/reference")
@@ -46,7 +62,7 @@ public class TemplateCommandResource {
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.CREATE))
-                .map(templateReferenceService::sendCommandSync)
+                .map(paymentTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
     }
@@ -69,7 +85,7 @@ public class TemplateCommandResource {
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.CREATE))
-                .map(templateReferenceService::sendCommandSync)
+                .map(paymentTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
     }
@@ -85,7 +101,7 @@ public class TemplateCommandResource {
         log.info("TemplateManagementResource removeTemplate templateModel: {}", templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
         command.setCommandType(CommandType.DELETE);
-        String idMessage = templateCommandService.sendCommandSync(command);
+        String idMessage = paymentTemplateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -96,7 +112,7 @@ public class TemplateCommandResource {
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.DELETE))
-                .map(templateReferenceService::sendCommandSync)
+                .map(paymentTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
     }

@@ -7,7 +7,7 @@ import com.rbkmoney.fraudbusters.management.converter.payment.PaymentGroupRefere
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
-import com.rbkmoney.fraudbusters.management.service.GroupReferenceService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupReferenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GroupCommandResource {
 
-    private final GroupReferenceService groupReferenceService;
-    private final GroupCommandService groupCommandService;
+    private final PaymentGroupReferenceService paymentGroupReferenceService;
+    private final GroupCommandService paymentGroupCommandService;
     private final GroupModelToCommandConverter groupModelToCommandConverter;
     private final PaymentGroupReferenceModelToCommandConverter groupReferenceToCommandConverter;
 
@@ -32,7 +32,7 @@ public class GroupCommandResource {
         log.info("GroupCommandResource insertTemplate groupModel: {}", groupModel);
         Command command = groupModelToCommandConverter.convert(groupModel);
         command.setCommandType(CommandType.CREATE);
-        String idMessage = groupCommandService.sendCommandSync(command);
+        String idMessage = paymentGroupCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -43,7 +43,7 @@ public class GroupCommandResource {
         List<String> ids = groupReferenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.CREATE))
-                .map(groupReferenceService::sendCommandSync)
+                .map(paymentGroupReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
     }
@@ -59,7 +59,7 @@ public class GroupCommandResource {
         log.info("GroupCommandResource removeTemplate groupModel: {}", groupModel);
         Command command = groupModelToCommandConverter.convert(groupModel);
         command.setCommandType(CommandType.DELETE);
-        String idMessage = groupCommandService.sendCommandSync(command);
+        String idMessage = paymentGroupCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -70,7 +70,7 @@ public class GroupCommandResource {
         List<String> ids = groupModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.DELETE))
-                .map(groupReferenceService::sendCommandSync)
+                .map(paymentGroupReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
     }

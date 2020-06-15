@@ -7,6 +7,7 @@ import com.rbkmoney.damsel.fraudbusters.PriorityId;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GroupModelToCommandConverter implements Converter<GroupModel, Command> {
 
+    @NonNull
     @Override
     public Command convert(GroupModel groupModel) {
         Command command = new Command();
