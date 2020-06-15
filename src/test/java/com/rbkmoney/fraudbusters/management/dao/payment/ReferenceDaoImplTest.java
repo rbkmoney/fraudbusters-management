@@ -1,6 +1,8 @@
-package com.rbkmoney.fraudbusters.management.dao.payment.reference;
+package com.rbkmoney.fraudbusters.management.dao.payment;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import org.jetbrains.annotations.NotNull;

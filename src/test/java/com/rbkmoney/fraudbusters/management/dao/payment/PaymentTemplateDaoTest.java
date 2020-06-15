@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.dao.template;
+package com.rbkmoney.fraudbusters.management.dao.payment;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
