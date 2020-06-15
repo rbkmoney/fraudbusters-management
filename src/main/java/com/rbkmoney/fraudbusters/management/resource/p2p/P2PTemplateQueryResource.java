@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource.p2p;
 
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.p2p.template.P2PTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class P2PTemplateQueryResource {
 
-    private final TemplateDao templateDao;
+    private final P2PTemplateDao templateDao;
     private final P2pReferenceDao p2pReferenceDao;
 
     @GetMapping(value = "/template/{id}/reference")

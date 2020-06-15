@@ -1,6 +1,7 @@
-package com.rbkmoney.fraudbusters.management.dao.template;
+package com.rbkmoney.fraudbusters.management.dao.payment.template;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
@@ -14,12 +15,12 @@ import java.util.List;
 import static com.rbkmoney.fraudbusters.management.domain.tables.FTemplate.F_TEMPLATE;
 
 @Component
-public class TemplateDaoImpl extends AbstractDao implements TemplateDao {
+public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
 
     private static final int LIMIT_TOTAL = 100;
     private final RowMapper<TemplateModel> listRecordRowMapper;
 
-    public TemplateDaoImpl(DataSource dataSource) {
+    public PaymentTemplateDao(DataSource dataSource) {
         super(dataSource);
         listRecordRowMapper = new RecordRowMapper<>(F_TEMPLATE, TemplateModel.class);
     }

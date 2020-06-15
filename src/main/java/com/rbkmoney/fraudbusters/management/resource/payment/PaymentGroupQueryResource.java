@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
@@ -18,9 +18,9 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class GroupQueryResource {
+public class PaymentGroupQueryResource {
 
-    private final GroupDao groupDao;
+    private final PaymentGroupDao groupDao;
     private final PaymentGroupReferenceDao referenceDao;
 
     @GetMapping(value = "/group/{id}/reference")

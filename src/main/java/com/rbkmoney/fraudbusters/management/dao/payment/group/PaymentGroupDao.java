@@ -1,6 +1,7 @@
-package com.rbkmoney.fraudbusters.management.dao.group;
+package com.rbkmoney.fraudbusters.management.dao.payment.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
+import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupRecord;
@@ -18,9 +19,9 @@ import java.util.stream.Collectors;
 import static com.rbkmoney.fraudbusters.management.domain.tables.FGroup.F_GROUP;
 
 @Component
-public class GroupDaoImpl extends AbstractDao implements GroupDao {
+public class PaymentGroupDao extends AbstractDao implements GroupDao {
 
-    public GroupDaoImpl(DataSource dataSource) {
+    public PaymentGroupDao(DataSource dataSource) {
         super(dataSource);
     }
 

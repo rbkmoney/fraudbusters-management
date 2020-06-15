@@ -1,9 +1,11 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.*;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
@@ -25,10 +27,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class EmulateResource {
+public class PaymentEmulateResource {
 
-    private final GroupDao groupDao;
-    private final TemplateDao templateDao;
+    private final PaymentGroupDao groupDao;
+    private final PaymentTemplateDao templateDao;
     private final PaymentGroupReferenceDao groupReferenceDao;
     private final PaymentReferenceDao referenceDao;
 

@@ -1,6 +1,8 @@
 package com.rbkmoney.fraudbusters.management.dao.template;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -10,8 +12,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-@ContextConfiguration(classes = {TemplateDaoImpl.class})
-public class TemplateDaoImplTest extends AbstractPostgresIntegrationTest {
+@ContextConfiguration(classes = {PaymentTemplateDao.class})
+public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
 
     @Autowired
     TemplateDao templateDao;

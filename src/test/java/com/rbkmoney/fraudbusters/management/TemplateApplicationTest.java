@@ -2,11 +2,13 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.fraudbusters.PaymentValidateServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
-import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
@@ -42,9 +44,9 @@ import static org.mockito.Mockito.*;
 public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
     @MockBean
-    public TemplateDao templateDao;
+    public PaymentTemplateDao paymentTemplateDao;
     @MockBean
-    public GroupDao groupDao;
+    public PaymentGroupDao paymentGroupDao;
     @MockBean
     public WbListDao wbListDao;
     @MockBean
@@ -72,8 +74,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         paymentTemplateCommandResource.removeTemplate(templateModel);
         Thread.sleep(4000L);
 
-        verify(templateDao, times(1)).insert(templateModel);
-        verify(templateDao, times(1)).remove(templateModel);
+        verify(paymentTemplateDao, times(1)).insert(templateModel);
+        verify(paymentTemplateDao, times(1)).remove(templateModel);
     }
 
     @Test
@@ -88,8 +90,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         Thread.sleep(4000L);
 
-        verify(groupDao, times(1)).insert(groupModel);
-        verify(groupDao, times(1)).remove(groupModel);
+        verify(paymentGroupDao, times(1)).insert(groupModel);
+        verify(paymentGroupDao, times(1)).remove(groupModel);
     }
 
     private void checkSerialization(GroupModel groupModel) throws IOException {

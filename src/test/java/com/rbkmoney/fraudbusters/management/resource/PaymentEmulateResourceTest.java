@@ -1,18 +1,18 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
-import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
-import com.rbkmoney.fraudbusters.management.dao.group.GroupDaoImpl;
+import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDaoImpl;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDaoImpl;
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.*;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
-import com.rbkmoney.fraudbusters.management.resource.payment.EmulateResource;
+import com.rbkmoney.fraudbusters.management.resource.payment.PaymentEmulateResource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,8 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
-@ContextConfiguration(classes = {EmulateResource.class, GroupDaoImpl.class, TemplateDaoImpl.class, GroupReferenceDaoImpl.class, ReferenceDaoImpl.class})
-public class EmulateResourceTest extends AbstractPostgresIntegrationTest {
+@ContextConfiguration(classes = {PaymentEmulateResource.class, PaymentGroupDao.class, PaymentTemplateDao.class, GroupReferenceDaoImpl.class, ReferenceDaoImpl.class})
+public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest {
 
     private static final String PARTY_ID = "partyId";
     private static final String SHOP_ID = "shopId";
@@ -34,7 +34,7 @@ public class EmulateResourceTest extends AbstractPostgresIntegrationTest {
     private static final String GLOBAL_TEMPLATE = "template_global";
 
     @Autowired
-    EmulateResource emulateResource;
+    PaymentEmulateResource paymentEmulateResource;
     @Autowired
     PaymentGroupReferenceDao groupReferenceDao;
     @Autowired
@@ -86,7 +86,7 @@ public class EmulateResourceTest extends AbstractPostgresIntegrationTest {
         referenceModel1.setIsGlobal(false);
         referenceDao.insert(referenceModel1);
 
-        ResponseEntity<List<TemplateModel>> rulesByPartyAndShop = emulateResource.getRulesByPartyAndShop(PARTY_ID, SHOP_ID);
+        ResponseEntity<List<TemplateModel>> rulesByPartyAndShop = paymentEmulateResource.getRulesByPartyAndShop(PARTY_ID, SHOP_ID);
 
         Assert.assertTrue(rulesByPartyAndShop.hasBody());
         List<TemplateModel> templateModels = rulesByPartyAndShop.getBody();
@@ -101,7 +101,7 @@ public class EmulateResourceTest extends AbstractPostgresIntegrationTest {
 
         referenceDao.remove(referenceModel1);
 
-        rulesByPartyAndShop = emulateResource.getRulesByPartyAndShop(PARTY_ID, SHOP_ID);
+        rulesByPartyAndShop = paymentEmulateResource.getRulesByPartyAndShop(PARTY_ID, SHOP_ID);
         Assert.assertTrue(rulesByPartyAndShop.hasBody());
         templateModels = rulesByPartyAndShop.getBody();
         Assert.assertFalse(templateModels.isEmpty());

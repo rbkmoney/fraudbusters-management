@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.listener.p2p;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.CommandToTemplateModelConverter;
-import com.rbkmoney.fraudbusters.management.dao.template.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.p2p.template.P2PTemplateDao;
 import com.rbkmoney.fraudbusters.management.listener.CommandListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class P2PTemplateListener extends CommandListener {
 
-    private final TemplateDao templateDao;
+    private final P2PTemplateDao p2pTemplateDao;
     private final CommandToTemplateModelConverter converter;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.template.p2p}", containerFactory = "kafkaTemplateListenerContainerFactory")
     public void listen(Command command) {
-        log.info("TemplateListener event: {}", command);
-        handle(command, converter, templateDao::insert, templateDao::remove);
+        log.info("P2PTemplateDao event: {}", command);
+        handle(command, converter, p2pTemplateDao::insert, p2pTemplateDao::remove);
     }
 
 }

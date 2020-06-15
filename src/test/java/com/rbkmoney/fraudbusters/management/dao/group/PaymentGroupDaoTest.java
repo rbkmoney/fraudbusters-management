@@ -1,7 +1,8 @@
 package com.rbkmoney.fraudbusters.management.dao.group;
 
-import com.rbkmoney.damsel.fraudbusters.PriorityId;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import org.junit.Assert;
@@ -11,8 +12,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-@ContextConfiguration(classes = {GroupDaoImpl.class})
-public class GroupDaoImplTest extends AbstractPostgresIntegrationTest {
+@ContextConfiguration(classes = {PaymentGroupDao.class})
+public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
 
     public static final String GROUP_1 = "group_1";
     public static final String TEST_TEMPL_2 = "test_templ_2";
