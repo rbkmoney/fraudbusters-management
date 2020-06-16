@@ -6,6 +6,7 @@ import com.rbkmoney.damsel.fraudbusters.Template;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class TemplateModelToCommandConverter implements Converter<TemplateModel, Command> {
 
     @Override
+    @NonNull
     public Command convert(TemplateModel templateModel) {
         Command command = new Command();
         Template template = new Template();

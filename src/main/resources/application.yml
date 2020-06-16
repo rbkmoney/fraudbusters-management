@@ -40,11 +40,18 @@ kafka:
       command: "wb-list-command"
       event.sink: "wb-list-event-sink"
     fraudbusters:
-      template: "template"
-      reference: "template_reference"
-      group:
-        list: "group"
-        reference: "group_reference"
+      payment:
+        template: "template"
+        reference: "template_reference"
+        group:
+          list: "group"
+          reference: "group_reference"
+      p2p:
+        template: "p2p_template"
+        reference: "p2p_reference"
+        group:
+          list: "p2p_group"
+          reference: "p2p_group_reference"
   ssl:
     enable: false
     keystore-location: src/main/resources/cert/kenny-k.struzhkin.p12
@@ -52,3 +59,11 @@ kafka:
     key-password: kenny
     server-password: kenny12
     server-keystore-location: src/main/resources/cert/truststore.p12
+service:
+  validate:
+    p2p:
+      url: http://fraudbusters:8022/fraud_p2p_validator/v1
+      networkTimeout: 5000
+    payment:
+      url: http://fraudbusters:8022/fraud_payment_validator/v1
+      networkTimeout: 5000

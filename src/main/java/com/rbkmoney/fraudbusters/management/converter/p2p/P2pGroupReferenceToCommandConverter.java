@@ -6,6 +6,7 @@ import com.rbkmoney.damsel.fraudbusters.P2PGroupReference;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class P2pGroupReferenceToCommandConverter implements Converter<P2pGroupReferenceModel, Command> {
 
+    @NonNull
     @Override
     public Command convert(P2pGroupReferenceModel groupReferenceModel) {
         Command command = new Command();

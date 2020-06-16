@@ -1,11 +1,10 @@
 package com.rbkmoney.fraudbusters.management.resource.p2p;
 
-import com.rbkmoney.fraudbusters.management.dao.group.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class P2pGroupQueryResource {
 
-    private final GroupDao groupDao;
+    private final P2PGroupDao groupDao;
     private final P2pGroupReferenceDao referenceDao;
 
     @GetMapping(value = "/group/{id}/reference")
