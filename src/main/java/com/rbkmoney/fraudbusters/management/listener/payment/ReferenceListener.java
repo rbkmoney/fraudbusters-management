@@ -4,7 +4,6 @@ import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.payment.CommandToPaymentReferenceModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
-import com.rbkmoney.fraudbusters.management.exception.UnknownReferenceException;
 import com.rbkmoney.fraudbusters.management.listener.CommandListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +24,7 @@ public class ReferenceListener extends CommandListener {
         if (command.getCommandBody().isSetReference()) {
             handle(command, paymentReferenceConverter, referenceDao::insert, referenceDao::remove);
         } else {
-            log.error("Unknown reference in command in ReferenceListener! command: {}", command);
-            throw new UnknownReferenceException();
+            log.warn("Unknown reference in command in ReferenceListener! command: {}", command);
         }
     }
 }

@@ -24,8 +24,7 @@ public class GroupReferenceListener extends CommandListener {
         if (command.getCommandBody().isSetGroupReference()) {
             handle(command, groupReferenceModelConverter, groupReferenceDao::insert, groupReferenceDao::remove);
         } else {
-            log.error("Unknown reference in command in ReferenceListener! command: {}", command);
-            throw new UnknownReferenceException();
+            log.warn("Unknown reference in command in ReferenceListener! command: {}", command);
         }
     }
 }

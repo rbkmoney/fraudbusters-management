@@ -25,8 +25,7 @@ public class P2PReferenceListener extends CommandListener {
         if (command.getCommandBody().isSetP2pReference()) {
             handle(command, p2pReferenceModelConverter, p2pReferenceDao::insert, p2pReferenceDao::remove);
         } else {
-            log.error("Unknown reference in command in P2PReferenceListener! command: {}", command);
-            throw new UnknownReferenceException();
+            log.warn("Unknown reference in command in P2PReferenceListener! command: {}", command);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource.p2p;
 
+import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
