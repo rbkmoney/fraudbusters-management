@@ -25,13 +25,13 @@ public class PaymentFraudoConfig {
 
     @Bean
     public TemplateCommandService paymentTemplateCommandService(CommandSender commandSender,
-                                                                @Value("${kafka.topic.fraudbusters.template.payment}") String topic) {
+                                                                @Value("${kafka.topic.fraudbusters.payment.template}") String topic) {
         return new TemplateCommandService(commandSender, topic);
     }
 
     @Bean
     public GroupCommandService paymentGroupCommandService(CommandSender commandSender,
-                                                          @Value("${kafka.topic.fraudbusters.group.payment}") String topic) {
+                                                          @Value("${kafka.topic.fraudbusters.payment.group.list}") String topic) {
         return new GroupCommandService(commandSender, topic);
     }
 

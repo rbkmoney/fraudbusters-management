@@ -16,7 +16,7 @@ public class PaymentGroupReferenceService {
 
     private final CommandSender commandSender;
 
-    @Value("${kafka.topic.fraudbusters.group.reference}")
+    @Value("${kafka.topic.fraudbusters.payment.group.reference}")
     public String topic;
 
     public String sendCommandSync(Command command) {

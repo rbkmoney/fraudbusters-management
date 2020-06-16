@@ -25,13 +25,13 @@ public class P2PFraudoConfig {
 
     @Bean
     public TemplateCommandService p2pTemplateCommandService(CommandSender commandSender,
-                                                            @Value("${kafka.topic.fraudbusters.template.p2p}") String topic) {
+                                                            @Value("${kafka.topic.fraudbusters.p2p.template}") String topic) {
         return new TemplateCommandService(commandSender, topic);
     }
 
     @Bean
     public GroupCommandService p2pGroupCommandService(CommandSender commandSender,
-                                                          @Value("${kafka.topic.fraudbusters.group.p2p}") String topic) {
+                                                          @Value("${kafka.topic.fraudbusters.p2p.group.list}") String topic) {
         return new GroupCommandService(commandSender, topic);
     }
 

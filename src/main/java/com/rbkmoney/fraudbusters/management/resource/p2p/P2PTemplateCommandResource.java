@@ -6,9 +6,11 @@ import com.rbkmoney.damsel.fraudbusters.Template;
 import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pReferenceToCommandConverter;
+import com.rbkmoney.fraudbusters.management.domain.ErrorTemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
+import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.p2p.P2PTemplateReferenceService;
@@ -56,15 +58,24 @@ public class P2PTemplateCommandResource {
     }
 
     @PostMapping(value = "/validateTemplate")
-    public ResponseEntity<List<String>> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
+    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
         log.info("P2PTemplateCommandResource validateTemplate templateModels: {}", templateModels);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(templateModels.stream()
                 .map(templateModel -> new Template()
                         .setId(templateModel.getId())
                         .setTemplate(templateModel.getTemplate().getBytes()))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList())
+        );
         log.info("P2PTemplateCommandResource validateTemplate result: {}", templateValidateErrors);
-        return ResponseEntity.ok().body(templateValidateErrors.get(0).getReason());
+        return ResponseEntity.ok().body(
+                ValidateTemplatesResponse.builder()
+                        .validateResults(templateValidateErrors.stream()
+                                .map(templateValidateError -> ErrorTemplateModel.builder()
+                                        .errors(templateValidateError.getReason())
+                                        .id(templateValidateError.id).build())
+                                .collect(Collectors.toList()))
+                        .build()
+        );
     }
 
     @PostMapping(value = "/template/{id}/reference")

@@ -17,7 +17,7 @@ public class PaymentTemplateListener extends CommandListener {
     private final TemplateDao paymentTemplateDao;
     private final CommandToTemplateModelConverter converter;
 
-    @KafkaListener(topics = "${kafka.topic.fraudbusters.template.payment}", containerFactory = "kafkaTemplateListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.fraudbusters.payment.template}", containerFactory = "kafkaTemplateListenerContainerFactory")
     public void listen(Command command) {
         log.info("PaymentTemplateListener event: {}", command);
         handle(command, converter, paymentTemplateDao::insert, paymentTemplateDao::remove);

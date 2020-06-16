@@ -4,6 +4,7 @@ import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.thrift.TBase;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CommandSender {
 
-    private final KafkaTemplate kafkaTemplate;
+    private final KafkaTemplate<String, TBase> kafkaTemplate;
 
     public String send(String topicName, Command command, String key) {
         try {

@@ -16,7 +16,7 @@ public class P2PGroupReferenceService {
 
     private final CommandSender commandSender;
 
-    @Value("${kafka.topic.fraudbusters.group.reference}")
+    @Value("${kafka.topic.fraudbusters.p2p.group.reference}")
     public String topic;
 
     public String sendCommandSync(Command command) {

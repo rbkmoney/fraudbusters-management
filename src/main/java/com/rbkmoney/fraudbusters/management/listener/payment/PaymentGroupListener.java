@@ -17,7 +17,7 @@ public class PaymentGroupListener extends CommandListener {
     private final GroupDao paymentGroupDao;
     private final CommandToGroupModelConverter converter;
 
-    @KafkaListener(topics = "${kafka.topic.fraudbusters.group.payment}", containerFactory = "kafkaGroupListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.fraudbusters.payment.group.list}", containerFactory = "kafkaGroupListenerContainerFactory")
     public void listen(Command command) {
         log.info("GroupListener event: {}", command);
         handle(command, converter, paymentGroupDao::insert, paymentGroupDao::remove);

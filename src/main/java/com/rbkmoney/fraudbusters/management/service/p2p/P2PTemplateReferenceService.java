@@ -15,7 +15,7 @@ public class P2PTemplateReferenceService {
 
     private final CommandSender commandSender;
 
-    @Value("${kafka.topic.fraudbusters.reference}")
+    @Value("${kafka.topic.fraudbusters.p2p.reference}")
     public String topic;
 
     public String sendCommandSync(Command command) {
