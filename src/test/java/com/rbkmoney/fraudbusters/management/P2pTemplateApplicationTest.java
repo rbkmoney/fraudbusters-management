@@ -2,13 +2,11 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.fraudbusters.P2PValidateServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
-import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.template.P2PTemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
-import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;

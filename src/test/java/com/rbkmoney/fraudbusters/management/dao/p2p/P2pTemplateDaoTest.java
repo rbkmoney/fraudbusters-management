@@ -1,9 +1,7 @@
 package com.rbkmoney.fraudbusters.management.dao.p2p;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
-import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.template.P2PTemplateDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;

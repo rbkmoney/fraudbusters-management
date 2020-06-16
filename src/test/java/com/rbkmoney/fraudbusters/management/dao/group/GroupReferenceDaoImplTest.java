@@ -1,8 +1,8 @@
 package com.rbkmoney.fraudbusters.management.dao.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
-import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import org.junit.Assert;
 import org.junit.Test;
