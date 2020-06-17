@@ -19,7 +19,7 @@ public class P2PReferenceListener extends CommandListener {
     private final ReferenceDao<P2pReferenceModel> p2pReferenceDao;
     private final CommandToP2pReferenceModelConverter p2pReferenceModelConverter;
 
-    @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.reference}", containerFactory = "kafkaReferenceListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.reference}", containerFactory = "kafkaP2PReferenceListenerContainerFactory")
     public void listen(Command command) {
         log.info("P2PReferenceListener command: {}", command);
         if (command.getCommandBody().isSetP2pReference()) {
