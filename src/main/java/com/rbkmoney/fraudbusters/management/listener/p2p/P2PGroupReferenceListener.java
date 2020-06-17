@@ -18,7 +18,7 @@ public class P2PGroupReferenceListener extends CommandListener {
     private final P2pGroupReferenceDao p2pGroupReferenceDao;
     private final CommandToP2pGroupReferenceModelConverter commandToP2pGroupReferenceModelConverter;
 
-    @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.group.reference}", containerFactory = "kafkaGroupReferenceListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.group.reference}", containerFactory = "kafkaP2PGroupReferenceListenerContainerFactory")
     public void listen(Command command) {
         log.info("P2PGroupReferenceListener command: {}", command);
         if (command.getCommandBody().isSetP2pGroupReference()) {
