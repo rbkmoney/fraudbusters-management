@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management;
 
-import com.rbkmoney.damsel.fraudbusters.PaymentValidateServiceSrv;
+import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
@@ -54,7 +54,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @MockBean
     public PaymentGroupReferenceDao groupReferenceDao;
     @MockBean
-    public PaymentValidateServiceSrv.Iface iface;
+    public PaymentServiceSrv.Iface iface;
 
     @Autowired
     PaymentTemplateCommandResource paymentTemplateCommandResource;

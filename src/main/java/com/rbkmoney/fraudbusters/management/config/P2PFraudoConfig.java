@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.config;
 
-import com.rbkmoney.damsel.fraudbusters.P2PValidateServiceSrv;
+import com.rbkmoney.damsel.fraudbusters.P2PServiceSrv;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
 import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
@@ -16,11 +16,11 @@ import java.io.IOException;
 public class P2PFraudoConfig {
 
     @Bean
-    public P2PValidateServiceSrv.Iface p2pValidateServiceSrv(@Value("${service.validate.p2p.url}") Resource resource,
-                                                             @Value("${service.validate.p2p.networkTimeout}") int networkTimeout) throws IOException {
+    public P2PServiceSrv.Iface p2pServiceSrv(@Value("${service.p2p.url}") Resource resource,
+                                             @Value("${service.p2p.networkTimeout}") int networkTimeout) throws IOException {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)
-                .withAddress(resource.getURI()).build(P2PValidateServiceSrv.Iface.class);
+                .withAddress(resource.getURI()).build(P2PServiceSrv.Iface.class);
     }
 
     @Bean
@@ -31,7 +31,7 @@ public class P2PFraudoConfig {
 
     @Bean
     public GroupCommandService p2pGroupCommandService(CommandSender commandSender,
-                                                          @Value("${kafka.topic.fraudbusters.p2p.group.list}") String topic) {
+                                                      @Value("${kafka.topic.fraudbusters.p2p.group.list}") String topic) {
         return new GroupCommandService(commandSender, topic);
     }
 

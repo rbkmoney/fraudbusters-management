@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.config;
 
-import com.rbkmoney.damsel.fraudbusters.PaymentValidateServiceSrv;
+import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
 import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
@@ -16,11 +16,11 @@ import java.io.IOException;
 public class PaymentFraudoConfig {
 
     @Bean
-    public PaymentValidateServiceSrv.Iface paymentValidateServiceSrv(@Value("${service.validate.payment.url}") Resource resource,
-                                                                     @Value("${service.validate.payment.networkTimeout}") int networkTimeout) throws IOException {
+    public PaymentServiceSrv.Iface paymentServiceSrv(@Value("${service.payment.url}") Resource resource,
+                                                     @Value("${service.payment.networkTimeout}") int networkTimeout) throws IOException {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)
-                .withAddress(resource.getURI()).build(PaymentValidateServiceSrv.Iface.class);
+                .withAddress(resource.getURI()).build(PaymentServiceSrv.Iface.class);
     }
 
     @Bean

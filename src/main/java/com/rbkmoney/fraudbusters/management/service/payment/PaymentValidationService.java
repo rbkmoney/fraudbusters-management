@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.service.payment;
 
-import com.rbkmoney.damsel.fraudbusters.PaymentValidateServiceSrv;
+import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.Template;
 import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
 import com.rbkmoney.fraudbusters.management.exception.ValidationException;
@@ -17,12 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaymentValidationService implements ValidationTemplateService {
 
-    private final PaymentValidateServiceSrv.Iface paymentValidateServiceSrv;
+    private final PaymentServiceSrv.Iface paymentServiceSrv;
 
     @Override
     public List<TemplateValidateError> validateTemplate(List<Template> templates) {
         try {
-            return paymentValidateServiceSrv.validateCompilationTemplate(templates).getErrors();
+            return paymentServiceSrv.validateCompilationTemplate(templates).getErrors();
         } catch (TException e) {
             log.error("Error when validateTemplate");
             throw new ValidationException(e);
