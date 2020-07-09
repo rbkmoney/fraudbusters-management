@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management;
 
-import com.rbkmoney.damsel.fraudbusters.P2PValidateServiceSrv;
+import com.rbkmoney.damsel.fraudbusters.P2PServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
@@ -49,7 +49,7 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @MockBean
     public P2pGroupReferenceDao groupReferenceDao;
     @MockBean
-    public P2PValidateServiceSrv.Iface iface;
+    public P2PServiceSrv.Iface iface;
 
     @Autowired
     P2PTemplateCommandResource p2pTemplateCommandResource;

@@ -60,10 +60,9 @@ kafka:
     server-password: kenny12
     server-keystore-location: src/main/resources/cert/truststore.p12
 service:
-  validate:
-    p2p:
-      url: http://fraudbusters:8022/fraud_p2p_validator/v1
-      networkTimeout: 5000
-    payment:
-      url: http://fraudbusters:8022/fraud_payment_validator/v1
-      networkTimeout: 5000
+  p2p:
+    url: http://fraudbusters:8022/fraud_p2p/v1
+    networkTimeout: 5000
+  payment:
+    url: http://fraudbusters:8022/fraud_payment/v1
+    networkTimeout: 5000
