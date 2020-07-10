@@ -3,9 +3,10 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-    <root level="warn">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
     <logger name="com.rbkmoney" level="ALL"/>
-    <logger name="org.springframework.kafka.listener" level="ALL"/>
+    <logger name="org.springframework.kafka" level="WARN"/>
+    <logger name="org.apache.kafka" level="WARN"/>
 </configuration>
