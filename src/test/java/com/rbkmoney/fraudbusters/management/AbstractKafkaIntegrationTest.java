@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.fraudbusters.management.config.KafkaConfig;
 import com.rbkmoney.fraudbusters.management.serializer.EventDeserializer;
-import com.rbkmoney.serializer.ThriftSerializer;
+import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -36,7 +36,9 @@ public abstract class AbstractKafkaIntegrationTest {
     public static final String KAFKA_DOCKER_VERSION = "5.0.1";
 
     @ClassRule
-    public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION).withEmbeddedZookeeper();
+    public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
+            .withEmbeddedZookeeper()
+            .withStartupTimeout(Duration.ofMinutes(10));
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public static final String WB_LIST_EVENT_SINK = "wb-list-event-sink";

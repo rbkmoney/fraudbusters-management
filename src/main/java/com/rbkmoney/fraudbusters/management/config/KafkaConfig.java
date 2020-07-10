@@ -4,7 +4,7 @@ import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.fraudbusters.management.serializer.CommandFraudDeserializer;
 import com.rbkmoney.fraudbusters.management.serializer.EventDeserializer;
-import com.rbkmoney.serializer.ThriftSerializer;
+import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
