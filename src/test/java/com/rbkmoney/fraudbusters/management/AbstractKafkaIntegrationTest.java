@@ -31,7 +31,7 @@ import java.util.Properties;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {KafkaConfig.class},
         initializers = AbstractKafkaIntegrationTest.Initializer.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public abstract class AbstractKafkaIntegrationTest {
 
     public static final String KAFKA_DOCKER_VERSION = "5.5.1";
