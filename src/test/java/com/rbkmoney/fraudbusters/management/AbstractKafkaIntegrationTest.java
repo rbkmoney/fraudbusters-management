@@ -30,16 +30,14 @@ import java.util.Properties;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {KafkaConfig.class},
         initializers = AbstractKafkaIntegrationTest.Initializer.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public abstract class AbstractKafkaIntegrationTest {
 
-    public static final String KAFKA_DOCKER_VERSION = "5.0.1";
+    public static final String KAFKA_DOCKER_VERSION = "5.5.1";
 
     @ClassRule
     public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
             .withEmbeddedZookeeper()
-            .withStartupTimeout(Duration.ofMinutes(2))
-            .withReuse(true);
+            .withStartupTimeout(Duration.ofMinutes(1));
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public static final String WB_LIST_EVENT_SINK = "wb-list-event-sink";
