@@ -65,6 +65,7 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         TemplateModel templateModel = new TemplateModel();
         templateModel.setId("id");
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
+
         p2pTemplateCommandResource.insertTemplate(templateModel);
         p2pTemplateCommandResource.removeTemplate(templateModel);
         Thread.sleep(4000L);
@@ -96,7 +97,7 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
         groupCommandResource.deleteGroupReference("id", Collections.singletonList(groupReferenceModel));
-        Thread.sleep(4000L);
+        Thread.sleep(5000L);
 
         verify(groupReferenceDao, times(1)).insert(any());
         verify(groupReferenceDao, times(1)).remove((P2pGroupReferenceModel) any());
