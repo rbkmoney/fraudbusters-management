@@ -12,6 +12,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -30,9 +31,10 @@ import java.util.Properties;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {KafkaConfig.class},
         initializers = AbstractKafkaIntegrationTest.Initializer.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public abstract class AbstractKafkaIntegrationTest {
 
-    public static final String KAFKA_DOCKER_VERSION = "5.0.1";
+    public static final String KAFKA_DOCKER_VERSION = "5.5.1";
 
     @ClassRule
     public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
