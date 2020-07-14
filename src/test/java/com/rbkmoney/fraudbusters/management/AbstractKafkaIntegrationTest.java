@@ -38,7 +38,7 @@ public abstract class AbstractKafkaIntegrationTest {
     @ClassRule
     public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
             .withEmbeddedZookeeper()
-            .withStartupTimeout(Duration.ofMinutes(10));
+            .withStartupTimeout(Duration.ofMinutes(1));
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public static final String WB_LIST_EVENT_SINK = "wb-list-event-sink";
