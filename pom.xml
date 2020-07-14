@@ -209,13 +209,13 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>1.10.2</version>
+            <version>1.14.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>kafka</artifactId>
-            <version>1.10.2</version>
+            <version>1.14.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
