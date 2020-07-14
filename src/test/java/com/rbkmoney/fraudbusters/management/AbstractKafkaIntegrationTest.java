@@ -32,12 +32,12 @@ import java.util.Properties;
         initializers = AbstractKafkaIntegrationTest.Initializer.class)
 public abstract class AbstractKafkaIntegrationTest {
 
-    public static final String KAFKA_DOCKER_VERSION = "5.5.1";
+    public static final String KAFKA_DOCKER_VERSION = "5.0.1";
 
     @ClassRule
     public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
             .withEmbeddedZookeeper()
-            .withStartupTimeout(Duration.ofMinutes(1));
+            .withStartupTimeout(Duration.ofMinutes(2));
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public static final String WB_LIST_EVENT_SINK = "wb-list-event-sink";
