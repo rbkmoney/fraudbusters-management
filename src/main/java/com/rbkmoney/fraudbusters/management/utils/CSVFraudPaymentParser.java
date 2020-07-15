@@ -5,6 +5,7 @@ import com.rbkmoney.damsel.fraudbusters.FraudInfo;
 import com.rbkmoney.damsel.fraudbusters.FraudPayment;
 import com.rbkmoney.damsel.fraudbusters.MerchantInfo;
 import com.rbkmoney.damsel.fraudbusters.ReferenceInfo;
+import com.rbkmoney.fraudbusters.management.constant.CsvFraudPaymentFields;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -20,10 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CSVFraudPaymentParser implements CsvParser<FraudPayment>{
+public class CSVFraudPaymentParser implements CsvParser<FraudPayment> {
 
     public static final String TYPE = "text/csv";
     public static final String UNKNOWN = "UNKNOWN";
+    public static final String PAYMENT_RESOURCE = "payment_resource";
+    public static final String RECURRENT = "recurrent";
+    public static final String CUSTOMER = "customer";
+    public static final String PAYER_TYPE = "payer_type";
 
     @Override
     public boolean hasCSVFormat(MultipartFile file) {
@@ -52,45 +57,45 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment>{
         return new FraudPayment()
                 .setCost(new Cash()
                         .setCurrency(new CurrencyRef()
-                                .setSymbolicCode(csvRecord.get("cur")))
-                        .setAmount(Long.valueOf(csvRecord.get("amount"))))
-                .setEventTime(csvRecord.get("eventTime"))
-                .setId(csvRecord.get("payment"))
+                                .setSymbolicCode(csvRecord.get(CsvFraudPaymentFields.CUR)))
+                        .setAmount(Long.parseLong(csvRecord.get(CsvFraudPaymentFields.AMOUNT))))
+                .setEventTime(csvRecord.get(CsvFraudPaymentFields.EVENT_TIME))
+                .setId(csvRecord.get(CsvFraudPaymentFields.PAYMENT))
                 .setFraudInfo(new FraudInfo()
-                        .setTempalteId(csvRecord.get("checkedTemplate"))
-                        .setCheckStatus(csvRecord.get("resultStatus"))
-                        .setType(csvRecord.get("fraud_type"))
+                        .setTempalteId(csvRecord.get(CsvFraudPaymentFields.CHECKED_TEMPLATE))
+                        .setCheckStatus(csvRecord.get(CsvFraudPaymentFields.RESULT_STATUS))
+                        .setType(csvRecord.get(CsvFraudPaymentFields.FRAUD_TYPE))
                 )
                 .setPayer(initPayer(csvRecord))
                 .setReferenceInfo(ReferenceInfo.merchant_info(new MerchantInfo()
-                        .setPartyId(csvRecord.get("partyId"))
-                        .setShopId(csvRecord.get("shopId"))))
+                        .setPartyId(csvRecord.get(CsvFraudPaymentFields.PARTY_ID))
+                        .setShopId(csvRecord.get(CsvFraudPaymentFields.SHOP_ID))))
                 .setRoute(new PaymentRoute()
                         .setProvider(new ProviderRef()
-                                .setId(Integer.valueOf(csvRecord.get("route_provider_id"))))
+                                .setId(Integer.parseInt(csvRecord.get(CsvFraudPaymentFields.ROUTE_PROVIDER_ID))))
                         .setTerminal(new TerminalRef()
-                                .setId(Integer.valueOf(csvRecord.get("route_terminal_id")))))
-                .setRrn(csvRecord.get("trx_additional_info_rrn"));
+                                .setId(Integer.parseInt(csvRecord.get(CsvFraudPaymentFields.ROUTE_TERMINAL_ID)))))
+                .setRrn(csvRecord.get(CsvFraudPaymentFields.TRX_ADDITIONAL_INFO_RRN));
     }
 
     private static Payer initPayer(CSVRecord csvRecord) {
         Payer payer;
-        String maskedPan = csvRecord.get("card");
+        String maskedPan = csvRecord.get(CsvFraudPaymentFields.CARD);
         String lastDigist = maskedPan.substring(maskedPan.length() - 4);
         String bin = maskedPan.substring(0, maskedPan.length() - 4);
-        switch (csvRecord.get("payer_type")) {
-            case "payment_resource":
+        switch (csvRecord.get(PAYER_TYPE)) {
+            case PAYMENT_RESOURCE:
                 payer = Payer.payment_resource(new PaymentResourcePayer()
                         .setContactInfo(initContactInfo(csvRecord))
                         .setResource(new DisposablePaymentResource()
                                 .setClientInfo(new ClientInfo()
-                                        .setFingerprint(csvRecord.get("fingerprint"))
-                                        .setIpAddress(csvRecord.get("ip"))
+                                        .setFingerprint(csvRecord.get(CsvFraudPaymentFields.FINGERPRINT))
+                                        .setIpAddress(csvRecord.get(CsvFraudPaymentFields.IP))
                                 )
                                 .setPaymentTool(initPaymentTool(csvRecord, lastDigist, bin)))
                 );
                 break;
-            case "recurrent":
+            case RECURRENT:
                 payer = Payer.recurrent(new RecurrentPayer()
                         .setContactInfo(initContactInfo(csvRecord))
                         .setRecurrentParent(new RecurrentParentPayment()
@@ -98,7 +103,7 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment>{
                                 .setPaymentId(UNKNOWN))
                         .setPaymentTool(initPaymentTool(csvRecord, lastDigist, bin)));
                 break;
-            case "customer":
+            case CUSTOMER:
                 payer = Payer.customer(new CustomerPayer()
                         .setCustomerId(UNKNOWN)
                         .setCustomerBindingId(UNKNOWN)
