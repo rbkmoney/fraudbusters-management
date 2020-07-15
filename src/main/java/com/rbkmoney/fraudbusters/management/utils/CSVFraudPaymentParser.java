@@ -40,7 +40,6 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment>{
 
             for (CSVRecord csvRecord : csvRecords) {
                 fraudPayments.add(mapFraudPayment(csvRecord));
-//                        .setStatus(csvRecord.get("trx_additional_info_rrn")));
             }
 
             return fraudPayments;
@@ -58,7 +57,10 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment>{
                 .setEventTime(csvRecord.get("eventTime"))
                 .setId(csvRecord.get("payment"))
                 .setFraudInfo(new FraudInfo()
-                        .setTempalteId(csvRecord.get("checkedTemplate")))
+                        .setTempalteId(csvRecord.get("checkedTemplate"))
+                        .setCheckStatus(csvRecord.get("resultStatus"))
+                        .setType(csvRecord.get("fraud_type"))
+                )
                 .setPayer(initPayer(csvRecord))
                 .setReferenceInfo(ReferenceInfo.merchant_info(new MerchantInfo()
                         .setPartyId(csvRecord.get("partyId"))
