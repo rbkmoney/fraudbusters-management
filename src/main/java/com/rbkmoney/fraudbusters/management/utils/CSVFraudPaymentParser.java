@@ -124,6 +124,7 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment> {
 
     private static PaymentTool initPaymentTool(CSVRecord csvRecord, String lastDigist, String bin) {
         return PaymentTool.bank_card(new BankCard()
+                .setPaymentSystem(BankCardPaymentSystem.valueOf(csvRecord.get("paymentSystem")))
                 .setLastDigits(lastDigist)
                 .setBin(bin)
                 .setToken(csvRecord.get("cardToken"))
