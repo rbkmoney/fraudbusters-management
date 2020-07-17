@@ -36,7 +36,6 @@ public abstract class AbstractKafkaIntegrationTest {
     @ClassRule
     public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
             .withEmbeddedZookeeper()
-            .withStartupTimeout(Duration.ofMinutes(2))
             .withCommand("bash -c 'echo Waiting for Kafka to be ready... && \n" +
                     "                                cub kafka-ready -b broker:9092 1 60 && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic wb-list-event-sink  && \n" +
