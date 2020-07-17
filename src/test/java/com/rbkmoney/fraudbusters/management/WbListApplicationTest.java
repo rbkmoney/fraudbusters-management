@@ -70,8 +70,8 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         Row row = createRow(ListType.black);
         event.setRow(row);
         event.setEventType(EventType.CREATED);
-        ProducerRecord producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
         try (Producer<String, Event> producer = createProducer()) {
+            ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
             producer.send(producerRecord).get();
             producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
             producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
@@ -114,14 +114,13 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         Row row = createRow(ListType.black);
         event.setRow(row);
         event.setEventType(EventType.DELETED);
-        ProducerRecord producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
-        Producer<String, Event> producer = createProducer();
-
-        producer.send(producerRecord).get();
-        producer.close();
-        Thread.sleep(3000L);
-
-        Mockito.verify(wbListDao, Mockito.times(1)).removeRecord((WbListRecords) any());
+        try (Producer<String, Event> producer = createProducer()) {
+            ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
+            producer.send(producerRecord).get();
+            producer.close();
+            Thread.sleep(3000L);
+            Mockito.verify(wbListDao, Mockito.times(1)).removeRecord((WbListRecords) any());
+        }
     }
 
     @NotNull
@@ -153,23 +152,25 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
         insertToBlackList(record, recordSecond);
 
-        Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class);
-        consumer.subscribe(Collections.singletonList(topicCommand));
-        List<ChangeCommand> eventList = consumeCommand(consumer);
+        try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
+            consumer.subscribe(Collections.singletonList(topicCommand));
+            List<ChangeCommand> eventList = consumeCommand(consumer);
 
-        Assert.assertEquals(2, eventList.size());
-        Assert.assertEquals(eventList.get(0).command, Command.CREATE);
-        Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
+            Assert.assertEquals(2, eventList.size());
+            Assert.assertEquals(eventList.get(0).command, Command.CREATE);
+            Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
 
-        deleteFromWhiteList(record);
+            deleteFromWhiteList(record);
+        }
 
-        consumer = createConsumer(CommandChangeDeserializer.class);
-        consumer.subscribe(Collections.singletonList(topicCommand));
-        eventList = consumeCommand(consumer);
+        try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
+            consumer.subscribe(Collections.singletonList(topicCommand));
+            List<ChangeCommand> eventList = consumeCommand(consumer);
 
-        Assert.assertEquals(1, eventList.size());
-        Assert.assertEquals(eventList.get(0).command, Command.DELETE);
-        Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.white);
+            Assert.assertEquals(1, eventList.size());
+            Assert.assertEquals(eventList.get(0).command, Command.DELETE);
+            Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.white);
+        }
     }
 
     private void insertToBlackList(PaymentListRecord... values) {
@@ -197,7 +198,6 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             log.info("poll command: {}", command.value());
             eventList.add(command.value());
         });
-        consumer.close();
         return eventList;
     }
 }

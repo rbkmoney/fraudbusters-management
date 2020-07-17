@@ -43,6 +43,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = FraudbustersManagementApplication.class)
 public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
+    public static final long TIMEOUT = 5000L;
     @MockBean
     public PaymentTemplateDao paymentTemplateDao;
     @MockBean
@@ -72,7 +73,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
         paymentTemplateCommandResource.insertTemplate(templateModel);
         paymentTemplateCommandResource.removeTemplate(templateModel);
-        Thread.sleep(4000L);
+        Thread.sleep(TIMEOUT);
 
         verify(paymentTemplateDao, times(1)).insert(templateModel);
         verify(paymentTemplateDao, times(1)).remove(templateModel);
@@ -88,7 +89,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupCommandResource.insertGroup(groupModel);
         groupCommandResource.removeGroup(groupModel);
 
-        Thread.sleep(4000L);
+        Thread.sleep(TIMEOUT);
 
         verify(paymentGroupDao, times(1)).insert(groupModel);
         verify(paymentGroupDao, times(1)).remove(groupModel);
@@ -112,7 +113,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setShopId("shop_id");
         paymentTemplateCommandResource.insertReference("id", Collections.singletonList(referenceModel));
         paymentTemplateCommandResource.deleteReference("id", Collections.singletonList(referenceModel));
-        Thread.sleep(200L);
+        Thread.sleep(TIMEOUT);
 
         verify(referenceDao, times(1)).insert(any());
         verify(referenceDao, times(1)).remove((PaymentReferenceModel) any());
@@ -137,7 +138,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
         paymentTemplateCommandResource.insertDefaultReference(Collections.singletonList(referenceModel));
-        Thread.sleep(200L);
+        Thread.sleep(TIMEOUT);
 
         verify(referenceDao, times(1)).insert(any());
     }
@@ -151,7 +152,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
         groupCommandResource.deleteGroupReference("id", Collections.singletonList(groupReferenceModel));
-        Thread.sleep(4000L);
+        Thread.sleep(TIMEOUT);
 
         verify(groupReferenceDao, times(1)).insert(any());
         verify(groupReferenceDao, times(1)).remove(any());
