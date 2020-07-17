@@ -8,6 +8,4 @@
     </root>
     <logger name="com.rbkmoney" level="ALL"/>
     <logger name="org.springframework.kafka" level="WARN"/>
-    <logger name="org.apache.kafka" level="ERROR"/>
-    <logger name="org.testcontainers" level="DEBUG"/>
 </configuration>
