@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.fraudbusters.management.config.KafkaConfig;
-import com.rbkmoney.fraudbusters.management.serializer.EventDeserializer;
 import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -23,7 +22,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.KafkaContainer;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Properties;
 
 @Slf4j
@@ -33,14 +31,7 @@ import java.util.Properties;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public abstract class AbstractKafkaIntegrationTest {
 
-    public static final String WB_LIST_EVENT_SINK = "wb-list-event-sink";
-    public static final String WB_LIST_COMMAND = "wb-list-command";
-    public static final String TEMPLATE = "template";
-    public static final String REFERENCE = "template_reference";
-    public static final String GROUP_REFERENCE = "group_reference";
-    public static final String GROUP = "group";
-
-    public static final String KAFKA_DOCKER_VERSION = "5.5.1";
+    public static final String KAFKA_DOCKER_VERSION = "5.0.1";
 
     @ClassRule
     public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
@@ -48,8 +39,8 @@ public abstract class AbstractKafkaIntegrationTest {
             .withStartupTimeout(Duration.ofMinutes(2))
             .withCommand("bash -c 'echo Waiting for Kafka to be ready... && \n" +
                     "                                cub kafka-ready -b broker:9092 1 60 && \n" +
-                    "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic " + WB_LIST_EVENT_SINK + "  && \n" +
-                    "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic " + WB_LIST_COMMAND + " && \n" +
+                    "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic wb-list-event-sink  && \n" +
+                    "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic wb-list-command && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template_p2p && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template_reference && \n" +
