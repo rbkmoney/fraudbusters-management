@@ -36,7 +36,7 @@ public class ClickhouseNotificatorProxyFacade {
 
     @PostMapping(value = "/notification/validate")
     public ValidationResponse validate(@Validated @RequestBody Notification notification) {
-        ResponseEntity<ValidationResponse> responseEntity = restTemplate.postForEntity(baseUrl + "/notification",
+        ResponseEntity<ValidationResponse> responseEntity = restTemplate.postForEntity(baseUrl + "/notification/validate",
                 notification, ValidationResponse.class);
         return responseEntity.getBody();
     }
