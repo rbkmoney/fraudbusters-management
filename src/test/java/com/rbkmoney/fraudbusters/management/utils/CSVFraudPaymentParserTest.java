@@ -36,11 +36,6 @@ public class CSVFraudPaymentParserTest {
         parse.forEach(fraudPayment -> {
             try {
                 fraudPayment.validate();
-                if (fraudPayment.getPayer().isSetPaymentResource()) {
-                    fraudPayment.getPayer().getPaymentResource().validate();
-                } else {
-                    fraudPayment.getPayer().getRecurrent().validate();
-                }
             } catch (TException e) {
                 e.printStackTrace();
             }
