@@ -1,3 +1,3 @@
-eventTime,partyId,shopId,amount,cur,card,payment,cardToken,bankCountry,email,fingerprint,ip,resultStatus,checkedTemplate,trx_additional_info_rrn,fraud_type,payer_type,route_terminal_id,route_provider_id,paymentSystem
-6/10/20 9:50,05acc7a1-9d65-43b4-a0c4-eca5d16c141e,f21415fe-8d23-45f7-a362-92132863ea9e,3887,в‚Ѕ,5 058 235 059,1KXR2Oqoayu.2,3rowd5N955bwVD3gxBQmcf,ESP,abdelghanizalagh023@gmail.com,94f9f44a6767c9835e4677ffbd09fb8c,41.92.44.227,THREE_DS,RULE_NOT_CHECKED,здесь ррн,Card not present fraud,payment_resource,123123213,123123213,visa
-6/10/20 9:49,05acc7a1-9d65-43b4-a0c4-eca5d16c141e,f21415fe-8d23-45f7-a362-92132863ea9e,3887,в‚Ѕ,5 058 235 059,1KXR2Oqoayu.1,3rowd5N955bwVD3gxBQmcf,ESP,abdelghanizalagh023@gmail.com,94f9f44a6767c9835e4677ffbd09fb8c,41.92.44.227,THREE_DS,RULE_NOT_CHECKED,здесь ррн,Account takeover,recurrent,123123213,123123213,nspkmir
+eventTime,id,fraud_type,comment
+6/10/20 9:50,1KXR2Oqoayu.2,Card not present fraud,tests_comment
+6/10/20 9:49,1KXR2Oqoayu.1,Account takeover,all fraud

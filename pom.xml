@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.rbkmoney</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.0.RELEASE-2</version>
+        <version>2.3.2.RELEASE</version>
     </parent>
 
     <artifactId>fraudbusters-management</artifactId>
@@ -34,7 +34,7 @@
         <db.schema>af</db.schema>
         <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
         <wb.list.proto.version>1.33-554d59c</wb.list.proto.version>
-        <fraudbusters.proto.version>1.49-dc01fde</fraudbusters.proto.version>
+        <fraudbusters.proto.version>1.57-0ba54ac</fraudbusters.proto.version>
         <kafka.common.lib.version>0.1.4</kafka.common.lib.version>
         <fraudo.version>0.0.17</fraudo.version>
         <geck.version>0.6.11</geck.version>
