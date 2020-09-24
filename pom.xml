@@ -22,7 +22,7 @@
 
         <server.port>8080</server.port>
         <exposed.ports>${server.port}</exposed.ports>
-        <dockerfile.base.service.tag>bc95d0d6dc13c693acd2b274531a7d604b877bf3</dockerfile.base.service.tag>
+        <dockerfile.base.service.tag>57e26d8ee999d7b0b50248c22afc63e6f926d276</dockerfile.base.service.tag>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <shared.resources.version>0.3.7</shared.resources.version>
         <flyway.version>5.2.3</flyway.version>
