@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment> {
 
     private static FraudPayment mapFraudPayment(CSVRecord csvRecord) {
         return new FraudPayment()
-                .setEventTime(csvRecord.get(CsvFraudPaymentFields.EVENT_TIME))
+                .setEventTime(Instant.now().toString())
                 .setId(csvRecord.get(CsvFraudPaymentFields.ID))
                 .setType(csvRecord.get(CsvFraudPaymentFields.FRAUD_TYPE))
                 .setComment(csvRecord.get(CsvFraudPaymentFields.COMMENT));

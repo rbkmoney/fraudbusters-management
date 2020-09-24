@@ -1,3 +1,3 @@
-eventTime,id,fraud_type,comment
-6/10/20 9:50,1KXR2Oqoayu.2,Card not present fraud,tests_comment
-6/10/20 9:49,1KXR2Oqoayu.1,Account takeover,all fraud
+id,fraud_type,comment
+1KXR2Oqoayu.2,Card not present fraud,
+1KXR2Oqoayu.1,Account takeover,
