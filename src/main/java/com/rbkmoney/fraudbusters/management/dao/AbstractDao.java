@@ -3,18 +3,11 @@ package com.rbkmoney.fraudbusters.management.dao;
 import com.rbkmoney.dao.impl.AbstractGenericDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionField;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
-import org.jooq.Condition;
-import org.jooq.EnumType;
-import org.jooq.Operator;
-import org.jooq.Param;
+import org.jooq.*;
 import org.jooq.impl.DSL;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
-import java.sql.Types;
-import java.time.LocalDateTime;
-import java.util.Map;
 
 public abstract class AbstractDao extends AbstractGenericDao {
 
@@ -36,5 +29,31 @@ public abstract class AbstractDao extends AbstractGenericDao {
                 field.getComparator(),
                 field.getValue()
         );
+    }
+
+    protected <T extends Record> SelectForUpdateStep<T> addSeekIfNeed(String lastId,
+                                                                      Integer size,
+                                                                      SelectSeekStep1<T, String> orderQuery) {
+        SelectForUpdateStep<T> seekQuery;
+        if (!StringUtils.isEmpty(lastId)) {
+            seekQuery = orderQuery
+                    .seekAfter(lastId)
+                    .limit(size);
+        } else {
+            seekQuery = orderQuery.limit(size);
+        }
+        return seekQuery;
+    }
+
+    protected <T extends Record> SelectSeekStep1<T, String> addSortCondition(TableField<T, String> sortField,
+                                                                             SortOrder sortOrder,
+                                                                             SelectConditionStep<T> whereQuery) {
+        SelectSeekStep1<T, String> orderQuery;
+        if (sortOrder.equals(SortOrder.DESC)) {
+            orderQuery = whereQuery.orderBy(sortField.desc());
+        } else {
+            orderQuery = whereQuery.orderBy(sortField.asc());
+        }
+        return orderQuery;
     }
 }

@@ -6,8 +6,10 @@ import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
+import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -70,5 +72,15 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
         return fetch(query, listRecordRowMapper);
     }
 
+    @Override
+    public List<TemplateModel> filterModel(String id, String lastId, Integer size, SortOrder sortOrder) {
+        FTemplateRecord fTemplateRecord = new FTemplateRecord();
+        fTemplateRecord.setId(lastId);
+        SelectConditionStep<FTemplateRecord> where = getDslContext()
+                .selectFrom(F_TEMPLATE)
+                .where(!StringUtils.isEmpty(id) ? F_TEMPLATE.ID.like(id) : DSL.noCondition());
+        SelectSeekStep1<FTemplateRecord, String> selectSeekStep = addSortCondition(F_TEMPLATE.ID, sortOrder, where);
+        return fetch(addSeekIfNeed(lastId, size, selectSeekStep), listRecordRowMapper);
+    }
 
 }
