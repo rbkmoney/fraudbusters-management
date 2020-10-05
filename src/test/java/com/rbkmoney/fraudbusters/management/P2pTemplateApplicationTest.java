@@ -2,13 +2,11 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.fraudbusters.P2PServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
-import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.p2p.template.P2PTemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.p2p.template.P2pTemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
-import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
@@ -39,7 +37,7 @@ import static org.mockito.Mockito.*;
 public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
     @MockBean
-    public P2PTemplateDao p2pTemplateDao;
+    public P2pTemplateDao p2pTemplateDao;
     @MockBean
     public P2PGroupDao p2pGroupDao;
     @MockBean

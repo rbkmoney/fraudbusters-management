@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplate
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jooq.SortOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -81,29 +82,29 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
         //filter with pagination
         templateModel = createTemplateModel("filter_id_2");
         templateDao.insert(templateModel);
-        List<TemplateModel> list = templateDao.filterModel(null, null, 1);
+        List<TemplateModel> list = templateDao.filterModel(null, null, 1, SortOrder.DESC);
         log.info("list: {}", list);
         assertEquals(1, list.size());
 
         TemplateModel templateModel1 = list.get(0);
-        list = templateDao.filterModel(null, templateModel1.getId(), 1);
+        list = templateDao.filterModel(null, templateModel1.getId(), 1, SortOrder.DESC);
         log.info("list: {}", list);
         assertEquals(1, list.size());
         assertNotEquals(templateModel1.getId(), list.get(0).getId());
 
         //filter by id
         String filter_id_regexp = "filter_%";
-        list = templateDao.filterModel(filter_id_regexp, null, 2);
+        list = templateDao.filterModel(filter_id_regexp, null, 2, SortOrder.DESC);
         log.info("list: {}", list);
         assertEquals(2, list.size());
 
         //filter and pagination by id
-        list = templateDao.filterModel(filter_id_regexp, null, 1);
+        list = templateDao.filterModel(filter_id_regexp, null, 1, SortOrder.DESC);
         log.info("list: {}", list);
         assertEquals(1, list.size());
 
         String id = list.get(0).getId();
-        list = templateDao.filterModel(null, id, 1);
+        list = templateDao.filterModel(null, id, 1, SortOrder.DESC);
         log.info("list: {}", list);
         assertEquals(1, list.size());
         assertNotEquals(id, list.get(0).getId());

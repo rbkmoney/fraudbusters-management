@@ -1,11 +1,12 @@
 package com.rbkmoney.fraudbusters.management.resource.p2p;
 
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.p2p.template.P2PTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class P2PTemplateQueryResource {
 
-    private final P2PTemplateDao templateDao;
+    private final TemplateDao p2PTemplateDao;
     private final P2pReferenceDao p2pReferenceDao;
 
     @GetMapping(value = "/template/{id}/reference")
@@ -33,8 +34,17 @@ public class P2PTemplateQueryResource {
     public ResponseEntity<List<TemplateModel>> getListTemplate(
             @Validated @RequestParam(required = false) Integer limit) {
         log.info("P2PTemplateQueryResource getListTemplate limit: {}", limit);
-        List<TemplateModel> list = templateDao.getList(limit);
+        List<TemplateModel> list = p2PTemplateDao.getList(limit);
         return ResponseEntity.ok().body(list);
     }
 
+    @GetMapping(value = "/template/filter")
+    public ResponseEntity<List<TemplateModel>> filterTemplates(@Validated @RequestParam(required = false) String id,
+                                                               @Validated @RequestParam(required = false) String lastId,
+                                                               @Validated @RequestParam(required = false) Integer size,
+                                                               @Validated @RequestParam(required = false) SortOrder sortOrder) {
+        log.info("filterTemplates id: {} lastId: {} size: {} sortOrder: {}", id, lastId, size, sortOrder);
+        List<TemplateModel> list = p2PTemplateDao.filterModel(id, lastId, size, sortOrder);
+        return ResponseEntity.ok().body(list);
+    }
 }

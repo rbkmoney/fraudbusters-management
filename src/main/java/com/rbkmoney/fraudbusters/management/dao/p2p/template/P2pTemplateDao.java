@@ -6,8 +6,10 @@ import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.P2pFTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
+import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -15,12 +17,12 @@ import java.util.List;
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFTemplate.P2P_F_TEMPLATE;
 
 @Component
-public class P2PTemplateDao extends AbstractDao implements TemplateDao {
+public class P2pTemplateDao extends AbstractDao implements TemplateDao {
 
     private static final int LIMIT_TOTAL = 100;
     private final RowMapper<TemplateModel> listRecordRowMapper;
 
-    public P2PTemplateDao(DataSource dataSource) {
+    public P2pTemplateDao(DataSource dataSource) {
         super(dataSource);
         listRecordRowMapper = new RecordRowMapper<>(P2P_F_TEMPLATE, TemplateModel.class);
     }
@@ -71,9 +73,14 @@ public class P2PTemplateDao extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public List<TemplateModel> filterModel(String id, String lastId, Integer size) {
-        return null;
+    public List<TemplateModel> filterModel(String id, String lastId, Integer size, SortOrder sortOrder) {
+        P2pFTemplateRecord p2pFTemplateRecord = new P2pFTemplateRecord();
+        p2pFTemplateRecord.setId(lastId);
+        SelectConditionStep<P2pFTemplateRecord> where = getDslContext()
+                .selectFrom(P2P_F_TEMPLATE)
+                .where(!StringUtils.isEmpty(id) ? P2P_F_TEMPLATE.ID.like(id) : DSL.noCondition());
+        SelectSeekStep1<P2pFTemplateRecord, String> selectSeekStep = addSortCondition(P2P_F_TEMPLATE.ID, sortOrder, where);
+        return fetch(addSeekIfNeed(lastId, size, selectSeekStep), listRecordRowMapper);
     }
-
 
 }

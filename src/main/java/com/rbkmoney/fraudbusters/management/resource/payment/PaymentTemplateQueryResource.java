@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaymentTemplateQueryResource {
 
-    private final PaymentTemplateDao paymentTemplateDao;
+    private final TemplateDao paymentTemplateDao;
     private final PaymentReferenceDao referenceDao;
 
     @GetMapping(value = "/template/{id}/reference")

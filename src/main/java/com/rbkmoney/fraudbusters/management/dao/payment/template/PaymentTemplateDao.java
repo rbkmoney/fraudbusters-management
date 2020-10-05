@@ -79,31 +79,8 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
         SelectConditionStep<FTemplateRecord> where = getDslContext()
                 .selectFrom(F_TEMPLATE)
                 .where(!StringUtils.isEmpty(id) ? F_TEMPLATE.ID.like(id) : DSL.noCondition());
-        SelectSeekStep1<FTemplateRecord, String> selectSeekStep = addSortCondition(sortOrder, where);
+        SelectSeekStep1<FTemplateRecord, String> selectSeekStep = addSortCondition(F_TEMPLATE.ID, sortOrder, where);
         return fetch(addSeekIfNeed(lastId, size, selectSeekStep), listRecordRowMapper);
-    }
-
-    private SelectForUpdateStep<FTemplateRecord> addSeekIfNeed(String lastId, Integer size, SelectSeekStep1<FTemplateRecord, String> selectSeekStep1) {
-        SelectForUpdateStep<FTemplateRecord> select;
-        if (!StringUtils.isEmpty(lastId)) {
-            select = selectSeekStep1
-                    .seekAfter(lastId)
-                    .limit(size);
-        } else {
-            select = selectSeekStep1
-                    .limit(size);
-        }
-        return select;
-    }
-
-    private SelectSeekStep1<FTemplateRecord, String> addSortCondition(SortOrder sortOrder, SelectConditionStep<FTemplateRecord> where) {
-        SelectSeekStep1<FTemplateRecord, String> selectSeekStep1;
-        if (sortOrder.equals(SortOrder.DESC)) {
-            selectSeekStep1 = where.orderBy(F_TEMPLATE.ID.desc());
-        } else {
-            selectSeekStep1 = where.orderBy(F_TEMPLATE.ID.asc());
-        }
-        return selectSeekStep1;
     }
 
 }
