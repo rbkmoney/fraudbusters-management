@@ -6,8 +6,10 @@ import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
+import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -70,5 +72,38 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
         return fetch(query, listRecordRowMapper);
     }
 
+    @Override
+    public List<TemplateModel> filterModel(String id, String lastId, Integer size, SortOrder sortOrder) {
+        FTemplateRecord fTemplateRecord = new FTemplateRecord();
+        fTemplateRecord.setId(lastId);
+        SelectConditionStep<FTemplateRecord> where = getDslContext()
+                .selectFrom(F_TEMPLATE)
+                .where(!StringUtils.isEmpty(id) ? F_TEMPLATE.ID.like(id) : DSL.noCondition());
+        SelectSeekStep1<FTemplateRecord, String> selectSeekStep = addSortCondition(sortOrder, where);
+        return fetch(addSeekIfNeed(lastId, size, selectSeekStep), listRecordRowMapper);
+    }
+
+    private SelectForUpdateStep<FTemplateRecord> addSeekIfNeed(String lastId, Integer size, SelectSeekStep1<FTemplateRecord, String> selectSeekStep1) {
+        SelectForUpdateStep<FTemplateRecord> select;
+        if (!StringUtils.isEmpty(lastId)) {
+            select = selectSeekStep1
+                    .seekAfter(lastId)
+                    .limit(size);
+        } else {
+            select = selectSeekStep1
+                    .limit(size);
+        }
+        return select;
+    }
+
+    private SelectSeekStep1<FTemplateRecord, String> addSortCondition(SortOrder sortOrder, SelectConditionStep<FTemplateRecord> where) {
+        SelectSeekStep1<FTemplateRecord, String> selectSeekStep1;
+        if (sortOrder.equals(SortOrder.DESC)) {
+            selectSeekStep1 = where.orderBy(F_TEMPLATE.ID.desc());
+        } else {
+            selectSeekStep1 = where.orderBy(F_TEMPLATE.ID.asc());
+        }
+        return selectSeekStep1;
+    }
 
 }

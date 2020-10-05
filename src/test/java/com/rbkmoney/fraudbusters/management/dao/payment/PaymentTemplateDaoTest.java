@@ -4,14 +4,17 @@ import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
+import static org.junit.Assert.*;
+
+@Slf4j
 @ContextConfiguration(classes = {PaymentTemplateDao.class})
 public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
 
@@ -24,11 +27,11 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
         TemplateModel templateModel = createTemplateModel(id);
         templateDao.insert(templateModel);
         TemplateModel byId = templateDao.getById(id);
-        Assert.assertEquals(templateModel, byId);
+        assertEquals(templateModel, byId);
 
         templateDao.remove(id);
         byId = templateDao.getById(id);
-        Assert.assertNull(byId);
+        assertNull(byId);
     }
 
     @NotNull
@@ -45,16 +48,16 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
         TemplateModel templateModel = createTemplateModel(ded_id);
         templateDao.insert(templateModel);
         TemplateModel byId = templateDao.getById(ded_id);
-        Assert.assertEquals(templateModel, byId);
+        assertEquals(templateModel, byId);
 
         templateModel.setTemplate("rule:blackList_1:inBlackList");
         templateDao.insert(templateModel);
         byId = templateDao.getById(ded_id);
-        Assert.assertEquals(templateModel, byId);
+        assertEquals(templateModel, byId);
 
         templateDao.remove(ded_id);
         byId = templateDao.getById(ded_id);
-        Assert.assertNull(byId);
+        assertNull(byId);
     }
 
     @Test
@@ -62,11 +65,47 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
         TemplateModel templateModel = createTemplateModel("id");
         templateDao.insert(templateModel);
         List<TemplateModel> list = templateDao.getList(10);
-        Assert.assertEquals(1, list.size());
+        assertEquals(1, list.size());
 
         templateModel = createTemplateModel("id_2");
         templateDao.insert(templateModel);
         list = templateDao.getList(10);
-        Assert.assertEquals(2, list.size());
+        assertEquals(2, list.size());
+    }
+
+    @Test
+    public void filterTemplateTest() {
+        TemplateModel templateModel = createTemplateModel("filter_id");
+        templateDao.insert(templateModel);
+
+        //filter with pagination
+        templateModel = createTemplateModel("filter_id_2");
+        templateDao.insert(templateModel);
+        List<TemplateModel> list = templateDao.filterModel(null, null, 1);
+        log.info("list: {}", list);
+        assertEquals(1, list.size());
+
+        TemplateModel templateModel1 = list.get(0);
+        list = templateDao.filterModel(null, templateModel1.getId(), 1);
+        log.info("list: {}", list);
+        assertEquals(1, list.size());
+        assertNotEquals(templateModel1.getId(), list.get(0).getId());
+
+        //filter by id
+        String filter_id_regexp = "filter_%";
+        list = templateDao.filterModel(filter_id_regexp, null, 2);
+        log.info("list: {}", list);
+        assertEquals(2, list.size());
+
+        //filter and pagination by id
+        list = templateDao.filterModel(filter_id_regexp, null, 1);
+        log.info("list: {}", list);
+        assertEquals(1, list.size());
+
+        String id = list.get(0).getId();
+        list = templateDao.filterModel(null, id, 1);
+        log.info("list: {}", list);
+        assertEquals(1, list.size());
+        assertNotEquals(id, list.get(0).getId());
     }
 }

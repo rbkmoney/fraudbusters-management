@@ -70,5 +70,10 @@ public class P2PTemplateDao extends AbstractDao implements TemplateDao {
         return fetch(query, listRecordRowMapper);
     }
 
+    @Override
+    public List<TemplateModel> filterModel(String id, String lastId, Integer size) {
+        return null;
+    }
+
 
 }
