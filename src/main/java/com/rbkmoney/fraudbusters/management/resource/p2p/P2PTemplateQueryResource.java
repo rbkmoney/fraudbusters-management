@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class P2PTemplateQueryResource {
 
-    private final TemplateDao p2PTemplateDao;
+    private final TemplateDao p2pTemplateDao;
     private final P2pReferenceDao p2pReferenceDao;
 
     @GetMapping(value = "/template/{id}/reference")
@@ -34,7 +34,7 @@ public class P2PTemplateQueryResource {
     public ResponseEntity<List<TemplateModel>> getListTemplate(
             @Validated @RequestParam(required = false) Integer limit) {
         log.info("P2PTemplateQueryResource getListTemplate limit: {}", limit);
-        List<TemplateModel> list = p2PTemplateDao.getList(limit);
+        List<TemplateModel> list = p2pTemplateDao.getList(limit);
         return ResponseEntity.ok().body(list);
     }
 
@@ -44,7 +44,7 @@ public class P2PTemplateQueryResource {
                                                                @Validated @RequestParam(required = false) Integer size,
                                                                @Validated @RequestParam(required = false) SortOrder sortOrder) {
         log.info("filterTemplates id: {} lastId: {} size: {} sortOrder: {}", id, lastId, size, sortOrder);
-        List<TemplateModel> list = p2PTemplateDao.filterModel(id, lastId, size, sortOrder);
+        List<TemplateModel> list = p2pTemplateDao.filterModel(id, lastId, size, sortOrder);
         return ResponseEntity.ok().body(list);
     }
 }

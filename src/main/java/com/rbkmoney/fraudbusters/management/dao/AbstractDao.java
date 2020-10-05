@@ -32,29 +32,28 @@ public abstract class AbstractDao extends AbstractGenericDao {
     }
 
     protected <T extends Record> SelectForUpdateStep<T> addSeekIfNeed(String lastId,
-                                                                    Integer size,
-                                                                    SelectSeekStep1<T, String> stringSelectSeekStep1) {
-        SelectForUpdateStep<T> select;
+                                                                      Integer size,
+                                                                      SelectSeekStep1<T, String> orderQuery) {
+        SelectForUpdateStep<T> seekQuery;
         if (!StringUtils.isEmpty(lastId)) {
-            select = stringSelectSeekStep1
+            seekQuery = orderQuery
                     .seekAfter(lastId)
                     .limit(size);
         } else {
-            select = stringSelectSeekStep1
-                    .limit(size);
+            seekQuery = orderQuery.limit(size);
         }
-        return select;
+        return seekQuery;
     }
 
-    protected  <T extends Record> SelectSeekStep1<T, String> addSortCondition(TableField<T, String> sortField,
-                                                                           SortOrder sortOrder,
-                                                                           SelectConditionStep<T> where) {
-        SelectSeekStep1<T, String> selectSeekStep1;
+    protected <T extends Record> SelectSeekStep1<T, String> addSortCondition(TableField<T, String> sortField,
+                                                                             SortOrder sortOrder,
+                                                                             SelectConditionStep<T> whereQuery) {
+        SelectSeekStep1<T, String> orderQuery;
         if (sortOrder.equals(SortOrder.DESC)) {
-            selectSeekStep1 = where.orderBy(sortField.desc());
+            orderQuery = whereQuery.orderBy(sortField.desc());
         } else {
-            selectSeekStep1 = where.orderBy(sortField.asc());
+            orderQuery = whereQuery.orderBy(sortField.asc());
         }
-        return selectSeekStep1;
+        return orderQuery;
     }
 }
