@@ -18,4 +18,6 @@ public interface TemplateDao {
     List<TemplateModel> getList(Integer limit);
 
     List<TemplateModel> filterModel(String id, String lastId, Integer size, SortOrder sortOrder);
+
+    Integer countFilterModel(String id);
 }
