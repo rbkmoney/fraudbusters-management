@@ -119,10 +119,10 @@ public class PaymentTemplateCommandResource {
         return command;
     }
 
-    @DeleteMapping(value = "/template")
-    public ResponseEntity<String> removeTemplate(@Validated @RequestBody TemplateModel templateModel) {
-        log.info("TemplateManagementResource removeTemplate templateModel: {}", templateModel);
-        Command command = templateModelToCommandConverter.convert(templateModel);
+    @DeleteMapping(value = "/template/{id}")
+    public ResponseEntity<String> removeTemplate(@PathVariable(value = "id") String id) {
+        log.info("TemplateManagementResource removeTemplate id: {}", id);
+        Command command = paymentTemplateCommandService.createTemplateCommandById(id);
         command.setCommandType(CommandType.DELETE);
         String idMessage = paymentTemplateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);

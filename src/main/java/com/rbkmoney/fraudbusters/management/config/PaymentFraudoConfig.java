@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.config;
 
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
+import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
 import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
@@ -25,8 +26,9 @@ public class PaymentFraudoConfig {
 
     @Bean
     public TemplateCommandService paymentTemplateCommandService(CommandSender commandSender,
+                                                                TemplateModelToCommandConverter templateModelToCommandConverter,
                                                                 @Value("${kafka.topic.fraudbusters.payment.template}") String topic) {
-        return new TemplateCommandService(commandSender, topic);
+        return new TemplateCommandService(commandSender, topic, templateModelToCommandConverter);
     }
 
     @Bean
