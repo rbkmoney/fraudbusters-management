@@ -70,7 +70,7 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         Thread.sleep(4000L);
 
         verify(p2pTemplateDao, times(1)).insert(templateModel);
-        verify(p2pTemplateDao, times(1)).remove(templateModel);
+        verify(p2pTemplateDao, times(1)).remove(id);
     }
 
     @Test

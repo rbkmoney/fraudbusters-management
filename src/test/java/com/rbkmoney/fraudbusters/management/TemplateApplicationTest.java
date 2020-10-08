@@ -77,7 +77,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         Thread.sleep(TIMEOUT);
 
         verify(paymentTemplateDao, times(1)).insert(templateModel);
-        verify(paymentTemplateDao, times(1)).remove(templateModel);
+        verify(paymentTemplateDao, times(1)).remove(id);
     }
 
     @Test
