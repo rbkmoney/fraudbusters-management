@@ -57,7 +57,7 @@ public class P2PTemplateCommandResource {
         );
     }
 
-    @PostMapping(value = "/validateTemplate")
+    @PostMapping(value = "/template/validate")
     public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
         log.info("P2PTemplateCommandResource validateTemplate templateModels: {}", templateModels);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(templateModels.stream()

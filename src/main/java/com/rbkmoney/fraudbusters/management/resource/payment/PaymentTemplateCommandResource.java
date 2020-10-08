@@ -58,7 +58,7 @@ public class PaymentTemplateCommandResource {
         );
     }
 
-    @PostMapping(value = "/validateTemplate")
+    @PostMapping(value = "/template/validate")
     public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
         log.info("TemplateManagementResource validateTemplate templateModels: {}", templateModels);
         List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(templateModels.stream()
