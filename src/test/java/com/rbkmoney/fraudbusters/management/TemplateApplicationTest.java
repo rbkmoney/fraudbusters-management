@@ -69,10 +69,11 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
                 .setErrors(List.of()));
 
         TemplateModel templateModel = new TemplateModel();
-        templateModel.setId("id");
+        String id = "id";
+        templateModel.setId(id);
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
         paymentTemplateCommandResource.insertTemplate(templateModel);
-        paymentTemplateCommandResource.removeTemplate(templateModel);
+        paymentTemplateCommandResource.removeTemplate(id);
         Thread.sleep(TIMEOUT);
 
         verify(paymentTemplateDao, times(1)).insert(templateModel);
