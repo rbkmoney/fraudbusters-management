@@ -61,15 +61,16 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
                 .setErrors(List.of()));
 
         TemplateModel templateModel = new TemplateModel();
-        templateModel.setId("id");
+        String id = "id";
+        templateModel.setId(id);
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
 
         p2pTemplateCommandResource.insertTemplate(templateModel);
-        p2pTemplateCommandResource.removeTemplate(templateModel);
+        p2pTemplateCommandResource.removeTemplate(id);
         Thread.sleep(4000L);
 
         verify(p2pTemplateDao, times(1)).insert(templateModel);
-        verify(p2pTemplateDao, times(1)).remove(templateModel);
+        verify(p2pTemplateDao, times(1)).remove(any(TemplateModel.class));
     }
 
     @Test

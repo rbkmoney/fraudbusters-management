@@ -57,7 +57,7 @@ public class P2PTemplateCommandResource {
         );
     }
 
-    @PostMapping(value = "/validateTemplate")
+    @PostMapping(value = "/template/validate")
     public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
         log.info("P2PTemplateCommandResource validateTemplate templateModels: {}", templateModels);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(templateModels.stream()
@@ -90,10 +90,10 @@ public class P2PTemplateCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
-    @DeleteMapping(value = "/template")
-    public ResponseEntity<String> removeTemplate(@Validated @RequestBody TemplateModel templateModel) {
-        log.info("TemplateManagementResource removeTemplate templateModel: {}", templateModel);
-        Command command = templateModelToCommandConverter.convert(templateModel);
+    @DeleteMapping(value = "/template/{id}")
+    public ResponseEntity<String> removeTemplate(@PathVariable(value = "id") String id) {
+        log.info("TemplateManagementResource removeTemplate id: {}", id);
+        Command command = p2pTemplateCommandService.createTemplateCommandById(id);
         command.setCommandType(CommandType.DELETE);
         String idMessage = p2pTemplateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);

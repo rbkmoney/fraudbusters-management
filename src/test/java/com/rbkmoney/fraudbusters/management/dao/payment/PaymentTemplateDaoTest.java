@@ -108,5 +108,8 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
         log.info("list: {}", list);
         assertEquals(1, list.size());
         assertNotEquals(id, list.get(0).getId());
+
+        Integer count = templateDao.countFilterModel(filter_id_regexp);
+        assertEquals(Integer.valueOf(2), count);
     }
 }

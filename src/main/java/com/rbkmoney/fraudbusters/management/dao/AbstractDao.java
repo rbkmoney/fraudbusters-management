@@ -37,7 +37,7 @@ public abstract class AbstractDao extends AbstractGenericDao {
         SelectForUpdateStep<T> seekQuery;
         if (!StringUtils.isEmpty(lastId)) {
             seekQuery = orderQuery
-                    .seekAfter(lastId)
+                    .seek(lastId)
                     .limit(size);
         } else {
             seekQuery = orderQuery.limit(size);

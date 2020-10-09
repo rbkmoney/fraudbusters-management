@@ -2,13 +2,11 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
-import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
-import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
@@ -69,14 +67,15 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
                 .setErrors(List.of()));
 
         TemplateModel templateModel = new TemplateModel();
-        templateModel.setId("id");
+        String id = "id";
+        templateModel.setId(id);
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
         paymentTemplateCommandResource.insertTemplate(templateModel);
-        paymentTemplateCommandResource.removeTemplate(templateModel);
+        paymentTemplateCommandResource.removeTemplate(id);
         Thread.sleep(TIMEOUT);
 
         verify(paymentTemplateDao, times(1)).insert(templateModel);
-        verify(paymentTemplateDao, times(1)).remove(templateModel);
+        verify(paymentTemplateDao, times(1)).remove(any(TemplateModel.class));
     }
 
     @Test

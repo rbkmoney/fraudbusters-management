@@ -83,4 +83,13 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
         return fetch(addSeekIfNeed(lastId, size, selectSeekStep), listRecordRowMapper);
     }
 
+    @Override
+    public Integer countFilterModel(String id) {
+        SelectConditionStep<Record1<Integer>> where = getDslContext()
+                .selectCount()
+                .from(F_TEMPLATE)
+                .where(!StringUtils.isEmpty(id) ? F_TEMPLATE.ID.like(id) : DSL.noCondition());
+        return fetchOne(where, Integer.class);
+    }
+
 }

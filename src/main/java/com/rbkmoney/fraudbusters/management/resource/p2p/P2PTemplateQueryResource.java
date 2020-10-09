@@ -4,6 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterTemplateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
@@ -39,12 +40,16 @@ public class P2PTemplateQueryResource {
     }
 
     @GetMapping(value = "/template/filter")
-    public ResponseEntity<List<TemplateModel>> filterTemplates(@Validated @RequestParam(required = false) String id,
-                                                               @Validated @RequestParam(required = false) String lastId,
-                                                               @Validated @RequestParam(required = false) Integer size,
-                                                               @Validated @RequestParam(required = false) SortOrder sortOrder) {
+    public ResponseEntity<FilterTemplateResponse> filterTemplates(@Validated @RequestParam(required = false) String id,
+                                                                  @Validated @RequestParam(required = false) String lastId,
+                                                                  @Validated @RequestParam(required = false) Integer size,
+                                                                  @Validated @RequestParam(required = false) SortOrder sortOrder) {
         log.info("filterTemplates id: {} lastId: {} size: {} sortOrder: {}", id, lastId, size, sortOrder);
-        List<TemplateModel> list = p2pTemplateDao.filterModel(id, lastId, size, sortOrder);
-        return ResponseEntity.ok().body(list);
+        List<TemplateModel> templateModels = p2pTemplateDao.filterModel(id, lastId, size, sortOrder);
+        Integer count = p2pTemplateDao.countFilterModel(id);
+        return ResponseEntity.ok().body(FilterTemplateResponse.builder()
+                .count(count)
+                .templateModels(templateModels)
+                .build());
     }
 }
