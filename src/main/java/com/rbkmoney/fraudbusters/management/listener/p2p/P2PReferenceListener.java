@@ -4,7 +4,6 @@ import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.p2p.CommandToP2pReferenceModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
-import com.rbkmoney.fraudbusters.management.exception.UnknownReferenceException;
 import com.rbkmoney.fraudbusters.management.listener.CommandListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

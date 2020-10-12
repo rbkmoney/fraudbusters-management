@@ -5,7 +5,10 @@ import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSour
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FReferenceRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
-import org.jooq.*;
+import org.jooq.Condition;
+import org.jooq.DeleteConditionStep;
+import org.jooq.Operator;
+import org.jooq.Query;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;

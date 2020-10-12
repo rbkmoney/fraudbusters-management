@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class GroupCommandService {
 
-    private final CommandSender commandSender;
     public final String topic;
+    private final CommandSender commandSender;
 
     public String sendCommandSync(Command command) {
         String key = command.getCommandBody().getGroup().getGroupId();

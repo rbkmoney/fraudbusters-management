@@ -3,7 +3,6 @@ package com.rbkmoney.fraudbusters.management.listener.p2p;
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.p2p.CommandToP2pGroupReferenceModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.exception.UnknownReferenceException;
 import com.rbkmoney.fraudbusters.management.listener.CommandListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

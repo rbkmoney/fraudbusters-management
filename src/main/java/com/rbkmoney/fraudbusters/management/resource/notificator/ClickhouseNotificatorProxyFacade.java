@@ -16,10 +16,9 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class ClickhouseNotificatorProxyFacade {
 
+    private final RestTemplate restTemplate;
     @Value("${ch.notificator.url}")
     private String baseUrl;
-
-    private final RestTemplate restTemplate;
 
     @PostMapping(value = "/notification")
     public Notification createOrUpdate(@Validated @RequestBody Notification notification) {

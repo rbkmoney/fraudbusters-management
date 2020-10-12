@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 public abstract class CommandListener {
 
     protected <R> void handle(Command command, Converter<Command, R> converter, Consumer<R> createConsumer,
-                          Consumer<R> deleteConsumer) {
+                              Consumer<R> deleteConsumer) {
         R model = converter.convert(command);
         switch (command.getCommandType()) {
             case CREATE:
