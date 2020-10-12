@@ -164,5 +164,8 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
         paymentReferenceModels = referenceDao.filterReferences(null, null, null, null, null, "template_id", SortOrder.DESC);
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
+
+        paymentReferenceModels
+                .forEach(paymentReferenceModel -> referenceDao.remove(paymentReferenceModel));
     }
 }

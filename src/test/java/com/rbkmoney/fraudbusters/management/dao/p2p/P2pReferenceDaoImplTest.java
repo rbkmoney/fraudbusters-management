@@ -28,6 +28,8 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     @Autowired
     P2pReferenceDao p2pReferenceDao;
 
+
+
     @Test
     public void insert() {
         String id = "id";
@@ -145,5 +147,8 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
         paymentReferenceModels = p2pReferenceDao.filterReferences(null, null, null, null, "template_id", SortOrder.DESC);
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
+
+        paymentReferenceModels
+                .forEach(paymentReferenceModel -> p2pReferenceDao.remove(paymentReferenceModel));
     }
 }
