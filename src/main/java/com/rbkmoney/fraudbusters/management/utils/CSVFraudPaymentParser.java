@@ -28,29 +28,6 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment> {
 
     public static final String TYPE = "text/csv";
 
-    @Override
-    public boolean hasCSVFormat(MultipartFile file) {
-        return TYPE.equals(file.getContentType());
-    }
-
-    @Override
-    public List<FraudPayment> parse(InputStream is) {
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-             CSVParser csvParser = new CSVParser(fileReader,
-                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());) {
-            List<FraudPayment> fraudPayments = new ArrayList<>();
-            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-
-            for (CSVRecord csvRecord : csvRecords) {
-                fraudPayments.add(mapFraudPayment(csvRecord));
-            }
-
-            return fraudPayments;
-        } catch (IOException e) {
-            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
-        }
-    }
-
     private static FraudPayment mapFraudPayment(CSVRecord csvRecord) {
         String eventTime = Instant.now().toString();
         if (!StringUtils.isEmpty(csvRecord.get(CsvFraudPaymentFields.EVENT_TIME))) {
@@ -71,6 +48,29 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment> {
         } catch (Exception ex) {
             log.error("validation error when parse date: {}", value);
             throw new DateFormatException(String.format("validation error when parse date: %s", value), ex);
+        }
+    }
+
+    @Override
+    public boolean hasCSVFormat(MultipartFile file) {
+        return TYPE.equals(file.getContentType());
+    }
+
+    @Override
+    public List<FraudPayment> parse(InputStream is) {
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+             CSVParser csvParser = new CSVParser(fileReader,
+                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());) {
+            List<FraudPayment> fraudPayments = new ArrayList<>();
+            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+
+            for (CSVRecord csvRecord : csvRecords) {
+                fraudPayments.add(mapFraudPayment(csvRecord));
+            }
+
+            return fraudPayments;
+        } catch (IOException e) {
+            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
     }
 

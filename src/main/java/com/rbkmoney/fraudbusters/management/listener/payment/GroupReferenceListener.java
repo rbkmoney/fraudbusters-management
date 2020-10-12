@@ -3,7 +3,6 @@ package com.rbkmoney.fraudbusters.management.listener.payment;
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.payment.CommandToPaymentGroupReferenceModelConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.exception.UnknownReferenceException;
 import com.rbkmoney.fraudbusters.management.listener.CommandListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

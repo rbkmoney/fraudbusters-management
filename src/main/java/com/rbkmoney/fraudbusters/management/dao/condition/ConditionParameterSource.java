@@ -27,5 +27,5 @@ public class ConditionParameterSource {
         }
         return this;
     }
-    
+
 }

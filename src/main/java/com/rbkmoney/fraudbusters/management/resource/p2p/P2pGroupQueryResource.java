@@ -1,6 +1,5 @@
 package com.rbkmoney.fraudbusters.management.resource.p2p;
 
-import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
@@ -31,8 +30,7 @@ public class P2pGroupQueryResource {
     }
 
     @GetMapping(value = "/group")
-    public ResponseEntity<GroupModel> findGroup(
-            @RequestParam(value = "id") String id) {
+    public ResponseEntity<GroupModel> findGroup(@RequestParam(value = "id") String id) {
         log.info("P2pGroupQueryResource findGroup groupId: {}", id);
         GroupModel groupModel = groupDao.getById(id);
         return ResponseEntity.ok().body(groupModel);
