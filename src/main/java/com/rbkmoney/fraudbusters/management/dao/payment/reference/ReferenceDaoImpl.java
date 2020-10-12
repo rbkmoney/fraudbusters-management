@@ -4,20 +4,21 @@ import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FReferenceRecord;
+import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
-import org.jooq.Condition;
-import org.jooq.DeleteConditionStep;
-import org.jooq.Operator;
-import org.jooq.Query;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
+import static com.rbkmoney.fraudbusters.management.domain.tables.FTemplate.F_TEMPLATE;
 import static org.jooq.Comparator.EQUALS;
+import static org.jooq.Comparator.LIKE;
 
 @Component
 public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao {
@@ -127,5 +128,40 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
                 .set(F_REFERENCE.IS_DEFAULT, true)
                 .where(F_REFERENCE.ID.eq(id));
         executeOne(query);
+    }
+
+    @Override
+    public List<PaymentReferenceModel> filterReferences(String searchValue, Boolean isGlobal, Boolean isDefault,
+                                                        String lastId, Integer size, String sortingBy, SortOrder sortOrder) {
+        FTemplateRecord fTemplateRecord = new FTemplateRecord();
+        fTemplateRecord.setId(lastId);
+        SelectConditionStep<FReferenceRecord> where = getDslContext()
+                .selectFrom(F_REFERENCE)
+                .where(referenceFullFieldFIndCondition(searchValue, isGlobal, isDefault));
+        Field<String> field = StringUtils.isEmpty(sortingBy) ? F_REFERENCE.ID : F_REFERENCE.field(sortingBy, String.class);
+        SelectSeekStep1<FReferenceRecord, String> fReferenceRecords = addSortCondition(field, sortOrder, where);
+        return fetch(addSeekIfNeed(lastId, size, fReferenceRecords), listRecordRowMapper);
+    }
+
+    @Override
+    public Integer countFilterModel(String searchValue, Boolean isGlobal, Boolean isDefault) {
+        SelectConditionStep<Record1<Integer>> where = getDslContext()
+                .selectCount()
+                .from(F_TEMPLATE)
+                .where(referenceFullFieldFIndCondition(searchValue, isGlobal, isDefault));
+        return fetchOne(where, Integer.class);
+    }
+
+    private Condition referenceFullFieldFIndCondition(String searchValue, Boolean isGlobal, Boolean isDefault) {
+        return appendConditions(StringUtils.isEmpty(searchValue) ? DSL.trueCondition() : DSL.falseCondition(), Operator.OR,
+                new ConditionParameterSource()
+                        .addValue(F_REFERENCE.ID, searchValue, LIKE)
+                        .addValue(F_REFERENCE.TEMPLATE_ID, searchValue, LIKE)
+                        .addValue(F_REFERENCE.PARTY_ID, searchValue, LIKE)
+                        .addValue(F_REFERENCE.SHOP_ID, searchValue, LIKE))
+                .and(appendConditions(DSL.trueCondition(), Operator.AND,
+                        new ConditionParameterSource()
+                                .addValue(F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)
+                                .addValue(F_REFERENCE.IS_DEFAULT, isDefault, EQUALS)));
     }
 }

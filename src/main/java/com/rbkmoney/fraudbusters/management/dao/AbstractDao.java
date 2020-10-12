@@ -45,11 +45,11 @@ public abstract class AbstractDao extends AbstractGenericDao {
         return seekQuery;
     }
 
-    protected <T extends Record> SelectSeekStep1<T, String> addSortCondition(TableField<T, String> sortField,
+    protected <T extends Record> SelectSeekStep1<T, String> addSortCondition(Field<String> sortField,
                                                                              SortOrder sortOrder,
                                                                              SelectConditionStep<T> whereQuery) {
         SelectSeekStep1<T, String> orderQuery;
-        if (sortOrder.equals(SortOrder.DESC)) {
+        if (sortOrder != null && sortOrder.equals(SortOrder.DESC)) {
             orderQuery = whereQuery.orderBy(sortField.desc());
         } else {
             orderQuery = whereQuery.orderBy(sortField.asc());

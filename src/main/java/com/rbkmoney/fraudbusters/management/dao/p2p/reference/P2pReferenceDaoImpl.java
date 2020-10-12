@@ -3,18 +3,21 @@ package com.rbkmoney.fraudbusters.management.dao.p2p.reference;
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.P2pFReferenceRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFReference.P2P_F_REFERENCE;
 import static org.jooq.Comparator.EQUALS;
+import static org.jooq.Comparator.LIKE;
 
 @Component
 public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao {
@@ -140,5 +143,38 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
                         .and(P2P_F_REFERENCE.IS_GLOBAL.eq(false))
                 );
         return fetch(where, listRecordRowMapper);
+    }
+
+    @Override
+    public List<P2pReferenceModel> filterReferences(String searchValue, Boolean isGlobal,
+                                                    String lastId, Integer size, String sortingBy, SortOrder sortOrder) {
+        FTemplateRecord fTemplateRecord = new FTemplateRecord();
+        fTemplateRecord.setId(lastId);
+        SelectConditionStep<P2pFReferenceRecord> where = getDslContext()
+                .selectFrom(P2P_F_REFERENCE)
+                .where(referenceFullFieldFIndCondition(searchValue, isGlobal));
+        Field<String> field = StringUtils.isEmpty(sortingBy) ? P2P_F_REFERENCE.ID : P2P_F_REFERENCE.field(sortingBy, String.class);
+        SelectSeekStep1<P2pFReferenceRecord, String> fReferenceRecords = addSortCondition(field, sortOrder, where);
+        return fetch(addSeekIfNeed(lastId, size, fReferenceRecords), listRecordRowMapper);
+    }
+
+    @Override
+    public Integer countFilterModel(String searchValue, Boolean isGlobal) {
+        SelectConditionStep<Record1<Integer>> where = getDslContext()
+                .selectCount()
+                .from(P2P_F_REFERENCE)
+                .where(referenceFullFieldFIndCondition(searchValue, isGlobal));
+        return fetchOne(where, Integer.class);
+    }
+
+    private Condition referenceFullFieldFIndCondition(String searchValue, Boolean isGlobal) {
+        return appendConditions(StringUtils.isEmpty(searchValue) ? DSL.trueCondition() : DSL.falseCondition(), Operator.OR,
+                new ConditionParameterSource()
+                        .addValue(P2P_F_REFERENCE.ID, searchValue, LIKE)
+                        .addValue(P2P_F_REFERENCE.TEMPLATE_ID, searchValue, LIKE)
+                        .addValue(P2P_F_REFERENCE.IDENTITY_ID, searchValue, LIKE))
+                .and(appendConditions(DSL.trueCondition(), Operator.AND,
+                        new ConditionParameterSource()
+                                .addValue(P2P_F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)));
     }
 }
