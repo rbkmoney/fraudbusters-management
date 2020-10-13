@@ -39,4 +39,12 @@ public class PaymentGroupQueryResource {
         return ResponseEntity.ok().body(groupModel);
     }
 
+    @GetMapping(value = "/group/filter")
+    public ResponseEntity<List<GroupModel>> filterGroups(
+            @RequestParam(value = "id") String id) {
+        log.info("GroupQueryResource findGroup groupId: {}", id);
+        GroupModel groupModel = groupDao.getById(id);
+        return ResponseEntity.ok().body(groupModel);
+    }
+
 }
