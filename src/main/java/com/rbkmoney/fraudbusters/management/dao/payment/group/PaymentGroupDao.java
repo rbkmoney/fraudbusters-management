@@ -5,12 +5,10 @@ import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupRecord;
-import org.jooq.DeleteConditionStep;
-import org.jooq.Query;
-import org.jooq.Record4;
-import org.jooq.SelectConditionStep;
+import org.jooq.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
