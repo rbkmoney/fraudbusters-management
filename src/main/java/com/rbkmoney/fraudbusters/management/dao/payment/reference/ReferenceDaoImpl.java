@@ -133,8 +133,6 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
     @Override
     public List<PaymentReferenceModel> filterReferences(String searchValue, Boolean isGlobal, Boolean isDefault,
                                                         String lastId, Integer size, String sortingBy, SortOrder sortOrder) {
-        FTemplateRecord fTemplateRecord = new FTemplateRecord();
-        fTemplateRecord.setId(lastId);
         SelectConditionStep<FReferenceRecord> where = getDslContext()
                 .selectFrom(F_REFERENCE)
                 .where(referenceFullFieldFIndCondition(searchValue, isGlobal, isDefault));
