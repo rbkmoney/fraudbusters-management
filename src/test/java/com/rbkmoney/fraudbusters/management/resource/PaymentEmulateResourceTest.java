@@ -2,17 +2,20 @@ package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDaoImpl;
-import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
-import com.rbkmoney.fraudbusters.management.domain.*;
+import com.rbkmoney.fraudbusters.management.domain.GroupModel;
+import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
+import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentEmulateResource;
+import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
-@ContextConfiguration(classes = {PaymentEmulateResource.class, PaymentGroupDao.class, PaymentTemplateDao.class, GroupReferenceDaoImpl.class, ReferenceDaoImpl.class})
+@ContextConfiguration(classes = {PaymentEmulateResource.class, PaymentGroupDao.class, PaymentTemplateDao.class,
+        GroupReferenceDaoImpl.class, ReferenceDaoImpl.class, GroupRowToModelMapper.class})
 public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest {
 
     private static final String PARTY_ID = "partyId";

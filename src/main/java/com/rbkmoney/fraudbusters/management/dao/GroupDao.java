@@ -2,6 +2,8 @@ package com.rbkmoney.fraudbusters.management.dao;
 
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 
+import java.util.List;
+
 public interface GroupDao {
 
     void insert(GroupModel groupModel);
@@ -12,4 +14,5 @@ public interface GroupDao {
 
     GroupModel getById(String id);
 
+    List<GroupModel> filterGroup(String filterValue);
 }

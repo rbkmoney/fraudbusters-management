@@ -2,10 +2,13 @@ package com.rbkmoney.fraudbusters.management.dao.payment.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.model.GroupPriorityRow;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupRecord;
+import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
 import org.jooq.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -19,8 +22,11 @@ import static com.rbkmoney.fraudbusters.management.domain.tables.FGroup.F_GROUP;
 @Component
 public class PaymentGroupDao extends AbstractDao implements GroupDao {
 
-    public PaymentGroupDao(DataSource dataSource) {
+    private final GroupRowToModelMapper groupRowToModelMapper;
+
+    public PaymentGroupDao(DataSource dataSource, @Autowired GroupRowToModelMapper groupRowToModelMapper) {
         super(dataSource);
+        this.groupRowToModelMapper = groupRowToModelMapper;
     }
 
     @Override
@@ -71,4 +77,31 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
         }
         return groupModel;
     }
+
+    @Override
+    public List<GroupModel> filterGroup(String filterValue) {
+        SelectJoinStep<Record3<String, String, Long>> from = getDslContext()
+                .select(F_GROUP.GROUP_ID, F_GROUP.TEMPLATE_ID, F_GROUP.PRIORITY)
+                .from(F_GROUP);
+        SelectConditionStep<Record1<String>> selectGroupsId = null;
+        if (!StringUtils.isEmpty(filterValue)) {
+            selectGroupsId = getDslContext()
+                    .selectDistinct(F_GROUP.GROUP_ID)
+                    .from(F_GROUP)
+                    .where(F_GROUP.GROUP_ID.like(filterValue)
+                            .or(F_GROUP.TEMPLATE_ID.like(filterValue)));
+        }
+        List<GroupPriorityRow> list = fetch(StringUtils.isEmpty(filterValue) ? from : from.where(F_GROUP.GROUP_ID.in(selectGroupsId)),
+                (rs, rowNum) ->
+                        GroupPriorityRow.builder()
+                                .groupId(rs.getString(F_GROUP.GROUP_ID.getName()))
+                                .priorityIdModel(PriorityIdModel.builder()
+                                        .id(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
+                                        .priority(rs.getLong(F_GROUP.PRIORITY.getName()))
+                                        .build())
+                                .build()
+        );
+        return groupRowToModelMapper.groupByGroupId(list);
+    }
+
 }
