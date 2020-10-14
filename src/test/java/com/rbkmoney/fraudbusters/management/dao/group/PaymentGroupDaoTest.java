@@ -16,6 +16,7 @@ import java.util.List;
 public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
 
     public static final String GROUP_1 = "group_1";
+    public static final String GROUP_2 = "group_2";
     public static final String TEST_TEMPL_2 = "test_templ_2";
     public static final String TEST_TEMPL_1 = "test_templ_1";
 
@@ -35,9 +36,20 @@ public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
 
         Assert.assertEquals(2L, byId.getPriorityTemplates().size());
 
-        groupDao.remove(groupModel);
+        groupModel.setGroupId(GROUP_2);
+        groupDao.insert(groupModel);
 
-        byId = groupDao.getById(GROUP_1);
+        List<GroupModel> groupModels = groupDao.filterGroup(null);
+        Assert.assertEquals(2, groupModels.size());
+
+        groupModels = groupDao.filterGroup("group%");
+        Assert.assertEquals(2, groupModels.size());
+
+        groupModels = groupDao.filterGroup("test_templ_2");
+        Assert.assertEquals(2, groupModels.size());
+
+        groupDao.remove(groupModel);
+        byId = groupDao.getById(GROUP_2);
         Assert.assertNull(byId.getGroupId());
     }
 }

@@ -73,4 +73,9 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
         }
         return groupModel;
     }
+
+    @Override
+    public List<GroupModel> filterGroup(String filterValue) {
+        return null;
+    }
 }

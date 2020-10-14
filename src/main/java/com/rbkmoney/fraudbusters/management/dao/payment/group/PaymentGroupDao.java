@@ -2,17 +2,18 @@ package com.rbkmoney.fraudbusters.management.dao.payment.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.model.GroupPriorityRow;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupRecord;
-import org.jooq.DeleteConditionStep;
-import org.jooq.Query;
-import org.jooq.Record4;
-import org.jooq.SelectConditionStep;
+import org.jooq.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,5 +73,47 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
             groupModel.setPriorityTemplates(list);
         }
         return groupModel;
+    }
+
+    @Override
+    public List<GroupModel> filterGroup(String filterValue) {
+        SelectJoinStep<Record3<String, String, Long>> from = getDslContext()
+                .select(F_GROUP.GROUP_ID, F_GROUP.TEMPLATE_ID, F_GROUP.PRIORITY)
+                .from(F_GROUP);
+        SelectConditionStep<Record1<String>> selectGroupsId = null;
+        if (!StringUtils.isEmpty(filterValue)) {
+            selectGroupsId = getDslContext()
+                    .selectDistinct(F_GROUP.GROUP_ID)
+                    .from(F_GROUP)
+                    .where(F_GROUP.GROUP_ID.like(filterValue)
+                            .or(F_GROUP.TEMPLATE_ID.like(filterValue)));
+        }
+        List<GroupPriorityRow> list = fetch(StringUtils.isEmpty(filterValue) ? from : from.where(F_GROUP.GROUP_ID.in(selectGroupsId)),
+                (rs, rowNum) ->
+                        GroupPriorityRow.builder()
+                                .groupId(rs.getString(F_GROUP.GROUP_ID.getName()))
+                                .priorityIdModel(PriorityIdModel.builder()
+                                        .id(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
+                                        .priority(rs.getLong(F_GROUP.PRIORITY.getName()))
+                                        .build())
+                                .build()
+        );
+        return groupByGroupId(list);
+    }
+
+    private List<GroupModel> groupByGroupId(List<GroupPriorityRow> list) {
+        if (!CollectionUtils.isEmpty(list)) {
+            return list.stream()
+                    .collect(Collectors.groupingBy(GroupPriorityRow::getGroupId,
+                            Collectors.mapping(GroupPriorityRow::getPriorityIdModel, Collectors.toList()))
+                    ).entrySet().stream()
+                    .map(entry -> GroupModel.builder()
+                            .groupId(entry.getKey())
+                            .priorityTemplates(entry.getValue())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+
     }
 }
