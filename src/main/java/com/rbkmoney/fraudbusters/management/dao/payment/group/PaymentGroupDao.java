@@ -6,14 +6,14 @@ import com.rbkmoney.fraudbusters.management.dao.payment.group.model.GroupPriorit
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupRecord;
+import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
 import org.jooq.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,8 +22,11 @@ import static com.rbkmoney.fraudbusters.management.domain.tables.FGroup.F_GROUP;
 @Component
 public class PaymentGroupDao extends AbstractDao implements GroupDao {
 
-    public PaymentGroupDao(DataSource dataSource) {
+    private final GroupRowToModelMapper groupRowToModelMapper;
+
+    public PaymentGroupDao(DataSource dataSource, @Autowired GroupRowToModelMapper groupRowToModelMapper) {
         super(dataSource);
+        this.groupRowToModelMapper = groupRowToModelMapper;
     }
 
     @Override
@@ -98,22 +101,7 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                                         .build())
                                 .build()
         );
-        return groupByGroupId(list);
+        return groupRowToModelMapper.groupByGroupId(list);
     }
 
-    private List<GroupModel> groupByGroupId(List<GroupPriorityRow> list) {
-        if (!CollectionUtils.isEmpty(list)) {
-            return list.stream()
-                    .collect(Collectors.groupingBy(GroupPriorityRow::getGroupId,
-                            Collectors.mapping(GroupPriorityRow::getPriorityIdModel, Collectors.toList()))
-                    ).entrySet().stream()
-                    .map(entry -> GroupModel.builder()
-                            .groupId(entry.getKey())
-                            .priorityTemplates(entry.getValue())
-                            .build())
-                    .collect(Collectors.toList());
-        }
-        return new ArrayList<>();
-
-    }
 }

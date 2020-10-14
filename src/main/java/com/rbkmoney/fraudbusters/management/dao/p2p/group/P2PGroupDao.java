@@ -2,15 +2,15 @@ package com.rbkmoney.fraudbusters.management.dao.p2p.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.group.model.GroupPriorityRow;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.P2pFGroupRecord;
-import org.jooq.DeleteConditionStep;
-import org.jooq.Query;
-import org.jooq.Record4;
-import org.jooq.SelectConditionStep;
+import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
+import org.jooq.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -21,8 +21,11 @@ import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFGroup.P2P_F
 @Component
 public class P2PGroupDao extends AbstractDao implements GroupDao {
 
-    public P2PGroupDao(DataSource dataSource) {
+    private final GroupRowToModelMapper groupRowToModelMapper;
+
+    public P2PGroupDao(DataSource dataSource, GroupRowToModelMapper groupRowToModelMapper) {
         super(dataSource);
+        this.groupRowToModelMapper = groupRowToModelMapper;
     }
 
     @Override
@@ -76,6 +79,27 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
 
     @Override
     public List<GroupModel> filterGroup(String filterValue) {
-        return null;
+        SelectJoinStep<Record3<String, String, Long>> from = getDslContext()
+                .select(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.TEMPLATE_ID, P2P_F_GROUP.PRIORITY)
+                .from(P2P_F_GROUP);
+        SelectConditionStep<Record1<String>> selectGroupsId = null;
+        if (!StringUtils.isEmpty(filterValue)) {
+            selectGroupsId = getDslContext()
+                    .selectDistinct(P2P_F_GROUP.GROUP_ID)
+                    .from(P2P_F_GROUP)
+                    .where(P2P_F_GROUP.GROUP_ID.like(filterValue)
+                            .or(P2P_F_GROUP.TEMPLATE_ID.like(filterValue)));
+        }
+        List<GroupPriorityRow> list = fetch(StringUtils.isEmpty(filterValue) ? from : from.where(P2P_F_GROUP.GROUP_ID.in(selectGroupsId)),
+                (rs, rowNum) ->
+                        GroupPriorityRow.builder()
+                                .groupId(rs.getString(P2P_F_GROUP.GROUP_ID.getName()))
+                                .priorityIdModel(PriorityIdModel.builder()
+                                        .id(rs.getString(P2P_F_GROUP.TEMPLATE_ID.getName()))
+                                        .priority(rs.getLong(P2P_F_GROUP.PRIORITY.getName()))
+                                        .build())
+                                .build()
+        );
+        return groupRowToModelMapper.groupByGroupId(list);
     }
 }

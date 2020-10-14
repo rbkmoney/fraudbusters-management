@@ -5,6 +5,7 @@ import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
+import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-@ContextConfiguration(classes = {PaymentGroupDao.class})
+@ContextConfiguration(classes = {PaymentGroupDao.class, GroupRowToModelMapper.class})
 public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
 
     public static final String GROUP_1 = "group_1";
