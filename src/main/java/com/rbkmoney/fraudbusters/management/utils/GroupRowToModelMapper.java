@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Service
 public class GroupRowToModelMapper {
 
-    public List<GroupModel> groupByGroupId(List<GroupPriorityRow> list) {
-        if (!CollectionUtils.isEmpty(list)) {
-            return list.stream()
+    public List<GroupModel> groupByGroupId(List<GroupPriorityRow> groupPriorityRows) {
+        if (!CollectionUtils.isEmpty(groupPriorityRows)) {
+            return groupPriorityRows.stream()
                     .collect(Collectors.groupingBy(GroupPriorityRow::getGroupId,
                             Collectors.mapping(GroupPriorityRow::getPriorityIdModel, Collectors.toList()))
                     ).entrySet().stream()

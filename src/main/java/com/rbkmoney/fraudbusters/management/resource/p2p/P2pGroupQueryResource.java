@@ -38,7 +38,7 @@ public class P2pGroupQueryResource {
 
     @GetMapping(value = "/group/filter")
     public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(value = "id") String id) {
-        log.info("findGroup groupId: {}", id);
+        log.info("filterGroup groupId: {}", id);
         List<GroupModel> groupModels = groupDao.filterGroup(id);
         return ResponseEntity.ok().body(groupModels);
     }

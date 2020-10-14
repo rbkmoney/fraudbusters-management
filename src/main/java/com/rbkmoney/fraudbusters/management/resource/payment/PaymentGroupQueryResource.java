@@ -26,21 +26,21 @@ public class PaymentGroupQueryResource {
     @GetMapping(value = "/group/{id}/reference")
     public ResponseEntity<List<PaymentGroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
                                                                           @Validated @RequestParam(required = false) Integer limit) {
-        log.info("GroupQueryResource getGroupReferences id: {} limit: {}", id, limit);
+        log.info("getGroupReferences id: {} limit: {}", id, limit);
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(id);
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
     @GetMapping(value = "/group")
     public ResponseEntity<GroupModel> findGroup(@RequestParam(value = "id") String id) {
-        log.info("GroupQueryResource findGroup groupId: {}", id);
+        log.info("findGroup groupId: {}", id);
         GroupModel groupModel = groupDao.getById(id);
         return ResponseEntity.ok().body(groupModel);
     }
 
     @GetMapping(value = "/group/filter")
     public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(value = "id") String id) {
-        log.info("GroupQueryResource findGroup groupId: {}", id);
+        log.info("filterGroup groupId: {}", id);
         List<GroupModel> groupModels = groupDao.filterGroup(id);
         return ResponseEntity.ok().body(groupModels);
     }
