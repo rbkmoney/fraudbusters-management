@@ -100,7 +100,7 @@ public class P2PTemplateCommandResource {
         String referenceId = Optional.of(referenceModel)
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.CREATE))
-                .map(p2pTemplateCommandService::sendCommandSync)
+                .map(p2PTemplateReferenceService::sendCommandSync)
                 .orElseThrow();
         return ResponseEntity.ok().body(referenceId);
     }
