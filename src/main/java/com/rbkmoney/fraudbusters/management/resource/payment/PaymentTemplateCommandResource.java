@@ -24,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -78,8 +79,8 @@ public class PaymentTemplateCommandResource {
         );
     }
 
-    @PostMapping(value = "/template/{id}/reference")
-    public ResponseEntity<List<String>> insertReference(@PathVariable(value = "id") String id,
+    @PostMapping(value = "/template/{id}/references")
+    public ResponseEntity<List<String>> insertReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
@@ -88,6 +89,18 @@ public class PaymentTemplateCommandResource {
                 .map(paymentTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
+    }
+
+    @PostMapping(value = "/template/{id}/reference")
+    public ResponseEntity<String> insertReference(@PathVariable(value = "id") String id,
+                                                        @Validated @RequestBody PaymentReferenceModel referenceModel) {
+        log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
+        String referenceId = Optional.of(referenceModel)
+                .map(reference -> convertReferenceModel(reference, id))
+                .map(command -> command.setCommandType(CommandType.CREATE))
+                .map(paymentTemplateReferenceService::sendCommandSync)
+                .orElseThrow();
+        return ResponseEntity.ok().body(referenceId);
     }
 
     @PostMapping(value = "/template/{id}/default")
