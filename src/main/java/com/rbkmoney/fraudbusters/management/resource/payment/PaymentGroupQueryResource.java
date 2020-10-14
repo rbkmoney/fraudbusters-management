@@ -39,7 +39,7 @@ public class PaymentGroupQueryResource {
     }
 
     @GetMapping(value = "/group/filter")
-    public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(value = "id") String id) {
+    public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(required = false) String id) {
         log.info("filterGroup groupId: {}", id);
         List<GroupModel> groupModels = groupDao.filterGroup(id);
         return ResponseEntity.ok().body(groupModels);
