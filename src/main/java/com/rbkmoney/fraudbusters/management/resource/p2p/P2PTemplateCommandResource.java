@@ -9,6 +9,7 @@ import com.rbkmoney.fraudbusters.management.converter.p2p.P2pReferenceToCommandC
 import com.rbkmoney.fraudbusters.management.domain.ErrorTemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
@@ -22,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -78,8 +80,8 @@ public class P2PTemplateCommandResource {
         );
     }
 
-    @PostMapping(value = "/template/{id}/reference")
-    public ResponseEntity<List<String>> insertReference(@PathVariable(value = "id") String id,
+    @PostMapping(value = "/template/{id}/references")
+    public ResponseEntity<List<String>> insertReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("P2pReferenceCommandResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
@@ -88,6 +90,19 @@ public class P2PTemplateCommandResource {
                 .map(p2PTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
+    }
+
+
+    @PostMapping(value = "/template/{id}/reference")
+    public ResponseEntity<String> insertReference(@PathVariable(value = "id") String id,
+                                                  @Validated @RequestBody P2pReferenceModel referenceModel) {
+        log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
+        String referenceId = Optional.of(referenceModel)
+                .map(reference -> convertReferenceModel(reference, id))
+                .map(command -> command.setCommandType(CommandType.CREATE))
+                .map(p2PTemplateReferenceService::sendCommandSync)
+                .orElseThrow();
+        return ResponseEntity.ok().body(referenceId);
     }
 
     @DeleteMapping(value = "/template/{id}")

@@ -110,15 +110,17 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setIsGlobal(false);
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
-        paymentTemplateCommandResource.insertReference("id", Collections.singletonList(referenceModel));
+        paymentTemplateCommandResource.insertReferences("id", Collections.singletonList(referenceModel));
+        paymentTemplateCommandResource.deleteReference("id", Collections.singletonList(referenceModel));
+        paymentTemplateCommandResource.insertReference("id", referenceModel);
         paymentTemplateCommandResource.deleteReference("id", Collections.singletonList(referenceModel));
         Thread.sleep(TIMEOUT);
 
-        verify(referenceDao, times(1)).insert(any());
-        verify(referenceDao, times(1)).remove((PaymentReferenceModel) any());
+        verify(referenceDao, times(2)).insert(any());
+        verify(referenceDao, times(2)).remove((PaymentReferenceModel) any());
     }
 
-    private PaymentReferenceModel buildDefaulReference(){
+    private PaymentReferenceModel buildDefaultReference(){
         PaymentReferenceModel paymentReferenceModel = new PaymentReferenceModel();
         paymentReferenceModel.setTemplateId("default_template_id");
         paymentReferenceModel.setIsGlobal(false);
@@ -129,7 +131,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @Test
     public void defaultReferenceTest() throws InterruptedException {
 
-        when(referenceDao.getDefaultReference()).thenReturn(buildDefaulReference());
+        when(referenceDao.getDefaultReference()).thenReturn(buildDefaultReference());
 
         PaymentReferenceModel referenceModel = new PaymentReferenceModel();
         referenceModel.setId("id");
