@@ -145,7 +145,7 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
     public Integer countFilterModel(String searchValue, Boolean isGlobal, Boolean isDefault) {
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
-                .from(F_TEMPLATE)
+                .from(F_REFERENCE)
                 .where(referenceFullFieldFIndCondition(searchValue, isGlobal, isDefault));
         return fetchOne(where, Integer.class);
     }
