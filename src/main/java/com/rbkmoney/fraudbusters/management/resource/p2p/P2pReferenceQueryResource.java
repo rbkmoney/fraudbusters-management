@@ -33,7 +33,7 @@ public class P2pReferenceQueryResource {
     }
 
     @GetMapping(value = "/reference/filter")
-    public ResponseEntity<FilterP2pReferenceResponse> filterTemplates(@Validated @RequestParam(required = false) String searchValue,
+    public ResponseEntity<FilterP2pReferenceResponse> filterReferences(@Validated @RequestParam(required = false) String searchValue,
                                                                       @Validated @RequestParam(required = false) Boolean isGlobal,
                                                                       @Validated @RequestParam(required = false) String lastId,
                                                                       @Validated @RequestParam(required = false) Integer size,

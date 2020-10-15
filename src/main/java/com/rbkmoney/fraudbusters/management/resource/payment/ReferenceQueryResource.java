@@ -33,7 +33,7 @@ public class ReferenceQueryResource {
     }
 
     @GetMapping(value = "/reference/filter")
-    public ResponseEntity<FilterPaymentReferenceResponse> filterTemplates(@Validated @RequestParam(required = false) String searchValue,
+    public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(@Validated @RequestParam(required = false) String searchValue,
                                                                           @Validated @RequestParam(required = false) Boolean isGlobal,
                                                                           @Validated @RequestParam(required = false) Boolean isDefault,
                                                                           @Validated @RequestParam(required = false) String lastId,
