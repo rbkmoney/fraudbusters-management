@@ -31,17 +31,17 @@ public class PaymentGroupQueryResource {
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
-    @GetMapping(value = "/group")
-    public ResponseEntity<GroupModel> findGroup(@RequestParam(value = "id") String id) {
+    @GetMapping(value = "/group/{id}")
+    public ResponseEntity<GroupModel> findGroup(@PathVariable String id) {
         log.info("findGroup groupId: {}", id);
         GroupModel groupModel = groupDao.getById(id);
         return ResponseEntity.ok().body(groupModel);
     }
 
     @GetMapping(value = "/group/filter")
-    public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(required = false) String id) {
-        log.info("filterGroup groupId: {}", id);
-        List<GroupModel> groupModels = groupDao.filterGroup(id);
+    public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(required = false, value = "id") String idRegexp) {
+        log.info("filterGroup groupId: {}", idRegexp);
+        List<GroupModel> groupModels = groupDao.filterGroup(idRegexp);
         return ResponseEntity.ok().body(groupModels);
     }
 

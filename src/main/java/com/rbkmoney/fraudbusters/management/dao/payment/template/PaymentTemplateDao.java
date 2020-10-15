@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.dao.payment.template;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
@@ -70,6 +71,16 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
                 .from(F_TEMPLATE)
                 .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
+    }
+
+    @Override
+    public List<String> getListNames(String idRegexp) {
+        SelectConditionStep<Record1<String>> where = getDslContext()
+                .select(F_TEMPLATE.ID)
+                .from(F_TEMPLATE)
+                .where(appendConditions(DSL.trueCondition(), Operator.AND, new ConditionParameterSource()
+                        .addValue(F_TEMPLATE.ID, idRegexp, Comparator.LIKE)));
+        return fetch(where, (resultSet, i) -> resultSet.getString(F_TEMPLATE.ID.getName()));
     }
 
     @Override

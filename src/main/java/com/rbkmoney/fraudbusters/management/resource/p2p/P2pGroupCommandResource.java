@@ -49,10 +49,10 @@ public class P2pGroupCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
-    @DeleteMapping(value = "/group")
-    public ResponseEntity<String> removeGroup(@Validated @RequestBody GroupModel groupModel) {
-        log.info("GroupCommandResource removeTemplate groupModel: {}", groupModel);
-        Command command = groupModelToCommandConverter.convert(groupModel);
+    @DeleteMapping(value = "/group/{id}")
+    public ResponseEntity<String> removeGroup(@PathVariable(value = "id") String id) {
+        log.info("removeGroup id: {}", id);
+        Command command = p2pGroupCommandService.createTemplateCommandById(id);
         command.setCommandType(CommandType.DELETE);
         String idMessage = p2pGroupCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);

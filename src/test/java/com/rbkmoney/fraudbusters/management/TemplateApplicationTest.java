@@ -86,7 +86,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         checkSerialization(groupModel);
 
         groupCommandResource.insertGroup(groupModel);
-        groupCommandResource.removeGroup(groupModel);
+        groupCommandResource.removeGroup(groupModel.getGroupId());
 
         Thread.sleep(TIMEOUT);
 
