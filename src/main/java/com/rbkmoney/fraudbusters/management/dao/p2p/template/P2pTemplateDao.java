@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.dao.p2p.template;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
+import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.P2pFTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
@@ -81,6 +82,16 @@ public class P2pTemplateDao extends AbstractDao implements TemplateDao {
                 .where(!StringUtils.isEmpty(id) ? P2P_F_TEMPLATE.ID.like(id) : DSL.noCondition());
         SelectSeekStep1<P2pFTemplateRecord, String> selectSeekStep = addSortCondition(P2P_F_TEMPLATE.ID, sortOrder, where);
         return fetch(addSeekIfNeed(lastId, size, selectSeekStep), listRecordRowMapper);
+    }
+
+    @Override
+    public List<String> getListNames(String idRegexp) {
+        SelectConditionStep<Record1<String>> where = getDslContext()
+                .select(P2P_F_TEMPLATE.ID)
+                .from(P2P_F_TEMPLATE)
+                .where(appendConditions(DSL.trueCondition(), Operator.AND, new ConditionParameterSource()
+                        .addValue(P2P_F_TEMPLATE.ID, idRegexp, Comparator.LIKE)));
+        return fetch(where, (resultSet, i) -> resultSet.getString(P2P_F_TEMPLATE.ID.getName()));
     }
 
     @Override

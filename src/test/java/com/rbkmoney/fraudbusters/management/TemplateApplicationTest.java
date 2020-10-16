@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management;
 
+import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
@@ -86,12 +87,12 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         checkSerialization(groupModel);
 
         groupCommandResource.insertGroup(groupModel);
-        groupCommandResource.removeGroup(groupModel);
+        groupCommandResource.removeGroup(groupModel.getGroupId());
 
         Thread.sleep(TIMEOUT);
 
         verify(paymentGroupDao, times(1)).insert(groupModel);
-        verify(paymentGroupDao, times(1)).remove(groupModel);
+        verify(paymentGroupDao, times(1)).remove(any(GroupModel.class));
     }
 
     private void checkSerialization(GroupModel groupModel) throws IOException {
