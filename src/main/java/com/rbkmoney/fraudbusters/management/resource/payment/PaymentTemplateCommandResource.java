@@ -141,16 +141,28 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(idMessage);
     }
 
-    @DeleteMapping(value = "/template/{id}/reference")
-    public ResponseEntity<List<String>> deleteReference(@PathVariable(value = "id") String id,
+    @DeleteMapping(value = "/template/{id}/references")
+    public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
-        log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
+        log.info("TemplateManagementResource insertReferences referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.DELETE))
                 .map(paymentTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
+    }
+
+    @DeleteMapping(value = "/template/{id}/reference")
+    public ResponseEntity<String> deleteReference(@PathVariable(value = "id") String id,
+                                                        @Validated @RequestBody PaymentReferenceModel referenceModel) {
+        log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
+        String idInserted = Optional.of(referenceModel)
+                .map(reference -> convertReferenceModel(reference, id))
+                .map(command -> command.setCommandType(CommandType.DELETE))
+                .map(paymentTemplateReferenceService::sendCommandSync)
+                .orElseThrow();
+        return ResponseEntity.ok().body(idInserted);
     }
 
 }

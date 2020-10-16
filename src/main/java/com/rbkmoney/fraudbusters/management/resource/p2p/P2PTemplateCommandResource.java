@@ -120,8 +120,8 @@ public class P2PTemplateCommandResource {
         return command;
     }
 
-    @DeleteMapping(value = "/template/{id}/reference")
-    public ResponseEntity<List<String>> deleteReference(@PathVariable(value = "id") String id,
+    @DeleteMapping(value = "/template/{id}/references")
+    public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("P2pReferenceCommandResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
@@ -130,6 +130,19 @@ public class P2PTemplateCommandResource {
                 .map(p2PTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
+    }
+
+
+    @DeleteMapping(value = "/template/{id}/reference")
+    public ResponseEntity<String> deleteReference(@PathVariable(value = "id") String id,
+                                                  @Validated @RequestBody P2pReferenceModel referenceModel) {
+        log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
+        String idInserted = Optional.of(referenceModel)
+                .map(reference -> convertReferenceModel(reference, id))
+                .map(command -> command.setCommandType(CommandType.DELETE))
+                .map(p2PTemplateReferenceService::sendCommandSync)
+                .orElseThrow();
+        return ResponseEntity.ok().body(idInserted);
     }
 
 }
