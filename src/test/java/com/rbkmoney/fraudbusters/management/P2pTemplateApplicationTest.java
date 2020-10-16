@@ -81,9 +81,9 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setIsGlobal(false);
         referenceModel.setIdentityId("identity_id");
         p2pTemplateCommandResource.insertReferences("id", Collections.singletonList(referenceModel));
-        p2pTemplateCommandResource.deleteReference("id", Collections.singletonList(referenceModel));
+        p2pTemplateCommandResource.deleteReferences("id", Collections.singletonList(referenceModel));
         p2pTemplateCommandResource.insertReference("id", referenceModel);
-        p2pTemplateCommandResource.deleteReference("id", Collections.singletonList(referenceModel));
+        p2pTemplateCommandResource.deleteReference("id", referenceModel);
         Thread.sleep(2000L);
 
         verify(referenceDao, times(2)).insert(any());
