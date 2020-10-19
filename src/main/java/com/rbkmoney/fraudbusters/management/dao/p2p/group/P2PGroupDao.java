@@ -31,6 +31,7 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
     @Override
     @Transactional
     public void insert(GroupModel groupModel) {
+        cleanRemovedTemplates(groupModel);
         List<Query> inserts = groupModel.getPriorityTemplates().stream()
                 .map(pair -> getDslContext()
                         .insertInto(P2P_F_GROUP)
@@ -40,6 +41,16 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
                         .doNothing()
                 ).collect(Collectors.toList());
         batchExecute(inserts);
+    }
+
+    private void cleanRemovedTemplates(GroupModel groupModel) {
+        DeleteConditionStep<P2pFGroupRecord> where = getDslContext()
+                .delete(P2P_F_GROUP)
+                .where(P2P_F_GROUP.GROUP_ID.eq(groupModel.getGroupId())
+                        .and(P2P_F_GROUP.TEMPLATE_ID.notIn(groupModel.getPriorityTemplates().stream()
+                                .map(PriorityIdModel::getId)
+                                .collect(Collectors.toList()))));
+        execute(where);
     }
 
     @Override
