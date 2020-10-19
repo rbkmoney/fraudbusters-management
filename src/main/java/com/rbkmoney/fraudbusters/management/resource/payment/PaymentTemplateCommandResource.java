@@ -141,10 +141,10 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(idMessage);
     }
 
-    @DeleteMapping(value = "/template/{id}/references")
+    @PostMapping(value = "/template/{id}/reference/delete")
     public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
-        log.info("TemplateManagementResource insertReferences referenceModels: {}", referenceModels);
+        log.info("TemplateManagementResource deleteReferences referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.DELETE))
@@ -153,16 +153,15 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
-    @DeleteMapping(value = "/template/{id}/reference")
-    public ResponseEntity<String> deleteReference(@PathVariable(value = "id") String id,
-                                                        @Validated @RequestBody PaymentReferenceModel referenceModel) {
-        log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
-        String idInserted = Optional.of(referenceModel)
-                .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> command.setCommandType(CommandType.DELETE))
-                .map(paymentTemplateReferenceService::sendCommandSync)
-                .orElseThrow();
-        return ResponseEntity.ok().body(idInserted);
+    @DeleteMapping(value = "/template/{templateId}/reference")
+    public ResponseEntity<String> deleteReference(@PathVariable String templateId,
+                                                        @RequestParam String partyId,
+                                                        @RequestParam String shopId) {
+        log.info("TemplateManagementResource deleteReference templateId: {}, partyId: {}, shopId: {}", templateId, partyId, shopId);
+        Command command = paymentTemplateReferenceService.createReferenceCommandByIds(templateId, partyId, shopId);
+        command.setCommandType(CommandType.DELETE);
+        String id = paymentTemplateReferenceService.sendCommandSync(command);
+        return ResponseEntity.ok().body(id);
     }
 
 }
