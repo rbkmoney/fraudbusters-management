@@ -65,8 +65,8 @@ public class GroupCommandResource {
 
     @DeleteMapping(value = "/group/{id}/reference")
     public ResponseEntity<String> removeGroupReference(@PathVariable(value = "id") String groupId,
-                                                       @PathVariable(value = "partyId") String partyId,
-                                                       @PathVariable(value = "shopId") String shopId) {
+                                                       @RequestParam(value = "partyId") String partyId,
+                                                       @RequestParam(value = "shopId") String shopId) {
         log.info("insertReference groupId: {} partyId: {} shopId: {}", groupId, partyId, shopId);
         PaymentGroupReferenceModel groupReferenceModel = new PaymentGroupReferenceModel();
         Command command = convertReferenceModel(groupReferenceModel, groupId);
