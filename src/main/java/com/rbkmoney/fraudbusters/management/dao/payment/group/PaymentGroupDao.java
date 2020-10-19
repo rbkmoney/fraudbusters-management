@@ -32,6 +32,7 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
     @Override
     @Transactional
     public void insert(GroupModel groupModel) {
+        cleanRemovedTemplates(groupModel);
         List<Query> inserts = groupModel.getPriorityTemplates().stream()
                 .map(pair -> getDslContext()
                         .insertInto(F_GROUP)
@@ -41,6 +42,16 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                         .doNothing()
                 ).collect(Collectors.toList());
         batchExecute(inserts);
+    }
+
+    private void cleanRemovedTemplates(GroupModel groupModel) {
+        DeleteConditionStep<FGroupRecord> where = getDslContext()
+                .delete(F_GROUP)
+                .where(F_GROUP.GROUP_ID.eq(groupModel.getGroupId())
+                        .and(F_GROUP.TEMPLATE_ID.notIn(groupModel.getPriorityTemplates().stream()
+                                .map(PriorityIdModel::getId)
+                                .collect(Collectors.toList()))));
+        execute(where);
     }
 
     @Override
