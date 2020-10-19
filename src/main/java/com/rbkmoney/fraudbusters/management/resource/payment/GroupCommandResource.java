@@ -69,6 +69,9 @@ public class GroupCommandResource {
                                                        @RequestParam(value = "shopId") String shopId) {
         log.info("insertReference groupId: {} partyId: {} shopId: {}", groupId, partyId, shopId);
         PaymentGroupReferenceModel groupReferenceModel = new PaymentGroupReferenceModel();
+        groupReferenceModel.setPartyId(partyId);
+        groupReferenceModel.setShopId(shopId);
+        groupReferenceModel.setGroupId(groupId);
         Command command = convertReferenceModel(groupReferenceModel, groupId);
         command.setCommandType(CommandType.DELETE);
         String id = paymentGroupReferenceService.sendCommandSync(command);
