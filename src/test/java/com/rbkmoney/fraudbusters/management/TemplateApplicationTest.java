@@ -1,6 +1,5 @@
 package com.rbkmoney.fraudbusters.management;
 
-import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
@@ -153,7 +152,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupReferenceModel.setShopId("shop_id");
 
         groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
-        groupCommandResource.deleteGroupReference("id", Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference("id", Collections.singletonList(groupReferenceModel));
         Thread.sleep(TIMEOUT);
 
         verify(groupReferenceDao, times(1)).insert(any());

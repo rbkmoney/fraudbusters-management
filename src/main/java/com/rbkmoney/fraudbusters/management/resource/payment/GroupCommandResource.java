@@ -64,7 +64,7 @@ public class GroupCommandResource {
     }
 
     @DeleteMapping(value = "/group/{id}/reference")
-    public ResponseEntity<List<String>> deleteGroupReference(@PathVariable(value = "id") String id,
+    public ResponseEntity<List<String>> removeGroupReference(@PathVariable(value = "id") String id,
                                                              @Validated @RequestBody List<PaymentGroupReferenceModel> groupModels) {
         log.info("insertReference groupModels: {}", groupModels);
         List<String> ids = groupModels.stream()
