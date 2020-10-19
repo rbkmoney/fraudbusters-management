@@ -64,15 +64,16 @@ public class GroupCommandResource {
     }
 
     @DeleteMapping(value = "/group/{id}/reference")
-    public ResponseEntity<List<String>> removeGroupReference(@PathVariable(value = "id") String id,
-                                                             @Validated @RequestBody List<PaymentGroupReferenceModel> groupModels) {
-        log.info("insertReference groupModels: {}", groupModels);
-        List<String> ids = groupModels.stream()
-                .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> command.setCommandType(CommandType.DELETE))
-                .map(paymentGroupReferenceService::sendCommandSync)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(ids);
+    public ResponseEntity<String> removeGroupReference(@PathVariable(value = "id") String groupId,
+                                                       @PathVariable(value = "partyId") String partyId,
+                                                       @PathVariable(value = "shopId") String shopId) {
+        log.info("insertReference groupId: {} partyId: {} shopId: {}", groupId, partyId, shopId);
+        PaymentGroupReferenceModel groupReferenceModel = new PaymentGroupReferenceModel();
+        Command command = convertReferenceModel(groupReferenceModel, groupId);
+        command.setCommandType(CommandType.DELETE);
+        String id = paymentGroupReferenceService.sendCommandSync(command);
+        log.info("insertReference sendCommand id: {}", id);
+        return ResponseEntity.ok().body(id);
     }
 
 }

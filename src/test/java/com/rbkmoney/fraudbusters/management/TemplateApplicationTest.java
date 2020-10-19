@@ -152,7 +152,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupReferenceModel.setShopId("shop_id");
 
         groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
-        groupCommandResource.removeGroupReference("id", Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference("id", "party_id", "shop_id");
         Thread.sleep(TIMEOUT);
 
         verify(groupReferenceDao, times(1)).insert(any());
