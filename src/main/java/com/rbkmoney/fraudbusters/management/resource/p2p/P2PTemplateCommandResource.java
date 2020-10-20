@@ -123,7 +123,7 @@ public class P2PTemplateCommandResource {
     @DeleteMapping(value = "/template/{id}/references")
     public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
-        log.info("P2pReferenceCommandResource insertReference referenceModels: {}", referenceModels);
+        log.info("P2pReferenceCommandResource deleteReferences referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> command.setCommandType(CommandType.DELETE))
@@ -133,16 +133,14 @@ public class P2PTemplateCommandResource {
     }
 
 
-    @DeleteMapping(value = "/template/{id}/reference")
-    public ResponseEntity<String> deleteReference(@PathVariable(value = "id") String id,
-                                                  @Validated @RequestBody P2pReferenceModel referenceModel) {
-        log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
-        String idInserted = Optional.of(referenceModel)
-                .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> command.setCommandType(CommandType.DELETE))
-                .map(p2PTemplateReferenceService::sendCommandSync)
-                .orElseThrow();
-        return ResponseEntity.ok().body(idInserted);
+    @DeleteMapping(value = "/template/{templateId}/reference")
+    public ResponseEntity<String> deleteReference(@PathVariable String templateId,
+                                                  @RequestParam String identityId) {
+        log.info("TemplateManagementResource deleteReference templateId: {}, identityId: {}", templateId, identityId);
+        Command command = p2PTemplateReferenceService.createReferenceCommandByIds(templateId, identityId);
+        command.setCommandType(CommandType.DELETE);
+        String id = p2PTemplateReferenceService.sendCommandSync(command);
+        return ResponseEntity.ok().body(id);
     }
 
 }

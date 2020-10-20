@@ -22,7 +22,7 @@ public class TemplateCommandService {
         return commandSender.send(topic, command, key);
     }
 
-    public Command createTemplateCommandById(@PathVariable("id") String id) {
+    public Command createTemplateCommandById(String id) {
         return templateModelToCommandConverter.convert(TemplateModel.builder()
                 .id(id)
                 .template(EMPTY_STRING)

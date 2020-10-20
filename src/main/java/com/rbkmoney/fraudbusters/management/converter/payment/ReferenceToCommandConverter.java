@@ -5,6 +5,7 @@ import com.rbkmoney.damsel.fraudbusters.CommandBody;
 import com.rbkmoney.damsel.fraudbusters.TemplateReference;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import lombok.RequiredArgsConstructor;
+import net.logstash.logback.encoder.org.apache.commons.lang.BooleanUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class ReferenceToCommandConverter implements Converter<PaymentReferenceMo
         Command command = new Command();
         TemplateReference reference = new TemplateReference();
         reference.setIsGlobal(referenceModel.getIsGlobal());
-        if (!referenceModel.getIsGlobal()) {
+        if (BooleanUtils.isFalse(referenceModel.getIsGlobal())) {
             reference.setShopId(referenceModel.getShopId());
             reference.setPartyId(referenceModel.getPartyId());
         }

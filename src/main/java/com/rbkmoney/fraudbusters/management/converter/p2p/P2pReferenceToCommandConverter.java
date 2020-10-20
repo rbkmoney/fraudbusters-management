@@ -5,6 +5,7 @@ import com.rbkmoney.damsel.fraudbusters.CommandBody;
 import com.rbkmoney.damsel.fraudbusters.P2PReference;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import lombok.RequiredArgsConstructor;
+import net.logstash.logback.encoder.org.apache.commons.lang.BooleanUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class P2pReferenceToCommandConverter implements Converter<P2pReferenceMod
         Command command = new Command();
         P2PReference reference = new P2PReference();
         reference.setIsGlobal(referenceModel.getIsGlobal());
-        if (!referenceModel.getIsGlobal()) {
+        if (BooleanUtils.isFalse(referenceModel.getIsGlobal())) {
             reference.setIdentityId(referenceModel.getIdentityId());
         }
         reference.setTemplateId(referenceModel.getTemplateId());
