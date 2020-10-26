@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.domain.response;
 
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FilterPaymentReferenceResponse {
+public class FilterP2pGroupsReferenceResponse {
 
-    private List<PaymentReferenceModel> referenceModels;
+    private List<P2pGroupReferenceModel> groupsReferenceModels;
     private Integer count;
 
 }

@@ -4,6 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterPaymentGroupsReferenceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
@@ -33,16 +34,20 @@ public class PaymentGroupQueryResource {
     }
 
     @GetMapping(value = "/group/reference/filter")
-    public ResponseEntity<List<PaymentGroupReferenceModel>> filterReference(@Validated @RequestParam(required = false) String idRegexp,
-                                                                            @Validated @RequestParam(required = false) String lastId,
-                                                                            @Validated @RequestParam(required = false) String sortFieldValue,
-                                                                            @Validated @RequestParam(required = false) Integer size,
-                                                                            @Validated @RequestParam(required = false) String sortBy,
-                                                                            @Validated @RequestParam(required = false) SortOrder sortOrder) {
+    public ResponseEntity<FilterPaymentGroupsReferenceResponse> filterReference(@Validated @RequestParam(required = false) String idRegexp,
+                                                                                @Validated @RequestParam(required = false) String lastId,
+                                                                                @Validated @RequestParam(required = false) String sortFieldValue,
+                                                                                @Validated @RequestParam(required = false) Integer size,
+                                                                                @Validated @RequestParam(required = false) String sortBy,
+                                                                                @Validated @RequestParam(required = false) SortOrder sortOrder) {
         log.info("getGroupReferences idRegexp: {}", idRegexp);
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.filterReference(idRegexp, lastId, sortFieldValue,
                 size, sortBy, sortOrder);
-        return ResponseEntity.ok().body(listByTemplateId);
+        Integer count = referenceDao.countReference(idRegexp, lastId, sortFieldValue, size, sortBy, sortOrder);
+        return ResponseEntity.ok().body(FilterPaymentGroupsReferenceResponse.builder()
+                .count(count)
+                .groupsReferenceModels(listByTemplateId)
+                .build());
     }
 
     @GetMapping(value = "/group/{id}")
