@@ -31,6 +31,20 @@ public abstract class AbstractDao extends AbstractGenericDao {
         );
     }
 
+    protected <T extends Record, E, P> SelectForUpdateStep<T> addSeekIfNeed(E lastId, P sortId,
+                                                                            Integer size,
+                                                                            SelectSeekStep2<T, E, P> orderQuery) {
+        SelectForUpdateStep<T> seekQuery;
+        if (lastId != null && sortId != null) {
+            seekQuery = orderQuery
+                    .seek(lastId, sortId)
+                    .limit(size);
+        } else {
+            seekQuery = orderQuery.limit(size);
+        }
+        return seekQuery;
+    }
+
     protected <T extends Record> SelectForUpdateStep<T> addSeekIfNeed(String lastId,
                                                                       Integer size,
                                                                       SelectSeekStep1<T, String> orderQuery) {
@@ -45,15 +59,25 @@ public abstract class AbstractDao extends AbstractGenericDao {
         return seekQuery;
     }
 
-    protected <T extends Record> SelectSeekStep1<T, String> addSortCondition(Field<String> sortField,
-                                                                             SortOrder sortOrder,
-                                                                             SelectConditionStep<T> whereQuery) {
-        SelectSeekStep1<T, String> orderQuery;
+    protected <T extends Record, E> SelectSeekStep1<T, E> addSortCondition(Field<E> sortField,
+                                                                           SortOrder sortOrder,
+                                                                           SelectConditionStep<T> whereQuery) {
+        SelectSeekStep1<T, E> orderQuery;
         if (sortOrder != null && sortOrder.equals(SortOrder.DESC)) {
             orderQuery = whereQuery.orderBy(sortField.desc());
         } else {
             orderQuery = whereQuery.orderBy(sortField.asc());
         }
         return orderQuery;
+    }
+
+    protected <T extends Record, E, P> SelectSeekStep2<T, E, P> addSortCondition(Field<E> sortField, Field<P> sortFieldSecond,
+                                                                                 SortOrder sortOrder,
+                                                                                 SelectConditionStep<T> whereQuery) {
+        if (sortOrder != null && sortOrder.equals(SortOrder.DESC)) {
+            return whereQuery.orderBy(sortField.desc(), sortFieldSecond.desc());
+        } else {
+            return whereQuery.orderBy(sortField.desc(), sortFieldSecond.asc());
+        }
     }
 }

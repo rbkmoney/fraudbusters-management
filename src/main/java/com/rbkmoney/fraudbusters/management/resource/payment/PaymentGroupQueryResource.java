@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,19 @@ public class PaymentGroupQueryResource {
                                                                           @Validated @RequestParam(required = false) Integer limit) {
         log.info("getGroupReferences id: {} limit: {}", id, limit);
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(id);
+        return ResponseEntity.ok().body(listByTemplateId);
+    }
+
+    @GetMapping(value = "/group/reference/filter")
+    public ResponseEntity<List<PaymentGroupReferenceModel>> filterReference(@Validated @RequestParam(required = false) String idRegexp,
+                                                                            @Validated @RequestParam(required = false) String lastId,
+                                                                            @Validated @RequestParam(required = false) String sortFieldValue,
+                                                                            @Validated @RequestParam(required = false) Integer size,
+                                                                            @Validated @RequestParam(required = false) String sortBy,
+                                                                            @Validated @RequestParam(required = false) SortOrder sortOrder) {
+        log.info("getGroupReferences idRegexp: {}", idRegexp);
+        List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.filterReference(idRegexp, lastId, sortFieldValue,
+                size, sortBy, sortOrder);
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
