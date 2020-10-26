@@ -73,7 +73,7 @@ public class P2pGroupCommandResource {
         groupReferenceModel.setGroupId(groupId);
         Command command = convertReferenceModel(groupReferenceModel, groupId);
         command.setCommandType(CommandType.DELETE);
-        String id = p2pGroupCommandService.sendCommandSync(command);
+        String id = p2pGroupReferenceService.sendCommandSync(command);
         log.info("removeGroupReference sendCommand id: {}", id);
         return ResponseEntity.ok().body(id);
     }
