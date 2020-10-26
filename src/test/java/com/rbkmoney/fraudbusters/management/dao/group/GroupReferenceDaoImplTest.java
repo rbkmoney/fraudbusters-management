@@ -53,6 +53,8 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
         paymentGroupReferenceModels = groupReferenceDao.filterReference(GROUP_ID, null, null, 2, null, null);
         assertEquals(2, paymentGroupReferenceModels.size());
+        Integer integer = groupReferenceDao.countFilterReference(GROUP_ID);
+        assertEquals(Integer.valueOf(2), integer);
 
         //check pagination
         paymentGroupReferenceModels = groupReferenceDao.filterReference(GROUP_ID, null, null, 1, null, null);
@@ -60,7 +62,8 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
         List<PaymentGroupReferenceModel> secondPage = groupReferenceDao.filterReference(GROUP_ID,
                 paymentGroupReferenceModels.get(0).getId(), GROUP_ID, 1, null, null);
-        System.out.println(secondPage);
         assertNotEquals(paymentGroupReferenceModels.get(0).getShopId(), secondPage.get(0).getShopId());
+        integer = groupReferenceDao.countFilterReference(GROUP_ID);
+        assertEquals(Integer.valueOf(2), integer);
     }
 }

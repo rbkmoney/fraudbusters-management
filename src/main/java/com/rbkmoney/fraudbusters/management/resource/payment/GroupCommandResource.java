@@ -67,7 +67,7 @@ public class GroupCommandResource {
     public ResponseEntity<String> removeGroupReference(@PathVariable(value = "id") String groupId,
                                                        @RequestParam(value = "partyId") String partyId,
                                                        @RequestParam(value = "shopId") String shopId) {
-        log.info("insertReference groupId: {} partyId: {} shopId: {}", groupId, partyId, shopId);
+        log.info("removeGroupReference groupId: {} partyId: {} shopId: {}", groupId, partyId, shopId);
         PaymentGroupReferenceModel groupReferenceModel = new PaymentGroupReferenceModel();
         groupReferenceModel.setPartyId(partyId);
         groupReferenceModel.setShopId(shopId);
@@ -75,7 +75,7 @@ public class GroupCommandResource {
         Command command = convertReferenceModel(groupReferenceModel, groupId);
         command.setCommandType(CommandType.DELETE);
         String id = paymentGroupReferenceService.sendCommandSync(command);
-        log.info("insertReference sendCommand id: {}", id);
+        log.info("removeGroupReference sendCommand id: {}", id);
         return ResponseEntity.ok().body(id);
     }
 

@@ -14,4 +14,6 @@ public interface PaymentGroupReferenceDao extends GroupReferenceDao<PaymentGroup
 
     List<PaymentGroupReferenceModel> filterReference(String filterValue, String lastId, String sortFieldValue,
                                                      Integer size, String sortingBy, SortOrder sortOrder);
+
+    Integer countFilterReference(String filterValue);
 }
