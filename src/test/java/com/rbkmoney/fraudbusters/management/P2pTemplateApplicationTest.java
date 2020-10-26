@@ -93,11 +93,13 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @Test
     public void groupReferenceTest() throws InterruptedException {
         P2pGroupReferenceModel groupReferenceModel = new P2pGroupReferenceModel();
-        groupReferenceModel.setId("id");
-        groupReferenceModel.setIdentityId("identity_id");
+        String id = "id";
+        groupReferenceModel.setId(id);
+        String identity_id = "identity_id";
+        groupReferenceModel.setIdentityId(identity_id);
 
-        groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
-        groupCommandResource.deleteGroupReference("id", Collections.singletonList(groupReferenceModel));
+        groupCommandResource.insertGroupReference(id, Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference(id, identity_id);
         Thread.sleep(5000L);
 
         verify(groupReferenceDao, times(1)).insert(any());
