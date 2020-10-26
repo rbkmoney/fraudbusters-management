@@ -31,13 +31,13 @@ public abstract class AbstractDao extends AbstractGenericDao {
         );
     }
 
-    protected <T extends Record, E, P> SelectForUpdateStep<T> addSeekIfNeed(E lastId, P secondId,
+    protected <T extends Record, E, P> SelectForUpdateStep<T> addSeekIfNeed(E lastId, P sortId,
                                                                             Integer size,
                                                                             SelectSeekStep2<T, E, P> orderQuery) {
         SelectForUpdateStep<T> seekQuery;
-        if (!StringUtils.isEmpty(lastId) && !StringUtils.isEmpty(secondId)) {
+        if (lastId != null && sortId != null) {
             seekQuery = orderQuery
-                    .seek(lastId, secondId)
+                    .seek(lastId, sortId)
                     .limit(size);
         } else {
             seekQuery = orderQuery.limit(size);
