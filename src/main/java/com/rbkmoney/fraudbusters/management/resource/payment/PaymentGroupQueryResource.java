@@ -40,10 +40,10 @@ public class PaymentGroupQueryResource {
                                                                                 @Validated @RequestParam(required = false) Integer size,
                                                                                 @Validated @RequestParam(required = false) String sortBy,
                                                                                 @Validated @RequestParam(required = false) SortOrder sortOrder) {
-        log.info("getGroupReferences idRegexp: {}", idRegexp);
+        log.info("filterReference idRegexp: {}", idRegexp);
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.filterReference(idRegexp, lastId, sortFieldValue,
                 size, sortBy, sortOrder);
-        Integer count = referenceDao.countReference(idRegexp, lastId, sortFieldValue, size, sortBy, sortOrder);
+        Integer count = referenceDao.countFilterReference(idRegexp);
         return ResponseEntity.ok().body(FilterPaymentGroupsReferenceResponse.builder()
                 .count(count)
                 .groupsReferenceModels(listByTemplateId)
