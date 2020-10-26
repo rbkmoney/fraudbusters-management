@@ -3,11 +3,13 @@ package com.rbkmoney.fraudbusters.management.dao.payment.group;
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupReferenceRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -65,6 +67,24 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
                         .from(F_GROUP_REFERENCE)
                         .where(F_GROUP_REFERENCE.GROUP_ID.eq(id));
         return fetch(where, listRecordRowMapper);
+    }
+
+    @Override
+    public List<PaymentGroupReferenceModel> filterReference(String filterValue, String lastId, String sortFieldValue,
+                                                            Integer size, String sortingBy, SortOrder sortOrder) {
+        SelectWhereStep<FGroupReferenceRecord> from = getDslContext()
+                .selectFrom(F_GROUP_REFERENCE);
+        Field<String> field = StringUtils.isEmpty(sortingBy) ? F_GROUP_REFERENCE.GROUP_ID : F_GROUP_REFERENCE.field(sortingBy, String.class);
+        SelectConditionStep<FGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
+                from.where(DSL.trueCondition()) : from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterValue)
+                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
+                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue))));
+        SelectSeekStep2<FGroupReferenceRecord, Long, String> fGroupReferenceRecords = addSortCondition(F_GROUP_REFERENCE.ID, field, sortOrder, whereQuery);
+        return fetch(addSeekIfNeed(parseIfExists(lastId), sortFieldValue, size, fGroupReferenceRecords), listRecordRowMapper);
+    }
+
+    private Long parseIfExists(String lastId) {
+        return lastId != null ? Long.valueOf(lastId) : null;
     }
 
     @Override

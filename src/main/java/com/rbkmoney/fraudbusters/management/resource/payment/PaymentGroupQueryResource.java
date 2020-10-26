@@ -31,6 +31,13 @@ public class PaymentGroupQueryResource {
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
+    @GetMapping(value = "/group/reference/filter")
+    public ResponseEntity<List<PaymentGroupReferenceModel>> filterReference(@RequestParam(required = false, value = "id") String idRegexp) {
+        log.info("getGroupReferences idRegexp: {}", idRegexp);
+        List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(idRegexp);
+        return ResponseEntity.ok().body(listByTemplateId);
+    }
+
     @GetMapping(value = "/group/{id}")
     public ResponseEntity<GroupModel> findGroup(@PathVariable String id) {
         log.info("findGroup groupId: {}", id);
