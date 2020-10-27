@@ -33,11 +33,11 @@ public abstract class AbstractDao extends AbstractGenericDao {
 
     protected <T extends Record, E, P> SelectForUpdateStep<T> addSeekIfNeed(E lastId, P sortId,
                                                                             Integer size,
-                                                                            SelectSeekStep2<T, E, P> orderQuery) {
+                                                                            SelectSeekStep2<T, P, E> orderQuery) {
         SelectForUpdateStep<T> seekQuery;
         if (lastId != null && sortId != null) {
             seekQuery = orderQuery
-                    .seek(lastId, sortId)
+                    .seek(sortId, lastId)
                     .limit(size);
         } else {
             seekQuery = orderQuery.limit(size);
@@ -71,13 +71,13 @@ public abstract class AbstractDao extends AbstractGenericDao {
         return orderQuery;
     }
 
-    protected <T extends Record, E, P> SelectSeekStep2<T, E, P> addSortCondition(Field<E> sortField, Field<P> sortFieldSecond,
+    protected <T extends Record, E, P> SelectSeekStep2<T, E, P> addSortCondition(Field<P> sortField, Field<E> sortFieldSecond,
                                                                                  SortOrder sortOrder,
                                                                                  SelectConditionStep<T> whereQuery) {
         if (sortOrder != null && sortOrder.equals(SortOrder.DESC)) {
-            return whereQuery.orderBy(sortField.desc(), sortFieldSecond.desc());
+            return whereQuery.orderBy(sortFieldSecond.desc(), sortField.desc());
         } else {
-            return whereQuery.orderBy(sortField.desc(), sortFieldSecond.asc());
+            return whereQuery.orderBy(sortFieldSecond.asc(), sortField.desc());
         }
     }
 }
