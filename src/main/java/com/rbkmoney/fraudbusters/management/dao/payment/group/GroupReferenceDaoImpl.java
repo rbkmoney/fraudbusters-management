@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference.F_GROUP_REFERENCE;
+import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFTemplate.P2P_F_TEMPLATE;
 import static org.jooq.Comparator.EQUALS;
 
 @Component
