@@ -15,7 +15,6 @@ import javax.sql.DataSource;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference.F_GROUP_REFERENCE;
-import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFTemplate.P2P_F_TEMPLATE;
 import static org.jooq.Comparator.EQUALS;
 
 @Component
@@ -80,7 +79,8 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
                 from.where(DSL.trueCondition()) : from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterValue)
                 .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
                         .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue))));
-        SelectSeekStep2<FGroupReferenceRecord, Long, String> fGroupReferenceRecords = addSortCondition(F_GROUP_REFERENCE.ID, field, sortOrder, whereQuery);
+        SelectSeekStep2<FGroupReferenceRecord, String, Long> fGroupReferenceRecords = addSortCondition(
+                F_GROUP_REFERENCE.ID, field, sortOrder, whereQuery);
         return fetch(addSeekIfNeed(parseIfExists(lastId), sortFieldValue, size, fGroupReferenceRecords), listRecordRowMapper);
     }
 
