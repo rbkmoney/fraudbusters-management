@@ -10,12 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference.F_GROUP_REFERENCE;
 import static com.rbkmoney.fraudbusters.management.domain.tables.WbListRecords.WB_LIST_RECORDS;
 import static org.jooq.Comparator.EQUALS;
 
@@ -108,5 +111,50 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
                                 .addValue(WB_LIST_RECORDS.LIST_NAME, listName, EQUALS)))
                 .limit(LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
+    }
+
+    @Override
+    public <T> List<WbListRecords> filterListRecords(@NonNull ListType listType, @NonNull List<String> listNames,
+                                                     String filterValue, String lastId, T sortFieldValue,
+                                                     Integer size, String sortingBy, SortOrder sortOrder) {
+        SelectWhereStep<WbListRecordsRecord> from = getDslContext()
+                .selectFrom(WB_LIST_RECORDS);
+        Condition condition = WB_LIST_RECORDS.LIST_NAME.in(listNames).and(WB_LIST_RECORDS.LIST_TYPE.eq(listType));
+        SelectConditionStep<WbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
+                from.where(condition) :
+                from.where(condition.and(
+                        WB_LIST_RECORDS.VALUE.like(filterValue)
+                                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
+                                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue)))));
+        Field field = StringUtils.isEmpty(sortingBy) ? WB_LIST_RECORDS.INSERT_TIME : F_GROUP_REFERENCE.field(sortingBy);
+        SelectSeekStep2<WbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(WB_LIST_RECORDS.ID,
+                field, sortOrder, whereQuery);
+        return fetch(addSeekIfNeed(lastId, sortFieldValue, size, wbListRecordsRecords), listRecordRowMapper);
+    }
+
+    @Override
+    public Integer countFilterRecords(@NonNull ListType listType, @NonNull List<String> listNames, String filterValue) {
+        SelectJoinStep<Record1<Integer>> from = getDslContext()
+                .selectCount()
+                .from(WB_LIST_RECORDS);
+        Condition condition = WB_LIST_RECORDS.LIST_NAME.in(listNames).and(WB_LIST_RECORDS.LIST_TYPE.eq(listType));
+        SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue) ?
+                from.where(condition) :
+                from.where(condition.and(
+                        WB_LIST_RECORDS.VALUE.like(filterValue)
+                                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
+                                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue)))));
+        return fetchOne(where, Integer.class);
+    }
+
+    @Override
+    public List<String> getCurrentListNames(ListType listType) {
+        SelectConditionStep<Record1<String>> where = getDslContext()
+                .selectDistinct(WB_LIST_RECORDS.LIST_NAME)
+                .from(WB_LIST_RECORDS)
+                .where(WB_LIST_RECORDS.LIST_TYPE.eq(listType));
+        return fetch(where, (rs, rowNum) ->
+                rs.getString(WB_LIST_RECORDS.LIST_NAME.getName())
+        );
     }
 }

@@ -25,6 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Deprecated
 @RestController
 @RequiredArgsConstructor
 public class WbListResource {
@@ -44,30 +45,11 @@ public class WbListResource {
         return insertInList(this::insertInWhiteList, records);
     }
 
-    private <T> ResponseEntity<List<String>> insertInList(Function<T, String> func, List<T> records) {
-        try {
-            List<String> recordIds = records.stream()
-                    .map(func)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok()
-                    .body(recordIds);
-        } catch (Exception e) {
-            log.error("Error when insert rows: {} e: ", records, e);
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    private String insertInWhiteList(PaymentListRecord record) {
-        Row row = paymentListRecordToRowConverter.convert(record);
-        log.info("WbListResource whiteList add record {}", record);
-        return wbListCommandService.sendCommandSync(topicCommand, row, ListType.white, Command.CREATE);
-    }
-
     @DeleteMapping(value = "/whiteList")
     public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody PaymentListRecord record) {
         Row row = paymentListRecordToRowConverter.convert(record);
         log.info("WbListResource whiteList remove record {}", record);
-        String idMessage = wbListCommandService.sendCommandSync(topicCommand, row, ListType.white, Command.DELETE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.white, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -84,17 +66,11 @@ public class WbListResource {
         return insertInList(this::insertBlackList, records);
     }
 
-    private String insertBlackList(PaymentListRecord record) {
-        Row row = paymentListRecordToRowConverter.convert(record);
-        log.info("WbListResource blackList add record {}", record);
-        return wbListCommandService.sendCommandSync(topicCommand, row, ListType.black, Command.CREATE);
-    }
-
     @DeleteMapping(value = "/blackList")
     public ResponseEntity<String> removeRowFromBlackList(@RequestBody PaymentListRecord record) {
         Row row = paymentListRecordToRowConverter.convert(record);
         log.info("WbListResource blackList remove record {}", record);
-        String idMessage = wbListCommandService.sendCommandSync(topicCommand, row, ListType.black, Command.DELETE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.black, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -106,30 +82,16 @@ public class WbListResource {
         return ResponseEntity.ok().body(listRecords);
     }
 
-    private List<ListRecord> selectConvertedList(String partyId, String shopId, String listName,
-                                                 com.rbkmoney.fraudbusters.management.domain.enums.ListType type) {
-        List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(partyId, shopId, type, listName);
-        return filteredListRecords.stream()
-                .map(wbListRecordsToListRecordConverter::destinationToSource)
-                .collect(Collectors.toList());
-    }
-
     @PostMapping(value = "/greyList")
     public ResponseEntity<List<String>> insertRowToGrey(@RequestBody List<PaymentCountInfo> records) {
         return insertInList(this::insertGreyList, records);
-    }
-
-    private String insertGreyList(PaymentCountInfo record) {
-        Row row = countInfoListRecordToRowConverter.convert(record);
-        log.info("WbListResource greyList add record {}", record);
-        return wbListCommandService.sendCommandSync(topicCommand, row, ListType.grey, Command.CREATE);
     }
 
     @DeleteMapping(value = "/greyList")
     public ResponseEntity<String> removeRowFromGreyList(@RequestBody PaymentCountInfo record) {
         Row row = countInfoListRecordToRowConverter.convert(record);
         log.info("WbListResource greyList remove record {}", record);
-        String idMessage = wbListCommandService.sendCommandSync(topicCommand, row, ListType.grey, Command.DELETE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.grey, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -142,6 +104,45 @@ public class WbListResource {
                 .map(wbListRecordsToListRecordWithRowConverter::convert)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(listRecords);
+    }
+
+    private <T> ResponseEntity<List<String>> insertInList(Function<T, String> func, List<T> records) {
+        try {
+            List<String> recordIds = records.stream()
+                    .map(func)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok()
+                    .body(recordIds);
+        } catch (Exception e) {
+            log.error("Error when insert rows: {} e: ", records, e);
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    private String insertInWhiteList(PaymentListRecord record) {
+        Row row = paymentListRecordToRowConverter.convert(record);
+        log.info("WbListResource whiteList add record {}", record);
+        return wbListCommandService.sendCommandSync(row, ListType.white, Command.CREATE);
+    }
+
+    private String insertGreyList(PaymentCountInfo record) {
+        Row row = countInfoListRecordToRowConverter.convert(record);
+        log.info("WbListResource greyList add record {}", record);
+        return wbListCommandService.sendCommandSync(row, ListType.grey, Command.CREATE);
+    }
+
+    private List<ListRecord> selectConvertedList(String partyId, String shopId, String listName,
+                                                 com.rbkmoney.fraudbusters.management.domain.enums.ListType type) {
+        List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(partyId, shopId, type, listName);
+        return filteredListRecords.stream()
+                .map(wbListRecordsToListRecordConverter::destinationToSource)
+                .collect(Collectors.toList());
+    }
+
+    private String insertBlackList(PaymentListRecord record) {
+        Row row = paymentListRecordToRowConverter.convert(record);
+        log.info("WbListResource blackList add record {}", record);
+        return wbListCommandService.sendCommandSync(row, ListType.black, Command.CREATE);
     }
 
 }

@@ -61,14 +61,14 @@ public class P2PWbListResource {
     private String insertInWhiteList(P2pListRecord record) {
         Row row = p2pListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource whiteList add record {}", record);
-        return wbListCommandService.sendCommandSync(topicCommand, row, ListType.white, Command.CREATE);
+        return wbListCommandService.sendCommandSync(row, ListType.white, Command.CREATE);
     }
 
     @DeleteMapping(value = "/whiteList")
     public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody P2pListRecord record) {
         Row row = p2pListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource whiteList remove record {}", record);
-        String idMessage = wbListCommandService.sendCommandSync(topicCommand, row, ListType.white, Command.DELETE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.white, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -87,14 +87,14 @@ public class P2PWbListResource {
     private String insertBlackList(P2pListRecord record) {
         Row row = p2pListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource blackList add record {}", record);
-        return wbListCommandService.sendCommandSync(topicCommand, row, ListType.black, Command.CREATE);
+        return wbListCommandService.sendCommandSync(row, ListType.black, Command.CREATE);
     }
 
     @DeleteMapping(value = "/blackList")
     public ResponseEntity<String> removeRowFromBlackList(@RequestBody P2pListRecord record) {
         Row row = p2pListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource blackList remove record {}", record);
-        String idMessage = wbListCommandService.sendCommandSync(topicCommand, row, ListType.black, Command.DELETE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.black, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -121,14 +121,14 @@ public class P2PWbListResource {
     private String insertGreyList(P2pCountInfo record) {
         Row row = countInfoListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource greyList add record {}", record);
-        return wbListCommandService.sendCommandSync(topicCommand, row, ListType.grey, Command.CREATE);
+        return wbListCommandService.sendCommandSync(row, ListType.grey, Command.CREATE);
     }
 
     @DeleteMapping(value = "/greyList")
     public ResponseEntity<String> removeRowFromGreyList(@RequestBody P2pCountInfo record) {
         Row row = countInfoListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource greyList remove record {}", record);
-        String idMessage = wbListCommandService.sendCommandSync(topicCommand, row, ListType.grey, Command.DELETE);
+        String idMessage = wbListCommandService.sendCommandSync(row, ListType.grey, Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 

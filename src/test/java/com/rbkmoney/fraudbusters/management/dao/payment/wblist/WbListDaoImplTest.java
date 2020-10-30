@@ -8,7 +8,7 @@ import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
+import org.jooq.SortOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -16,6 +16,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 @ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class,
         PaymentCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
@@ -37,11 +39,11 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         wbListDao.saveListRecord(listRecord);
         WbListRecords byId = wbListDao.getById(id);
-        Assert.assertEquals(listRecord, byId);
+        assertEquals(listRecord, byId);
 
         wbListDao.removeRecord(listRecord);
         byId = wbListDao.getById(id);
-        Assert.assertNull(byId);
+        assertNull(byId);
     }
 
     @Test
@@ -53,11 +55,11 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         wbListDao.saveListRecord(listRecord);
         WbListRecords byId = wbListDao.getById(id);
-        Assert.assertEquals(listRecord, byId);
+        assertEquals(listRecord, byId);
 
         wbListDao.removeRecord(listRecord);
         byId = wbListDao.getById(id);
-        Assert.assertNull(byId);
+        assertNull(byId);
     }
 
     @NotNull
@@ -88,11 +90,11 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(PARTY, SHOP, ListType.black, LIST_NAME);
 
-        Assert.assertEquals(1, filteredListRecords.size());
+        assertEquals(1, filteredListRecords.size());
 
         filteredListRecords = wbListDao.getFilteredListRecords(null, SHOP, ListType.black, null);
 
-        Assert.assertEquals(2, filteredListRecords.size());
+        assertEquals(2, filteredListRecords.size());
 
         WbListRecords listRecord_4 = createListRecord("4");
         listRecord_4.setRowInfo("{ \n" +
@@ -104,11 +106,28 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         wbListDao.saveListRecord(listRecord_4);
 
         filteredListRecords = wbListDao.getFilteredListRecords(null, SHOP, ListType.grey, null);
-        Assert.assertEquals(1, filteredListRecords.size());
-        Assert.assertFalse(filteredListRecords.get(0).getRowInfo().isEmpty());
+        assertEquals(1, filteredListRecords.size());
+        assertFalse(filteredListRecords.get(0).getRowInfo().isEmpty());
 
         PaymentCountInfo countInfoListRecord = wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
 
-        Assert.assertEquals(5L, countInfoListRecord.getCountInfo().getCount().longValue());
+        assertEquals(5L, countInfoListRecord.getCountInfo().getCount().longValue());
+
+        //check sorting
+        List<WbListRecords> wbListRecordsFirst = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), null, null,
+                null, 3, null, SortOrder.ASC);
+        List<WbListRecords> wbListRecordsSecond = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), null, null,
+                null, 3, null, SortOrder.DESC);
+        assertEquals(wbListRecordsFirst.get(0).getPartyId(), wbListRecordsSecond.get(1).getPartyId());
+
+        //check paging
+        wbListRecordsFirst = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), null, null,
+                null, 1, null, SortOrder.DESC);
+        wbListRecordsSecond = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), null, wbListRecordsFirst.get(0).getId(),
+                wbListRecordsFirst.get(0).getInsertTime(), 1, null, SortOrder.DESC);
+        Integer count = wbListDao.countFilterRecords(ListType.black, List.of(LIST_NAME), null);
+        assertEquals(Integer.valueOf(2), count);
+        assertNotEquals(wbListRecordsFirst.get(0).getPartyId(), wbListRecordsSecond.get(0).getPartyId());
+
     }
 }

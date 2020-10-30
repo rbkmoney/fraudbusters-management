@@ -4,23 +4,36 @@ import com.rbkmoney.damsel.wb_list.ChangeCommand;
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.damsel.wb_list.Row;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
+import com.rbkmoney.fraudbusters.management.exception.UnknownEventException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TBase;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class WbListCommandService {
 
-    private final KafkaTemplate<String, TBase> kafkaTemplate;
+    @Value("${kafka.topic.wblist.command}")
+    public String topicCommand;
 
-    public String sendCommandSync(String topicCommand, Row row, ListType type, Command command) {
+    private final KafkaTemplate<String, TBase> kafkaTemplate;
+    private final PaymentListRecordToRowConverter paymentListRecordToRowConverter;
+    private final PaymentCountInfoRequestToRowConverter countInfoListRecordToRowConverter;
+
+    public String sendCommandSync(Row row, ListType type, Command command) {
         row.setListType(type);
         String uuid = UUID.randomUUID().toString();
         try {
@@ -45,5 +58,41 @@ public class WbListCommandService {
         changeCommand.setCommand(command);
         return changeCommand;
     }
+
+    public ResponseEntity<List<String>> sendListRecords(List<PaymentCountInfo> records, ListType listType) {
+        try {
+            List<String> recordIds = records.stream()
+                    .map(t -> mapToRow(t, listType))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok()
+                    .body(recordIds);
+        } catch (Exception e) {
+            log.error("Error when insert rows: {} e: ", records, e);
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    private String mapToRow(PaymentCountInfo record, ListType listType) {
+        Row row = initRow(record, listType);
+        log.info("WbListResource list add row {}", row);
+        return sendCommandSync(row, listType, Command.CREATE);
+    }
+
+    private Row initRow(PaymentCountInfo record, ListType listType) {
+        Row row = null;
+        switch (listType) {
+            case black:
+            case white:
+                row = paymentListRecordToRowConverter.convert(record.getListRecord());
+                break;
+            case grey:
+                row = countInfoListRecordToRowConverter.convert(record);
+                break;
+            default:
+                throw new UnknownEventException();
+        }
+        return row;
+    }
+
 
 }

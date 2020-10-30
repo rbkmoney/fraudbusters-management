@@ -55,7 +55,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class ExceptionApplicationTest {
 
     private static final String VALUE = "value";
-    private static final String KEY = "key";
     private static final String SHOP_ID = "shopId";
     private static final String PARTY_ID = "partyId";
     private static final String LIST_NAME = "listName";
@@ -101,7 +100,7 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpClientErrorException.BadRequest.class)
     public void executionRestTestBadRequest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenReturn(ID_TEST);
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenReturn(ID_TEST);
 
         ListRecord listRecord = new ListRecord();
         String format = String.format(SERVICE_URL, serverPort);
@@ -113,7 +112,7 @@ public class ExceptionApplicationTest {
     @Test
     public void executionRestTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenReturn(ID_TEST);
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenReturn(ID_TEST);
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
@@ -128,7 +127,7 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpServerErrorException.InternalServerError.class)
     public void executionRestDaoExceptionTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenThrow(new DaoException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new DaoException(TEST_MESSAGE));
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
@@ -140,7 +139,7 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpServerErrorException.InternalServerError.class)
     public void executionRestKafkaSerializationTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
 
         ListRecord listRecord = createRow();
         String format = String.format(SERVICE_URL, serverPort);
@@ -152,7 +151,7 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpClientErrorException.BadRequest.class)
     public void getRestTestBadRequest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendCommandSync(any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
         HashMap<String, Object> uriVariables = new HashMap<>();
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(String.format(SERVICE_URL, serverPort) + "/whiteList")
                 .queryParam("partyId", PARTY_ID)
