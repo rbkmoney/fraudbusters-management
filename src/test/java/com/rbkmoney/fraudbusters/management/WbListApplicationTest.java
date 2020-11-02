@@ -2,7 +2,9 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.wb_list.*;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
+import com.rbkmoney.fraudbusters.management.domain.request.ListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
@@ -171,22 +172,46 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             Assert.assertEquals(eventList.get(0).command, Command.DELETE);
             Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.white);
         }
+
+        String value = VALUE + 66;
+        HttpEntity<ListRowsInsertRequest> entity = new HttpEntity<>(createListRowsInsertRequest(value), new org.springframework.http.HttpHeaders());
+        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/lists", HttpMethod.POST, entity, String.class);
+
+        try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
+            consumer.subscribe(Collections.singletonList(topicCommand));
+            List<ChangeCommand> eventList = consumeCommand(consumer);
+
+            Assert.assertEquals(1, eventList.size());
+            Assert.assertEquals(eventList.get(0).command, Command.CREATE);
+            Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
+            Assert.assertEquals(value, eventList.get(0).getRow().getValue());
+            log.info("{}", eventList.get(0).getRow());
+        }
+    }
+
+    @NotNull
+    private ListRowsInsertRequest createListRowsInsertRequest(String value) {
+        ListRowsInsertRequest listRowsInsertRequest = new ListRowsInsertRequest();
+        listRowsInsertRequest.setListType(ListType.black);
+        PaymentCountInfo paymentCountInfo = new PaymentCountInfo();
+        PaymentListRecord listRecord = new PaymentListRecord();
+        listRecord.setListName(LIST_NAME);
+        listRecord.setPartyId(PARTY_ID);
+        listRecord.setShopId(SHOP_ID);
+        listRecord.setValue(value);
+        paymentCountInfo.setListRecord(listRecord);
+        listRowsInsertRequest.setRecords(List.of(paymentCountInfo));
+        return listRowsInsertRequest;
     }
 
     private void insertToBlackList(PaymentListRecord... values) {
         HttpEntity<List<PaymentListRecord>> entity = new HttpEntity<>(List.of(values), new org.springframework.http.HttpHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:" + port + "/fb-management/v1/blackList",
-                HttpMethod.POST, entity, String.class);
-        System.out.println(response);
+        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/blackList", HttpMethod.POST, entity, String.class);
     }
 
     private void deleteFromWhiteList(PaymentListRecord value) {
         HttpEntity<PaymentListRecord> entity = new HttpEntity<>(value, new org.springframework.http.HttpHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:" + port + "/fb-management/v1/whiteList",
-                HttpMethod.DELETE, entity, String.class);
-        System.out.println(response);
+        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/whiteList", HttpMethod.DELETE, entity, String.class);
     }
 
     @NotNull
