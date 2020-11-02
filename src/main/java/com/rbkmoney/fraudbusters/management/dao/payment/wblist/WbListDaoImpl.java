@@ -124,9 +124,9 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
                 from.where(condition) :
                 from.where(condition.and(
                         WB_LIST_RECORDS.VALUE.like(filterValue)
-                                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
-                                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue)))));
-        Field field = StringUtils.isEmpty(sortingBy) ? WB_LIST_RECORDS.INSERT_TIME : F_GROUP_REFERENCE.field(sortingBy);
+                                .or(WB_LIST_RECORDS.PARTY_ID.like(filterValue)
+                                        .or(WB_LIST_RECORDS.SHOP_ID.like(filterValue)))));
+        Field field = StringUtils.isEmpty(sortingBy) ? WB_LIST_RECORDS.INSERT_TIME : WB_LIST_RECORDS.field(sortingBy);
         SelectSeekStep2<WbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(WB_LIST_RECORDS.ID,
                 field, sortOrder, whereQuery);
         return fetch(addSeekIfNeed(lastId, sortFieldValue, size, wbListRecordsRecords), listRecordRowMapper);
@@ -142,8 +142,8 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
                 from.where(condition) :
                 from.where(condition.and(
                         WB_LIST_RECORDS.VALUE.like(filterValue)
-                                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
-                                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue)))));
+                                .or(WB_LIST_RECORDS.PARTY_ID.like(filterValue)
+                                        .or(WB_LIST_RECORDS.SHOP_ID.like(filterValue)))));
         return fetchOne(where, Integer.class);
     }
 
