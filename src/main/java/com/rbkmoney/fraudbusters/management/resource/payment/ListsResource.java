@@ -30,6 +30,7 @@ public class ListsResource {
 
     @PostMapping(value = "/lists")
     public ResponseEntity<List<String>> insertRowsToList(@Validated @RequestBody ListRowsInsertRequest request) {
+        log.info("insertRowsToList request {}", request);
         return wbListCommandService.sendListRecords(request.getRecords(), request.getListType());
     }
 
@@ -40,7 +41,7 @@ public class ListsResource {
             log.error("List remove record not fount: {}", id);
             throw new NotFoundException(String.format("List record not found with id: %s", id));
         }
-        log.info("WbListResource whiteList remove record {}", record);
+        log.info("removeRowFromList record {}", record);
         Row row = wbListRecordToRowConverter.convert(record);
         String idMessage = wbListCommandService.sendCommandSync(row,
                 com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().getName()), Command.DELETE);
@@ -50,16 +51,17 @@ public class ListsResource {
     @GetMapping(value = "/lists/filter")
     public ResponseEntity<FilterListRecordsResponse> filterList(@Validated @RequestParam(required = false) ListType listType,
                                                                 @Validated @RequestParam(required = false) List<String> listNames,
-                                                                @Validated @RequestParam(required = false) String idRegexp,
+                                                                @Validated @RequestParam(required = false) String searchValue,
                                                                 @Validated @RequestParam(required = false) String lastId,
                                                                 @Validated @RequestParam(required = false) String sortFieldValue,
                                                                 @Validated @RequestParam(required = false) Integer size,
                                                                 @Validated @RequestParam(required = false) String sortBy,
                                                                 @Validated @RequestParam(required = false) SortOrder sortOrder) {
-        log.info("filterReference idRegexp: {}", idRegexp);
-        List<WbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, idRegexp, lastId,
+        log.info("filterList listType: {} listNames: {} searchValue: {} lastId: {} sortFieldValue: {} size: {} sortBy: {} sortOrder: {}",
+                listType, listNames, searchValue, lastId, sortFieldValue, size, sortBy, sortOrder);
+        List<WbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, searchValue, lastId,
                 sortFieldValue, size, sortBy, sortOrder);
-        Integer count = wbListDao.countFilterRecords(listType, listNames, idRegexp);
+        Integer count = wbListDao.countFilterRecords(listType, listNames, searchValue);
         return ResponseEntity.ok().body(FilterListRecordsResponse.builder()
                 .count(count)
                 .wbListRecords(wbListRecords)
@@ -68,7 +70,7 @@ public class ListsResource {
 
     @GetMapping(value = "/lists/names")
     public ResponseEntity<List<String>> getNames(@Validated @RequestParam(required = false) ListType listType) {
-        log.info("filterList listType: {}", listType);
+        log.info("getNames listType: {}", listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
         return ResponseEntity.ok().body(currentListNames);
     }
