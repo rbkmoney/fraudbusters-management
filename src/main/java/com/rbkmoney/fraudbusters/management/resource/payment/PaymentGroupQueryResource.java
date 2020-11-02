@@ -4,7 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.response.FilterPaymentGroupsReferenceResponse;
+import com.rbkmoney.fraudbusters.management.domain.payment.response.FilterPaymentGroupsReferenceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;

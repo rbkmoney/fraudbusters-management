@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.resource.p2p;
 
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.response.FilterP2pReferenceResponse;
+import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterP2pReferenceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;

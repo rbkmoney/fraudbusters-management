@@ -1,7 +1,10 @@
-package com.rbkmoney.fraudbusters.management.domain.response;
+package com.rbkmoney.fraudbusters.management.domain.payment.response;
 
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 

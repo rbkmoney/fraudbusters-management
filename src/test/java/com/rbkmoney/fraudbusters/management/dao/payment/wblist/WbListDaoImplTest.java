@@ -1,5 +1,8 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.wblist;
 
+import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverterImpl;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
@@ -20,6 +23,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class,
+        PaymentListRecordToRowConverter.class, PaymentCountInfoRequestToRowConverter.class, ListRecordToRowConverterImpl.class,
         PaymentCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
 public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 

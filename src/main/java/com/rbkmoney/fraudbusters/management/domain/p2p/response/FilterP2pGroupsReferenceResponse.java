@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.domain.response;
+package com.rbkmoney.fraudbusters.management.domain.p2p.response;
 
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import lombok.AllArgsConstructor;

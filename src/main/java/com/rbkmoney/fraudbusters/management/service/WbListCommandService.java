@@ -6,9 +6,7 @@ import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
-import com.rbkmoney.fraudbusters.management.exception.UnknownEventException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TBase;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -59,10 +58,14 @@ public class WbListCommandService {
         return changeCommand;
     }
 
-    public ResponseEntity<List<String>> sendListRecords(List<PaymentCountInfo> records, ListType listType) {
+    public <T> ResponseEntity<List<String>> sendListRecords(List<T> records, ListType listType, BiFunction<T, ListType, Row> func) {
         try {
             List<String> recordIds = records.stream()
-                    .map(t -> mapToRow(t, listType))
+                    .map(record -> {
+                        Row row = func.apply(record, listType);
+                        log.info("WbListResource list add row {}", row);
+                        return sendCommandSync(row, listType, Command.CREATE);
+                    })
                     .collect(Collectors.toList());
             return ResponseEntity.ok()
                     .body(recordIds);
@@ -71,28 +74,5 @@ public class WbListCommandService {
             return ResponseEntity.status(500).build();
         }
     }
-
-    private String mapToRow(PaymentCountInfo record, ListType listType) {
-        Row row = initRow(record, listType);
-        log.info("WbListResource list add row {}", row);
-        return sendCommandSync(row, listType, Command.CREATE);
-    }
-
-    private Row initRow(PaymentCountInfo record, ListType listType) {
-        Row row = null;
-        switch (listType) {
-            case black:
-            case white:
-                row = paymentListRecordToRowConverter.convert(record.getListRecord());
-                break;
-            case grey:
-                row = countInfoListRecordToRowConverter.convert(record);
-                break;
-            default:
-                throw new UnknownEventException();
-        }
-        return row;
-    }
-
 
 }

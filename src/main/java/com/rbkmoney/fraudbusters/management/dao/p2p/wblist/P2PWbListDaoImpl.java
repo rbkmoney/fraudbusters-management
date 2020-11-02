@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
@@ -104,5 +106,48 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
                                 .addValue(P2P_WB_LIST_RECORDS.LIST_NAME, listName, EQUALS)))
                 .limit(LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
+    }
+
+    @Override
+    public <T> List<P2pWbListRecords> filterListRecords(@NonNull ListType listType, @NonNull List<String> listNames,
+                                                        String filterValue, String lastId, T sortFieldValue,
+                                                        Integer size, String sortingBy, SortOrder sortOrder) {
+        SelectWhereStep<P2pWbListRecordsRecord> from = getDslContext()
+                .selectFrom(P2P_WB_LIST_RECORDS);
+        Condition condition = P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
+        SelectConditionStep<P2pWbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
+                from.where(condition) :
+                from.where(condition.and(
+                        P2P_WB_LIST_RECORDS.VALUE.like(filterValue)
+                                .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterValue))));
+        Field field = StringUtils.isEmpty(sortingBy) ? P2P_WB_LIST_RECORDS.INSERT_TIME : P2P_WB_LIST_RECORDS.field(sortingBy);
+        SelectSeekStep2<P2pWbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(P2P_WB_LIST_RECORDS.ID,
+                field, sortOrder, whereQuery);
+        return fetch(addSeekIfNeed(lastId, sortFieldValue, size, wbListRecordsRecords), listRecordRowMapper);
+    }
+
+    @Override
+    public Integer countFilterRecords(@NonNull ListType listType, @NonNull List<String> listNames, String filterValue) {
+        SelectJoinStep<Record1<Integer>> from = getDslContext()
+                .selectCount()
+                .from(P2P_WB_LIST_RECORDS);
+        Condition condition = P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
+        SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue) ?
+                from.where(condition) :
+                from.where(condition.and(
+                        P2P_WB_LIST_RECORDS.VALUE.like(filterValue)
+                                .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterValue))));
+        return fetchOne(where, Integer.class);
+    }
+
+    @Override
+    public List<String> getCurrentListNames(ListType listType) {
+        SelectConditionStep<Record1<String>> where = getDslContext()
+                .selectDistinct(P2P_WB_LIST_RECORDS.LIST_NAME)
+                .from(P2P_WB_LIST_RECORDS)
+                .where(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
+        return fetch(where, (rs, rowNum) ->
+                rs.getString(P2P_WB_LIST_RECORDS.LIST_NAME.getName())
+        );
     }
 }

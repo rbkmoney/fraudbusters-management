@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.domain.response;
+package com.rbkmoney.fraudbusters.management.domain.payment.response;
 
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FilterListRecordsResponse {
+public class PaymentFilterListRecordsResponse {
 
     private List<WbListRecords> wbListRecords;
     private Integer count;
