@@ -34,17 +34,16 @@ public class ListsResource {
     }
 
     @DeleteMapping(value = "/lists/{id}")
-    public ResponseEntity<String> removeRowFromList(@Validated @PathVariable String id,
-                                                    @Validated @RequestParam ListType listType) {
+    public ResponseEntity<String> removeRowFromList(@Validated @PathVariable String id) {
         WbListRecords record = wbListDao.getById(id);
-        if (record == null || listType.equals(record.getListType())) {
-            log.error("List remove record not fount: {} listType: {}", id, listType);
-            throw new NotFoundException(String.format("List record not found with id: %s listType: %s", id, listType.getName()));
+        if (record == null) {
+            log.error("List remove record not fount: {}", id);
+            throw new NotFoundException(String.format("List record not found with id: %s", id));
         }
         log.info("WbListResource whiteList remove record {}", record);
         Row row = wbListRecordToRowConverter.convert(record);
         String idMessage = wbListCommandService.sendCommandSync(row,
-                com.rbkmoney.damsel.wb_list.ListType.valueOf(listType.getName()), Command.DELETE);
+                com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().getName()), Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -68,7 +67,7 @@ public class ListsResource {
     }
 
     @GetMapping(value = "/lists/names")
-    public ResponseEntity<List<String>> filterList(@Validated @RequestParam(required = false) ListType listType) {
+    public ResponseEntity<List<String>> getNames(@Validated @RequestParam(required = false) ListType listType) {
         log.info("filterList listType: {}", listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
         return ResponseEntity.ok().body(currentListNames);
