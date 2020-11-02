@@ -44,7 +44,7 @@ public class ListsResource {
         log.info("removeRowFromList record {}", record);
         Row row = wbListRecordToRowConverter.convert(record);
         String idMessage = wbListCommandService.sendCommandSync(row,
-                com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().getName()), Command.DELETE);
+                com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()), Command.DELETE);
         return ResponseEntity.ok().body(idMessage);
     }
 
