@@ -133,5 +133,7 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         assertEquals(Integer.valueOf(2), count);
         assertNotEquals(wbListRecordsFirst.get(0).getPartyId(), wbListRecordsSecond.get(0).getPartyId());
 
+        List<String> currentListNames = wbListDao.getCurrentListNames(ListType.black);
+        assertEquals(LIST_NAME, currentListNames.get(0));
     }
 }
