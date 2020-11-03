@@ -52,8 +52,8 @@ public class P2pListsResource {
     }
 
     @GetMapping(value = "/lists/filter")
-    public ResponseEntity<P2pFilterListRecordsResponse> filterList(@Validated @RequestParam(required = false) ListType listType,
-                                                                   @Validated @RequestParam(required = false) List<String> listNames,
+    public ResponseEntity<P2pFilterListRecordsResponse> filterList(@Validated @RequestParam(required = true) ListType listType,
+                                                                   @Validated @RequestParam(required = true) List<String> listNames,
                                                                    @Validated @RequestParam(required = false) String searchValue,
                                                                    @Validated @RequestParam(required = false) String lastId,
                                                                    @Validated @RequestParam(required = false) String sortFieldValue,
