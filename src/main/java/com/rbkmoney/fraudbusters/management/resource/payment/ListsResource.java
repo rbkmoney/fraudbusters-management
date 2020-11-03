@@ -51,8 +51,8 @@ public class ListsResource {
     }
 
     @GetMapping(value = "/lists/filter")
-    public ResponseEntity<PaymentFilterListRecordsResponse> filterList(@Validated @RequestParam(required = false) ListType listType,
-                                                                       @Validated @RequestParam(required = false) List<String> listNames,
+    public ResponseEntity<PaymentFilterListRecordsResponse> filterList(@Validated @RequestParam ListType listType,
+                                                                       @Validated @RequestParam List<String> listNames,
                                                                        @Validated @RequestParam(required = false) String searchValue,
                                                                        @Validated @RequestParam(required = false) String lastId,
                                                                        @Validated @RequestParam(required = false) String sortFieldValue,
@@ -71,7 +71,7 @@ public class ListsResource {
     }
 
     @GetMapping(value = "/lists/names")
-    public ResponseEntity<List<String>> getNames(@Validated @RequestParam(required = true) ListType listType) {
+    public ResponseEntity<List<String>> getNames(@Validated @RequestParam ListType listType) {
         log.info("getNames listType: {}", listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
         return ResponseEntity.ok().body(currentListNames);

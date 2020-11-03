@@ -52,8 +52,8 @@ public class P2pListsResource {
     }
 
     @GetMapping(value = "/lists/filter")
-    public ResponseEntity<P2pFilterListRecordsResponse> filterList(@Validated @RequestParam(required = true) ListType listType,
-                                                                   @Validated @RequestParam(required = true) List<String> listNames,
+    public ResponseEntity<P2pFilterListRecordsResponse> filterList(@Validated @RequestParam ListType listType,
+                                                                   @Validated @RequestParam List<String> listNames,
                                                                    @Validated @RequestParam(required = false) String searchValue,
                                                                    @Validated @RequestParam(required = false) String lastId,
                                                                    @Validated @RequestParam(required = false) String sortFieldValue,
@@ -72,7 +72,7 @@ public class P2pListsResource {
     }
 
     @GetMapping(value = "/lists/names")
-    public ResponseEntity<List<String>> getNames(@Validated @RequestParam(required = false) ListType listType) {
+    public ResponseEntity<List<String>> getNames(@Validated @RequestParam ListType listType) {
         log.info("getNames listType: {}", listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
         return ResponseEntity.ok().body(currentListNames);
