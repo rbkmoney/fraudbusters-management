@@ -1,5 +1,8 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.wblist;
 
+import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverterImpl;
+import com.rbkmoney.fraudbusters.management.converter.p2p.P2pCountInfoListRequestToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.P2pListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pWbListRecordsToListRecordWithRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
@@ -20,12 +23,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @ContextConfiguration(classes = {P2PWbListDaoImpl.class, P2pWbListRecordsToListRecordWithRowConverter.class,
+        P2pListRecordToRowConverter.class, P2pCountInfoListRequestToRowConverter.class, ListRecordToRowConverterImpl.class,
         P2pCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
 public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
-
     public static final String LIST_NAME = "ip";
     public static final String IDENTITY_ID = "identityId";
-
     @Autowired
     P2PWbListDao p2PWbListDao;
 

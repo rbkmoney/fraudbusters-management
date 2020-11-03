@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.response.FilterPaymentReferenceResponse;
+import com.rbkmoney.fraudbusters.management.domain.payment.response.FilterPaymentReferenceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;

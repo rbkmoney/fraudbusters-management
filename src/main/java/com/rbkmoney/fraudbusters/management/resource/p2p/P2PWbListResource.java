@@ -25,6 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Deprecated
 @RestController
 @RequestMapping("/p2p")
 @RequiredArgsConstructor

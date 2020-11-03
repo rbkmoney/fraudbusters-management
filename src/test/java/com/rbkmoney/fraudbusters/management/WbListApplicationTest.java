@@ -4,7 +4,7 @@ import com.rbkmoney.damsel.wb_list.*;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
-import com.rbkmoney.fraudbusters.management.domain.request.ListRowsInsertRequest;
+import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,6 +26,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
@@ -36,6 +36,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 @Slf4j
@@ -157,9 +159,9 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             consumer.subscribe(Collections.singletonList(topicCommand));
             List<ChangeCommand> eventList = consumeCommand(consumer);
 
-            Assert.assertEquals(2, eventList.size());
-            Assert.assertEquals(eventList.get(0).command, Command.CREATE);
-            Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
+            assertEquals(2, eventList.size());
+            assertEquals(eventList.get(0).command, Command.CREATE);
+            assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
 
             deleteFromWhiteList(record);
         }
@@ -168,9 +170,9 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             consumer.subscribe(Collections.singletonList(topicCommand));
             List<ChangeCommand> eventList = consumeCommand(consumer);
 
-            Assert.assertEquals(1, eventList.size());
-            Assert.assertEquals(eventList.get(0).command, Command.DELETE);
-            Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.white);
+            assertEquals(1, eventList.size());
+            assertEquals(eventList.get(0).command, Command.DELETE);
+            assertEquals(eventList.get(0).getRow().getListType(), ListType.white);
         }
 
         String value = VALUE + 66;
@@ -181,12 +183,16 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             consumer.subscribe(Collections.singletonList(topicCommand));
             List<ChangeCommand> eventList = consumeCommand(consumer);
 
-            Assert.assertEquals(1, eventList.size());
-            Assert.assertEquals(eventList.get(0).command, Command.CREATE);
-            Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
-            Assert.assertEquals(value, eventList.get(0).getRow().getValue());
+            assertEquals(1, eventList.size());
+            assertEquals(eventList.get(0).command, Command.CREATE);
+            assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
+            assertEquals(value, eventList.get(0).getRow().getValue());
             log.info("{}", eventList.get(0).getRow());
         }
+
+        ResponseEntity<ArrayList> result = restTemplate.getForEntity("http://localhost:" + port + "/fb-management/v1/lists/names?listType={name}",
+                ArrayList.class, "black");
+        assertTrue(result.getBody().isEmpty());
     }
 
     @NotNull

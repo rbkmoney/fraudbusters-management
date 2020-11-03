@@ -4,7 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.response.FilterP2pGroupsReferenceResponse;
+import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterP2pGroupsReferenceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;

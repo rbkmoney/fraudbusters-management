@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.domain.response;
+package com.rbkmoney.fraudbusters.management.domain.payment.response;
 
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import lombok.AllArgsConstructor;

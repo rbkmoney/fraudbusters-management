@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.domain.request;
+package com.rbkmoney.fraudbusters.management.domain.payment.request;
 
 import lombok.Data;
 
