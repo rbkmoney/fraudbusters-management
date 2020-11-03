@@ -71,7 +71,7 @@ public class ListsResource {
     }
 
     @GetMapping(value = "/lists/names")
-    public ResponseEntity<List<String>> getNames(@Validated @RequestParam(required = false) ListType listType) {
+    public ResponseEntity<List<String>> getNames(@Validated @RequestParam(required = true) ListType listType) {
         log.info("getNames listType: {}", listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
         return ResponseEntity.ok().body(currentListNames);
