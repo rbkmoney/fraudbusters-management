@@ -10,8 +10,8 @@ public interface PaymentReferenceDao extends ReferenceDao<PaymentReferenceModel>
 
     List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, Boolean isDefault, Integer limit);
 
-    List<PaymentReferenceModel> filterReferences(String searchValue, Boolean isGlobal, Boolean isDefault,
-                                                 String lastId, Integer size, String sortingBy, SortOrder sortOrder);
+    List<PaymentReferenceModel> filterReferences(String filterValue, boolean isGlobal, boolean isDefault, String lastId, String sortFieldValue,
+                                                 Integer size, String sortingBy, SortOrder sortOrder);
 
     List<PaymentReferenceModel> getByPartyAndShop(String partyId, String shopId);
 

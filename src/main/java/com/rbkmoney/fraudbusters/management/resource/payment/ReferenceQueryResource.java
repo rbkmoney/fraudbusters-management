@@ -34,16 +34,17 @@ public class ReferenceQueryResource {
 
     @GetMapping(value = "/reference/filter")
     public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(@Validated @RequestParam(required = false) String searchValue,
-                                                                          @Validated @RequestParam(required = false) Boolean isGlobal,
-                                                                          @Validated @RequestParam(required = false) Boolean isDefault,
-                                                                          @Validated @RequestParam(required = false) String lastId,
-                                                                          @Validated @RequestParam(required = false) Integer size,
-                                                                          @Validated @RequestParam(required = false) String sortField,
-                                                                          @Validated @RequestParam(required = false) SortOrder sortOrder) {
+                                                                           @Validated @RequestParam(required = false) Boolean isGlobal,
+                                                                           @Validated @RequestParam(required = false) Boolean isDefault,
+                                                                           @Validated @RequestParam(required = false) String lastId,
+                                                                           @Validated @RequestParam(required = false) String sortFieldValue,
+                                                                           @Validated @RequestParam(required = false) Integer size,
+                                                                           @Validated @RequestParam(required = false) String sortField,
+                                                                           @Validated @RequestParam(required = false) SortOrder sortOrder) {
         log.info("filterReferences searchValue: {} lastId: {} size: {} sortOrder: {}, isGlobal: {}, isDefault: {}",
                 searchValue, lastId, size, sortOrder, isGlobal, isDefault);
-        List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(searchValue, isGlobal,
-                isDefault, lastId, size, sortField, sortOrder);
+        List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(searchValue, isGlobal, isDefault, lastId, sortFieldValue,
+                size, sortField, sortOrder);
         Integer count = referenceDao.countFilterModel(searchValue, isGlobal, isDefault);
         return ResponseEntity.ok().body(FilterPaymentReferenceResponse.builder()
                 .count(count)

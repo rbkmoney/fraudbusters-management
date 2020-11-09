@@ -6,14 +6,18 @@ import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDaoImp
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.SortOrder;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 import java.util.UUID;
 
+import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
+import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFReference.P2P_F_REFERENCE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -28,7 +32,13 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     @Autowired
     P2pReferenceDao p2pReferenceDao;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
+    @After
+    public void cleanup() {
+        jdbcTemplate.execute("TRUNCATE " + P2P_F_REFERENCE.getSchema().getName() + "." + P2P_F_REFERENCE.getName());
+    }
 
     @Test
     public void insert() {
@@ -114,38 +124,38 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceModel.setIsGlobal(true);
         p2pReferenceDao.insert(referenceModel);
 
-        List<P2pReferenceModel> paymentReferenceModels = p2pReferenceDao.filterReferences(null, null, null, null, null, null);
+        List<P2pReferenceModel> paymentReferenceModels = p2pReferenceDao.filterReferences(null, false, null, null, 5, null, null);
         System.out.println(paymentReferenceModels);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(3, paymentReferenceModels.size());
 
         //check template field
-        paymentReferenceModels = p2pReferenceDao.filterReferences(TEMPLATE_ID, null, null, null, null, null);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(TEMPLATE_ID, false, null, null, 5, null, null);
 
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(2, paymentReferenceModels.size());
 
         //check regexp
-        paymentReferenceModels = p2pReferenceDao.filterReferences("%" + id + "%", null, null, null, null, null);
+        paymentReferenceModels = p2pReferenceDao.filterReferences("%" + TEMPLATE_ID + "%", false, null, null, 5, null, null);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(3, paymentReferenceModels.size());
 
         //check concrete
-        paymentReferenceModels = p2pReferenceDao.filterReferences(THIRD + TEMPLATE_ID, null, null, null, null, null);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(THIRD + TEMPLATE_ID, false, null, null, 5, null, null);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
 
         //check global
-        paymentReferenceModels = p2pReferenceDao.filterReferences(null, true, null, null, null, null);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(null, true, null, null, 5, null, null);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         //check sort
-        paymentReferenceModels = p2pReferenceDao.filterReferences(null, null, null, null, "template_id", null);
-        assertEquals(id, paymentReferenceModels.get(0).getId());
+        paymentReferenceModels = p2pReferenceDao.filterReferences(null, false, null, null, 5, "template_id", null);
+        assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
-        paymentReferenceModels = p2pReferenceDao.filterReferences(null, null, null, null, "template_id", SortOrder.DESC);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(null, false, null, null, 5, "template_id", SortOrder.DESC);
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         paymentReferenceModels

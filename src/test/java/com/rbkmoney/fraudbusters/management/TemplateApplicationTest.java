@@ -110,9 +110,9 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setIsGlobal(false);
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
-        paymentTemplateCommandResource.insertReferences("id", Collections.singletonList(referenceModel));
+        paymentTemplateCommandResource.insertReferences(Collections.singletonList(referenceModel));
         paymentTemplateCommandResource.deleteReferences("id", Collections.singletonList(referenceModel));
-        paymentTemplateCommandResource.insertReference("id", referenceModel);
+        paymentTemplateCommandResource.insertReference(referenceModel);
         paymentTemplateCommandResource.deleteReference(referenceModel.getTemplateId(), referenceModel.getPartyId(), referenceModel.getShopId());
         Thread.sleep(TIMEOUT);
 

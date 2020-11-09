@@ -4,7 +4,6 @@ import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FReferenceRecord;
-import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
 import org.jooq.impl.DSL;
@@ -16,9 +15,7 @@ import javax.sql.DataSource;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
-import static com.rbkmoney.fraudbusters.management.domain.tables.FTemplate.F_TEMPLATE;
 import static org.jooq.Comparator.EQUALS;
-import static org.jooq.Comparator.LIKE;
 
 @Component
 public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao {
@@ -131,35 +128,46 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
     }
 
     @Override
-    public List<PaymentReferenceModel> filterReferences(String searchValue, Boolean isGlobal, Boolean isDefault,
-                                                        String lastId, Integer size, String sortingBy, SortOrder sortOrder) {
-        SelectConditionStep<FReferenceRecord> where = getDslContext()
-                .selectFrom(F_REFERENCE)
-                .where(referenceFullFieldFIndCondition(searchValue, isGlobal, isDefault));
-        Field<String> field = StringUtils.isEmpty(sortingBy) ? F_REFERENCE.ID : F_REFERENCE.field(sortingBy, String.class);
-        SelectSeekStep1<FReferenceRecord, String> fReferenceRecords = addSortCondition(field, sortOrder, where);
-        return fetch(addSeekIfNeed(lastId, size, fReferenceRecords), listRecordRowMapper);
+    public List<PaymentReferenceModel> filterReferences(String filterValue, boolean isGlobal, boolean isDefault,
+                                                        String lastId, String sortFieldValue,
+                                                        Integer size, String sortingBy, SortOrder sortOrder) {
+        SelectWhereStep<FReferenceRecord> from = getDslContext()
+                .selectFrom(F_REFERENCE);
+        Field<String> field = StringUtils.isEmpty(sortingBy) ? F_REFERENCE.TEMPLATE_ID : F_REFERENCE.field(sortingBy, String.class);
+        SelectConditionStep<FReferenceRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
+                from.where(DSL.trueCondition()) : from.where(
+                F_REFERENCE.TEMPLATE_ID.like(filterValue)
+                        .or(F_REFERENCE.PARTY_ID.like(filterValue))
+                        .or(F_REFERENCE.SHOP_ID.like(filterValue)));
+        whereQuery = addCheckGlobalDefaultIfExist(isGlobal, isDefault, whereQuery);
+        SelectSeekStep2<FReferenceRecord, String, String> fReferenceRecords = addSortCondition(
+                F_REFERENCE.ID, field, sortOrder, whereQuery);
+        return fetch(addSeekIfNeed(lastId, sortFieldValue, size, fReferenceRecords), listRecordRowMapper);
+    }
+
+    private <T extends Record> SelectConditionStep<T> addCheckGlobalDefaultIfExist(boolean isGlobal, boolean isDefault,
+                                                                                   SelectConditionStep<T> whereQuery) {
+        if (isDefault) {
+            whereQuery = whereQuery.and(F_REFERENCE.IS_DEFAULT.eq(isDefault));
+        }
+        if (isGlobal) {
+            whereQuery = whereQuery.and(F_REFERENCE.IS_GLOBAL.eq(isGlobal));
+        }
+        return whereQuery;
     }
 
     @Override
-    public Integer countFilterModel(String searchValue, Boolean isGlobal, Boolean isDefault) {
+    public Integer countFilterModel(String filterValue, Boolean isGlobal, Boolean isDefault) {
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(F_REFERENCE)
-                .where(referenceFullFieldFIndCondition(searchValue, isGlobal, isDefault));
+                .where(!StringUtils.isEmpty(filterValue) ?
+                        F_REFERENCE.TEMPLATE_ID.like(filterValue)
+                                .or(F_REFERENCE.PARTY_ID.like(filterValue)
+                                        .or(F_REFERENCE.SHOP_ID.like(filterValue))) :
+                        DSL.noCondition());
+        where = addCheckGlobalDefaultIfExist(isGlobal, isDefault, where);
         return fetchOne(where, Integer.class);
     }
 
-    private Condition referenceFullFieldFIndCondition(String searchValue, Boolean isGlobal, Boolean isDefault) {
-        return appendConditions(StringUtils.isEmpty(searchValue) ? DSL.trueCondition() : DSL.falseCondition(), Operator.OR,
-                new ConditionParameterSource()
-                        .addValue(F_REFERENCE.ID, searchValue, LIKE)
-                        .addValue(F_REFERENCE.TEMPLATE_ID, searchValue, LIKE)
-                        .addValue(F_REFERENCE.PARTY_ID, searchValue, LIKE)
-                        .addValue(F_REFERENCE.SHOP_ID, searchValue, LIKE))
-                .and(appendConditions(DSL.trueCondition(), Operator.AND,
-                        new ConditionParameterSource()
-                                .addValue(F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)
-                                .addValue(F_REFERENCE.IS_DEFAULT, isDefault, EQUALS)));
-    }
 }
