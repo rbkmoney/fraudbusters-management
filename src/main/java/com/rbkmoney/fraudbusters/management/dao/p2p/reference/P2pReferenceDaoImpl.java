@@ -145,14 +145,27 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
     }
 
     @Override
-    public List<P2pReferenceModel> filterReferences(String searchValue, Boolean isGlobal,
-                                                    String lastId, Integer size, String sortingBy, SortOrder sortOrder) {
-        SelectConditionStep<P2pFReferenceRecord> where = getDslContext()
-                .selectFrom(P2P_F_REFERENCE)
-                .where(referenceFullFieldSearchCondition(searchValue, isGlobal));
-        Field<String> field = StringUtils.isEmpty(sortingBy) ? P2P_F_REFERENCE.ID : P2P_F_REFERENCE.field(sortingBy, String.class);
-        SelectSeekStep1<P2pFReferenceRecord, String> fReferenceRecords = addSortCondition(field, sortOrder, where);
-        return fetch(addSeekIfNeed(lastId, size, fReferenceRecords), listRecordRowMapper);
+    public List<P2pReferenceModel> filterReferences(String filterValue, boolean isGlobal, String lastId, String sortFieldValue,
+                                                    Integer size, String sortingBy, SortOrder sortOrder) {
+        SelectWhereStep<P2pFReferenceRecord> from = getDslContext()
+                .selectFrom(P2P_F_REFERENCE);
+        Field<String> field = StringUtils.isEmpty(sortingBy) ? P2P_F_REFERENCE.TEMPLATE_ID : P2P_F_REFERENCE.field(sortingBy, String.class);
+        SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
+                from.where(DSL.trueCondition()) : from.where(
+                P2P_F_REFERENCE.TEMPLATE_ID.like(filterValue)
+                        .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterValue)));
+        whereQuery = addCheckGlobalDefaultIfExist(isGlobal, whereQuery);
+        SelectSeekStep2<P2pFReferenceRecord, String, String> fReferenceRecords = addSortCondition(
+                P2P_F_REFERENCE.ID, field, sortOrder, whereQuery);
+        return fetch(addSeekIfNeed(lastId, sortFieldValue, size, fReferenceRecords), listRecordRowMapper);
+    }
+
+    private <T extends Record> SelectConditionStep<T> addCheckGlobalDefaultIfExist(boolean isGlobal,
+                                                                                   SelectConditionStep<T> whereQuery) {
+        if (isGlobal) {
+            whereQuery = whereQuery.and(P2P_F_REFERENCE.IS_GLOBAL.eq(isGlobal));
+        }
+        return whereQuery;
     }
 
     @Override
@@ -161,6 +174,7 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
                 .selectCount()
                 .from(P2P_F_REFERENCE)
                 .where(referenceFullFieldSearchCondition(searchValue, isGlobal));
+        where = addCheckGlobalDefaultIfExist(isGlobal, where);
         return fetchOne(where, Integer.class);
     }
 

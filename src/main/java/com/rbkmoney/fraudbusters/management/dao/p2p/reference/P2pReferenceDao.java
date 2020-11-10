@@ -12,7 +12,8 @@ public interface P2pReferenceDao extends ReferenceDao<P2pReferenceModel> {
 
     List<P2pReferenceModel> getByIdentity(String identityId);
 
-    List<P2pReferenceModel> filterReferences(String searchValue, Boolean isGlobal, String lastId, Integer size, String sortingBy, SortOrder sortOrder);
+    List<P2pReferenceModel> filterReferences(String filterValue, boolean isGlobal, String lastId, String sortFieldValue,
+                                             Integer size, String sortingBy, SortOrder sortOrder);
 
     Integer countFilterModel(String searchValue, Boolean isGlobal);
 

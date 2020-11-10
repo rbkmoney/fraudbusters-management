@@ -1,10 +1,12 @@
 package com.rbkmoney.fraudbusters.management.dao;
 
 import org.flywaydb.core.Flyway;
+import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
@@ -12,13 +14,20 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Duration;
 
 @RunWith(SpringRunner.class)
 @EnableConfigurationProperties({DataSourceProperties.class})
-@ContextConfiguration(classes = {DataSourceAutoConfiguration.class},
+@ContextConfiguration(classes = {DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class},
         initializers = AbstractPostgresIntegrationTest.Initializer.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public abstract class AbstractPostgresIntegrationTest {
