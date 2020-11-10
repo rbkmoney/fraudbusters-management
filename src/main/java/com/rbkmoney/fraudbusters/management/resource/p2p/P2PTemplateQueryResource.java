@@ -39,6 +39,13 @@ public class P2PTemplateQueryResource {
         return ResponseEntity.ok().body(list);
     }
 
+    @GetMapping(value = "/template/names")
+    public ResponseEntity<List<String>> getTemplatesName(@Validated @RequestParam(required = false) String regexpName) {
+        log.info("getTemplatesName regexpName: {}", regexpName);
+        List<String> list = p2pTemplateDao.getListNames(regexpName);
+        return ResponseEntity.ok().body(list);
+    }
+
     @GetMapping(value = "/template/filter")
     public ResponseEntity<FilterTemplateResponse> filterTemplates(@Validated @RequestParam(required = false) String id,
                                                                   @Validated @RequestParam(required = false) String lastId,
