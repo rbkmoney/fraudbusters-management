@@ -82,7 +82,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public void groupTest() throws InterruptedException, IOException {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId("id");
-        groupModel.setPriorityTemplates(List.of(new PriorityIdModel(1L, "test")));
+        groupModel.setPriorityTemplates(List.of(new PriorityIdModel(1L, "test", null)));
         checkSerialization(groupModel);
 
         groupCommandResource.insertGroup(groupModel);

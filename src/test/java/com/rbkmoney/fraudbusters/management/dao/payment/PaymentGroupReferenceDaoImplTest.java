@@ -21,8 +21,6 @@ public class PaymentGroupReferenceDaoImplTest extends AbstractPostgresIntegratio
 
     @Test
     public void insert() {
-        String id = "id";
-
         PaymentGroupReferenceModel referenceModel = new PaymentGroupReferenceModel();
         referenceModel.setPartyId(PARTY_ID);
         referenceModel.setGroupId(GROUP_ID);
@@ -30,10 +28,9 @@ public class PaymentGroupReferenceDaoImplTest extends AbstractPostgresIntegratio
 
         List<PaymentGroupReferenceModel> byId = groupReferenceDao.getByGroupId(GROUP_ID);
         Assert.assertEquals(PARTY_ID, byId.get(0).getPartyId());
-
+        System.out.println(byId);
         groupReferenceDao.remove(referenceModel);
 
         byId = groupReferenceDao.getByGroupId(GROUP_ID);
-        Assert.assertTrue(byId.isEmpty());
     }
 }

@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,9 +80,10 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                 .from(F_GROUP)
                 .where(F_GROUP.GROUP_ID.eq(id));
         List<PriorityIdModel> list = fetch(where, (rs, rowNum) ->
-                new PriorityIdModel(
-                        rs.getLong(F_GROUP.PRIORITY.getName()),
-                        rs.getString(F_GROUP.TEMPLATE_ID.getName()))
+                PriorityIdModel.builder()
+                        .priority(rs.getLong(F_GROUP.PRIORITY.getName()))
+                        .lastUpdateTime(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
+                        .id(rs.getString(F_GROUP.TEMPLATE_ID.getName())).build()
         );
         GroupModel groupModel = new GroupModel();
         if (list != null && !list.isEmpty()) {
@@ -91,8 +95,8 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
 
     @Override
     public List<GroupModel> filterGroup(String filterValue) {
-        SelectJoinStep<Record3<String, String, Long>> from = getDslContext()
-                .select(F_GROUP.GROUP_ID, F_GROUP.TEMPLATE_ID, F_GROUP.PRIORITY)
+        SelectJoinStep<Record4<String, String, Long, LocalDateTime>> from = getDslContext()
+                .select(F_GROUP.GROUP_ID, F_GROUP.TEMPLATE_ID, F_GROUP.PRIORITY, F_GROUP.LAST_UPDATE_DATE)
                 .from(F_GROUP);
         SelectConditionStep<Record1<String>> selectGroupsId = null;
         if (!StringUtils.isEmpty(filterValue)) {
@@ -103,16 +107,20 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                             .or(F_GROUP.TEMPLATE_ID.like(filterValue)));
         }
         List<GroupPriorityRow> list = fetch(StringUtils.isEmpty(filterValue) ? from : from.where(F_GROUP.GROUP_ID.in(selectGroupsId)),
-                (rs, rowNum) ->
-                        GroupPriorityRow.builder()
-                                .groupId(rs.getString(F_GROUP.GROUP_ID.getName()))
-                                .priorityIdModel(PriorityIdModel.builder()
-                                        .id(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
-                                        .priority(rs.getLong(F_GROUP.PRIORITY.getName()))
-                                        .build())
-                                .build()
+                (rs, rowNum) -> createGroupPriorityRow(rs)
         );
         return groupRowToModelMapper.groupByGroupId(list);
+    }
+
+    private GroupPriorityRow createGroupPriorityRow(ResultSet rs) throws SQLException {
+        return GroupPriorityRow.builder()
+                .groupId(rs.getString(F_GROUP.GROUP_ID.getName()))
+                .priorityIdModel(PriorityIdModel.builder()
+                        .id(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
+                        .lastUpdateTime(rs.getString(F_GROUP.LAST_UPDATE_DATE.getName()))
+                        .priority(rs.getLong(F_GROUP.PRIORITY.getName()))
+                        .build())
+                .build();
     }
 
 }

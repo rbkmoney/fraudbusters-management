@@ -30,6 +30,7 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
 
     @Override
     public void insert(TemplateModel templateModel) {
+        templateModel.setLastUpdateDate(null);
         Query query = getDslContext()
                 .insertInto(F_TEMPLATE)
                 .set(getDslContext().newRecord(F_TEMPLATE, templateModel))

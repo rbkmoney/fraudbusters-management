@@ -15,7 +15,6 @@ import javax.sql.DataSource;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference.F_GROUP_REFERENCE;
-import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFTemplate.P2P_F_TEMPLATE;
 import static org.jooq.Comparator.EQUALS;
 
 @Component
@@ -30,6 +29,7 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
 
     @Override
     public void insert(PaymentGroupReferenceModel referenceModel) {
+        referenceModel.setLastUpdateDate(null);
         Query query = getDslContext().insertInto(F_GROUP_REFERENCE)
                 .set(getDslContext().newRecord(F_GROUP_REFERENCE, referenceModel))
                 .onConflict(F_GROUP_REFERENCE.PARTY_ID, F_GROUP_REFERENCE.SHOP_ID)

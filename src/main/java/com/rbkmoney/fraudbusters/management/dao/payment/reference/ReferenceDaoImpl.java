@@ -30,6 +30,7 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
 
     @Override
     public void insert(PaymentReferenceModel referenceModel) {
+        referenceModel.setLastUpdateDate(null);
         Query query = getDslContext().insertInto(F_REFERENCE)
                 .set(getDslContext().newRecord(F_REFERENCE, referenceModel))
                 .onConflict(F_REFERENCE.PARTY_ID, F_REFERENCE.SHOP_ID, F_REFERENCE.IS_GLOBAL)
