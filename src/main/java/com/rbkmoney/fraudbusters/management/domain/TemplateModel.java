@@ -13,5 +13,6 @@ public class TemplateModel {
 
     private String id;
     private String template;
+    private String lastUpdateDate;
 
 }

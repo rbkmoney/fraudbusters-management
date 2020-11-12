@@ -15,5 +15,6 @@ public class ReferenceModel {
     protected String templateId;
     protected Boolean isGlobal;
     protected Boolean isDefault;
+    protected String lastUpdateDate;
 
 }
