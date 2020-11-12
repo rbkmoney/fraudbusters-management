@@ -30,6 +30,7 @@ public class P2pTemplateDao extends AbstractDao implements TemplateDao {
 
     @Override
     public void insert(TemplateModel templateModel) {
+        templateModel.setLastUpdateDate(null);
         Query query = getDslContext()
                 .insertInto(P2P_F_TEMPLATE)
                 .set(getDslContext().newRecord(P2P_F_TEMPLATE, templateModel))

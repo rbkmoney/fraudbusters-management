@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,7 +80,8 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
         List<PriorityIdModel> list = fetch(where, (rs, rowNum) ->
                 new PriorityIdModel(
                         rs.getLong(P2P_F_GROUP.PRIORITY.getName()),
-                        rs.getString(P2P_F_GROUP.TEMPLATE_ID.getName()))
+                        rs.getString(P2P_F_GROUP.TEMPLATE_ID.getName()),
+                        null)
         );
         GroupModel groupModel = new GroupModel();
         if (list != null && !list.isEmpty()) {
@@ -102,15 +105,19 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
                             .or(P2P_F_GROUP.TEMPLATE_ID.like(filterValue)));
         }
         List<GroupPriorityRow> list = fetch(StringUtils.isEmpty(filterValue) ? from : from.where(P2P_F_GROUP.GROUP_ID.in(selectGroupsId)),
-                (rs, rowNum) ->
-                        GroupPriorityRow.builder()
-                                .groupId(rs.getString(P2P_F_GROUP.GROUP_ID.getName()))
-                                .priorityIdModel(PriorityIdModel.builder()
-                                        .id(rs.getString(P2P_F_GROUP.TEMPLATE_ID.getName()))
-                                        .priority(rs.getLong(P2P_F_GROUP.PRIORITY.getName()))
-                                        .build())
-                                .build()
+                (rs, rowNum) -> createGroupPriorityRow(rs)
         );
         return groupRowToModelMapper.groupByGroupId(list);
+    }
+
+    private GroupPriorityRow createGroupPriorityRow(ResultSet rs) throws SQLException {
+        return GroupPriorityRow.builder()
+                .groupId(rs.getString(P2P_F_GROUP.GROUP_ID.getName()))
+                .priorityIdModel(PriorityIdModel.builder()
+                        .id(rs.getString(P2P_F_GROUP.TEMPLATE_ID.getName()))
+                        .lastUpdateTime(rs.getString(P2P_F_GROUP.LAST_UPDATE_DATE.getName()))
+                        .priority(rs.getLong(P2P_F_GROUP.PRIORITY.getName()))
+                        .build())
+                .build();
     }
 }

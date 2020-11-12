@@ -53,8 +53,8 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(GROUP_ID);
         ArrayList<PriorityIdModel> priorityTemplates = new ArrayList<>();
-        priorityTemplates.add(new PriorityIdModel(2L, TEMPLATE_1));
-        priorityTemplates.add(new PriorityIdModel(1L, TEMPLATE_2));
+        priorityTemplates.add(new PriorityIdModel(2L, TEMPLATE_1, null));
+        priorityTemplates.add(new PriorityIdModel(1L, TEMPLATE_2, null));
         groupModel.setPriorityTemplates(priorityTemplates);
         groupDao.insert(groupModel);
 

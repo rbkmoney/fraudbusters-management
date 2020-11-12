@@ -26,8 +26,6 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
     @Test
     public void insert() {
-        String id = "id";
-
         PaymentGroupReferenceModel referenceModel = new PaymentGroupReferenceModel();
         referenceModel.setPartyId(PARTY_ID);
         referenceModel.setShopId(SHOP_ID);
@@ -91,5 +89,7 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         paymentGroupReferenceModels = groupReferenceDao.filterReference(null, paymentGroupReferenceModels.get(0).getId(),
                 paymentGroupReferenceModels.get(0).getGroupId(), 1, null, SortOrder.DESC);
         assertEquals(paymentGroupReferenceModels.get(0).getShopId(), SHOP_ID);
+
+        System.out.println(paymentGroupReferenceModels);
     }
 }

@@ -32,7 +32,7 @@ public class CommandToGroupModelConverter implements Converter<Command, GroupMod
 
     private List<PriorityIdModel> convertPriorityIds(List<PriorityId> templateIds) {
         return templateIds.stream()
-                .map(priorityId -> new PriorityIdModel(priorityId.getPriority(), priorityId.getId()))
+                .map(priorityId -> new PriorityIdModel(priorityId.getPriority(), priorityId.getId(), null))
                 .collect(Collectors.toList());
     }
 }

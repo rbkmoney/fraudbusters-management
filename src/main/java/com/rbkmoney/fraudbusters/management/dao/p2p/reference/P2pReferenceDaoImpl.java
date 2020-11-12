@@ -31,6 +31,7 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
 
     @Override
     public void insert(P2pReferenceModel referenceModel) {
+        referenceModel.setLastUpdateDate(null);
         Query query = getDslContext().insertInto(P2P_F_REFERENCE)
                 .set(getDslContext().newRecord(P2P_F_REFERENCE, referenceModel))
                 .onConflict(P2P_F_REFERENCE.IDENTITY_ID, P2P_F_REFERENCE.IS_GLOBAL)

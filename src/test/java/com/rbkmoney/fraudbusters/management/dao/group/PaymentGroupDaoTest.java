@@ -34,8 +34,8 @@ public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(GROUP_1);
         groupModel.setPriorityTemplates(List.of(
-                new PriorityIdModel(2L, TEST_TEMPL_1),
-                new PriorityIdModel(1L, TEST_TEMPL_2)));
+                new PriorityIdModel(2L, TEST_TEMPL_1, null),
+                new PriorityIdModel(1L, TEST_TEMPL_2, null)));
         groupDao.insert(groupModel);
 
         GroupModel byId = groupDao.getById(GROUP_1);
@@ -64,8 +64,8 @@ public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(UPDATE_GROUP);
         groupModel.setPriorityTemplates(List.of(
-                new PriorityIdModel(2L, TEST_TEMPL_1),
-                new PriorityIdModel(1L, TEST_TEMPL_2)));
+                new PriorityIdModel(2L, TEST_TEMPL_1, null),
+                new PriorityIdModel(1L, TEST_TEMPL_2, null)));
         groupDao.insert(groupModel);
 
         GroupModel foundGroupModel = groupDao.getById(UPDATE_GROUP);
