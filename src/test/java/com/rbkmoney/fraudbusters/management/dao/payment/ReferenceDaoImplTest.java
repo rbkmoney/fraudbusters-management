@@ -48,6 +48,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceDao.insert(referenceModel);
 
         ReferenceModel byId = referenceDao.getById(id);
+        byId.setLastUpdateDate(null);
         assertEquals(referenceModel, byId);
 
         referenceDao.remove(referenceModel);
@@ -184,7 +185,6 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
         //check paging
         paymentReferenceModels = referenceDao.filterReferences(null, false, false, null, null, 1, null, null);
-        System.out.println(paymentReferenceModels);
         assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
         paymentReferenceModels = referenceDao.filterReferences(null, false, false, paymentReferenceModels.get(0).getId(), paymentReferenceModels.get(0).getTemplateId(), 1, null, null);
