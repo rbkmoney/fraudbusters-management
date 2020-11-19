@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.config;
 
+import com.rbkmoney.fraudbusters.management.constant.Roles;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -61,11 +62,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         super.configure(http);
         http.authorizeRequests()
                 .antMatchers("rules/**", "p2p/rules/**")
-                .hasAnyRole("fraud-support", "fraud-monitoring", "fraud-officer")
+                .hasAnyRole(Roles.FRAUD_SUPPORT.getValue(), Roles.FRAUD_MONITORING.getValue(), Roles.FRAUD_OFFICER.getValue())
                 .antMatchers("lists/**", "p2p/lists/**")
-                .hasAnyRole("fraud-monitoring", "fraud-officer")
+                .hasAnyRole(Roles.FRAUD_MONITORING.getValue(), Roles.FRAUD_OFFICER.getValue())
                 .antMatchers("/template/**", "groups/**", "p2p/template/**", "p2p/groups/**", "fraud/load/**")
-                .hasAnyRole("fraud-officer")
+                .hasAnyRole(Roles.FRAUD_OFFICER.getValue())
                 .anyRequest()
                 .permitAll();
     }
