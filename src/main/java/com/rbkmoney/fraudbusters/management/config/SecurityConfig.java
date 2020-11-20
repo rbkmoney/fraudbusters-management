@@ -67,8 +67,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .hasAnyRole(Roles.FRAUD_MONITORING.getValue(), Roles.FRAUD_OFFICER.getValue())
                 .antMatchers("/template/**", "groups/**", "p2p/template/**", "p2p/groups/**", "fraud/load/**")
                 .hasAnyRole(Roles.FRAUD_OFFICER.getValue())
-                .anyRequest()
-                .permitAll();
+                .anyRequest().authenticated();
     }
 
 }
