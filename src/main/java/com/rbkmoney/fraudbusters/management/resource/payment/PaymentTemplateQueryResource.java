@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class PaymentTemplateQueryResource {
     private final PaymentReferenceDao referenceDao;
 
     @GetMapping(value = "/template/{id}/reference")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<PaymentReferenceModel>> getReferences(@PathVariable(value = "id") String id,
                                                                      @Validated @RequestParam(required = false) Integer limit) {
         log.info("getReferences id: {} limit: {}", id, limit);
@@ -34,6 +36,7 @@ public class PaymentTemplateQueryResource {
     }
 
     @GetMapping(value = "/template")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<TemplateModel>> getListTemplate(
             @Validated @RequestParam(required = false) Integer limit) {
         log.info("getListTemplate limit: {}", limit);
@@ -42,6 +45,7 @@ public class PaymentTemplateQueryResource {
     }
 
     @GetMapping(value = "/template/names")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<String>> getTemplatesName(@Validated @RequestParam(required = false) String regexpName) {
         log.info("getTemplatesName regexpName: {}", regexpName);
         List<String> list = paymentTemplateDao.getListNames(regexpName);
@@ -49,6 +53,7 @@ public class PaymentTemplateQueryResource {
     }
 
     @GetMapping(value = "/template/filter")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<FilterTemplateResponse> filterTemplates(@Validated @RequestParam(required = false) String id,
                                                                   @Validated @RequestParam(required = false) String lastId,
                                                                   @Validated @RequestParam(required = false) Integer size,
