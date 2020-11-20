@@ -5,6 +5,7 @@ import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,6 +20,8 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -45,9 +48,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(@Value("${keycloak.allowed-origin}") String allowedOrigin) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.applyPermitDefaultValues();
+        configuration.setAllowedOrigins(List.of(allowedOrigin));
         configuration.addAllowedMethod(HttpMethod.PUT);
         configuration.addAllowedMethod(HttpMethod.DELETE);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

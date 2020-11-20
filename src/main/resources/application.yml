@@ -79,3 +79,4 @@ keycloak:
   ssl-required: external
   public-client: true
   enabled: false
+  allowed-origin: http://localhost
