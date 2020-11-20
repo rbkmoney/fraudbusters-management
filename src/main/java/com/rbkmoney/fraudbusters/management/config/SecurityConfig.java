@@ -60,16 +60,16 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
-        http.cors().and()
-                .csrf().disable()
-                .authorizeRequests()
+        http.authorizeRequests()
+                .anyRequest()
+                .authenticated()
                 .antMatchers("rules/**", "p2p/rules/**")
                 .hasAnyRole(Roles.FRAUD_SUPPORT.getValue(), Roles.FRAUD_MONITORING.getValue(), Roles.FRAUD_OFFICER.getValue())
                 .antMatchers("lists/**", "p2p/lists/**")
                 .hasAnyRole(Roles.FRAUD_MONITORING.getValue(), Roles.FRAUD_OFFICER.getValue())
                 .antMatchers("/template/**", "groups/**", "p2p/template/**", "p2p/groups/**", "fraud/load/**")
                 .hasAnyRole(Roles.FRAUD_OFFICER.getValue())
-                .anyRequest().authenticated();
+                .anyRequest().denyAll();
     }
 
 }
