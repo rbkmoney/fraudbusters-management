@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ public class PaymentEmulateResource {
     private final PaymentReferenceDao referenceDao;
 
     @GetMapping(value = "/rules")
+    @PreAuthorize("hasAnyAuthority('fraud-support', 'fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<TemplateModel>> getRulesByPartyAndShop(@Validated @RequestParam String partyId,
                                                                       @Validated @RequestParam String shopId) {
         log.info("EmulateResource getRulesByPartyAndShop partyId: {} shopId: {}", partyId, shopId);

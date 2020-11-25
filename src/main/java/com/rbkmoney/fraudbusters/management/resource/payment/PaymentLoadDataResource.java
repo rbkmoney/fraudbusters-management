@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.utils.CSVFraudPaymentParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ public class PaymentLoadDataResource {
     private final CSVFraudPaymentParser csvFraudPaymentParser;
 
     @PostMapping(value = "/fraud/load")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public void loadFraudOperation(@RequestParam("file") MultipartFile file) throws TException {
         if (csvFraudPaymentParser.hasCSVFormat(file)) {
             try {

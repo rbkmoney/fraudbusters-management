@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,7 @@ public class P2PWbListResource {
     public String topicCommand;
 
     @PostMapping(value = "/whiteList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<String>> insertRowToWhite(@Validated @RequestBody List<P2pListRecord> records) {
         return insertInList(this::insertInWhiteList, records);
     }
@@ -66,6 +68,7 @@ public class P2PWbListResource {
     }
 
     @DeleteMapping(value = "/whiteList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody P2pListRecord record) {
         Row row = p2pListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource whiteList remove record {}", record);
@@ -74,6 +77,7 @@ public class P2PWbListResource {
     }
 
     @GetMapping(value = "/whiteList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<ListRecord>> getWhiteList(@RequestParam(required = false) String identityId,
                                                          @RequestParam String listName) {
         List<ListRecord> listRecords = selectConvertedList(identityId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.white);
@@ -81,6 +85,7 @@ public class P2PWbListResource {
     }
 
     @PostMapping(value = "/blackList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<String>> insertRowToBlack(@RequestBody List<P2pListRecord> records) {
         return insertInList(this::insertBlackList, records);
     }
@@ -92,6 +97,7 @@ public class P2PWbListResource {
     }
 
     @DeleteMapping(value = "/blackList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<String> removeRowFromBlackList(@RequestBody P2pListRecord record) {
         Row row = p2pListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource blackList remove record {}", record);
@@ -100,6 +106,7 @@ public class P2PWbListResource {
     }
 
     @GetMapping(value = "/blackList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<ListRecord>> getBlackList(@RequestParam(required = false) String identityId,
                                                          @RequestParam String listName) {
         List<ListRecord> listRecords = selectConvertedList(identityId, listName, com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);
@@ -115,6 +122,7 @@ public class P2PWbListResource {
     }
 
     @PostMapping(value = "/greyList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<String>> insertRowToGrey(@RequestBody List<P2pCountInfo> records) {
         return insertInList(this::insertGreyList, records);
     }
@@ -126,6 +134,7 @@ public class P2PWbListResource {
     }
 
     @DeleteMapping(value = "/greyList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<String> removeRowFromGreyList(@RequestBody P2pCountInfo record) {
         Row row = countInfoListRecordToRowConverter.convert(record);
         log.info("P2PWbListResource greyList remove record {}", record);
@@ -134,6 +143,7 @@ public class P2PWbListResource {
     }
 
     @GetMapping(value = "/greyList")
+    @PreAuthorize("hasAnyAuthority('fraud-officer')")
     public ResponseEntity<List<P2pCountInfo>> getGreyList(@RequestParam(required = false) String identityId,
                                                           @RequestParam String listName) {
         List<P2pCountInfo> listRecords = p2PWbListDao.getFilteredListRecords(identityId, com.rbkmoney.fraudbusters.management.domain.enums.ListType.grey, listName)
