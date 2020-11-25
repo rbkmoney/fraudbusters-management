@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,12 +32,14 @@ public class ListsResource {
     private final PaymentCountInfoGenerator paymentCountInfoGenerator;
 
     @PostMapping(value = "/lists")
+    @PreAuthorize("hasAnyAuthority('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<String>> insertRowsToList(@Validated @RequestBody ListRowsInsertRequest request) {
         log.info("insertRowsToList request {}", request);
         return wbListCommandService.sendListRecords(request.getRecords(), request.getListType(), paymentCountInfoGenerator::initRow);
     }
 
     @DeleteMapping(value = "/lists/{id}")
+    @PreAuthorize("hasAnyAuthority('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<String> removeRowFromList(@Validated @PathVariable String id) {
         WbListRecords record = wbListDao.getById(id);
         if (record == null) {
@@ -51,6 +54,7 @@ public class ListsResource {
     }
 
     @GetMapping(value = "/lists/filter")
+    @PreAuthorize("hasAnyAuthority('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<PaymentFilterListRecordsResponse> filterList(@Validated @RequestParam ListType listType,
                                                                        @Validated @RequestParam List<String> listNames,
                                                                        @Validated @RequestParam(required = false) String searchValue,
@@ -71,6 +75,7 @@ public class ListsResource {
     }
 
     @GetMapping(value = "/lists/names")
+    @PreAuthorize("hasAnyAuthority('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<String>> getNames(@Validated @RequestParam ListType listType) {
         log.info("getNames listType: {}", listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
