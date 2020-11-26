@@ -80,4 +80,4 @@ keycloak:
   public-client: true
   enabled: false
 
-cors.allowed-origins: "http://localhost"
+cors.allowed-origins: "http://localhost:4200"
