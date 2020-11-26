@@ -33,14 +33,14 @@ public class P2pListsResource {
     private final P2pCountInfoGenerator p2pCountInfoGenerator;
 
     @PostMapping(value = "/lists")
-    @PreAuthorize("hasAnyAuthority('fraud-monitoring', 'fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<String>> insertRowsToList(@Validated @RequestBody P2pListRowsInsertRequest request) {
         log.info("insertRowsToList request {}", request);
         return wbListCommandService.sendListRecords(request.getRecords(), request.getListType(), p2pCountInfoGenerator::initRow);
     }
 
     @DeleteMapping(value = "/lists/{id}")
-    @PreAuthorize("hasAnyAuthority('fraud-monitoring', 'fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<String> removeRowFromList(@Validated @PathVariable String id) {
         P2pWbListRecords record = wbListDao.getById(id);
         if (record == null) {
@@ -55,7 +55,7 @@ public class P2pListsResource {
     }
 
     @GetMapping(value = "/lists/filter")
-    @PreAuthorize("hasAnyAuthority('fraud-monitoring', 'fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<P2pFilterListRecordsResponse> filterList(@Validated @RequestParam ListType listType,
                                                                    @Validated @RequestParam List<String> listNames,
                                                                    @Validated @RequestParam(required = false) String searchValue,
@@ -76,7 +76,7 @@ public class P2pListsResource {
     }
 
     @GetMapping(value = "/lists/names")
-    @PreAuthorize("hasAnyAuthority('fraud-monitoring', 'fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<String>> getNames(@Validated @RequestParam ListType listType) {
         log.info("getNames listType: {}", listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);

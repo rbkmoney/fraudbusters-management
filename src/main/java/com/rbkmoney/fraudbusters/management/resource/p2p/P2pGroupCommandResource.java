@@ -30,7 +30,7 @@ public class P2pGroupCommandResource {
     private final P2pGroupReferenceToCommandConverter groupReferenceToCommandConverter;
 
     @PostMapping(value = "/group")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertGroup(@RequestBody GroupModel groupModel) {
         log.info("GroupCommandResource insertTemplate groupModel: {}", groupModel);
         Command command = groupModelToCommandConverter.convert(groupModel);
@@ -40,7 +40,7 @@ public class P2pGroupCommandResource {
     }
 
     @PostMapping(value = "/group/{id}/reference")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertGroupReference(@PathVariable(value = "id") String id,
                                                              @Validated @RequestBody List<P2pGroupReferenceModel> groupReferenceModels) {
         log.info("P2pGroupReferenceCommandResource insertReference referenceModels: {}", groupReferenceModels);
@@ -53,7 +53,7 @@ public class P2pGroupCommandResource {
     }
 
     @DeleteMapping(value = "/group/{id}")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroup(@PathVariable(value = "id") String id) {
         log.info("removeGroup id: {}", id);
         Command command = p2pGroupCommandService.createTemplateCommandById(id);
@@ -69,7 +69,7 @@ public class P2pGroupCommandResource {
     }
 
     @DeleteMapping(value = "/group/{id}/reference")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroupReference(@PathVariable(value = "id") String groupId,
                                                        @RequestParam(value = "identityId") String identityId) {
         log.info("removeGroupReference groupId: {} identityId: {}", groupId, identityId);

@@ -42,13 +42,13 @@ public class WbListResource {
     public String topicCommand;
 
     @PostMapping(value = "/whiteList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertRowToWhite(@Validated @RequestBody List<PaymentListRecord> records) {
         return insertInList(this::insertInWhiteList, records);
     }
 
     @DeleteMapping(value = "/whiteList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeRowFromWhiteList(@Validated @RequestBody PaymentListRecord record) {
         Row row = paymentListRecordToRowConverter.convert(record);
         log.info("WbListResource whiteList remove record {}", record);
@@ -57,7 +57,7 @@ public class WbListResource {
     }
 
     @GetMapping(value = "/whiteList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<ListRecord>> getWhiteList(@RequestParam(required = false) String partyId,
                                                          @RequestParam(required = false) String shopId,
                                                          @RequestParam String listName) {
@@ -66,13 +66,13 @@ public class WbListResource {
     }
 
     @PostMapping(value = "/blackList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertRowToBlack(@RequestBody List<PaymentListRecord> records) {
         return insertInList(this::insertBlackList, records);
     }
 
     @DeleteMapping(value = "/blackList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeRowFromBlackList(@RequestBody PaymentListRecord record) {
         Row row = paymentListRecordToRowConverter.convert(record);
         log.info("WbListResource blackList remove record {}", record);
@@ -81,7 +81,7 @@ public class WbListResource {
     }
 
     @GetMapping(value = "/blackList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<ListRecord>> getBlackList(@RequestParam(required = false) String partyId,
                                                          @RequestParam(required = false) String shopId,
                                                          @RequestParam String listName) {
@@ -90,13 +90,13 @@ public class WbListResource {
     }
 
     @PostMapping(value = "/greyList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertRowToGrey(@RequestBody List<PaymentCountInfo> records) {
         return insertInList(this::insertGreyList, records);
     }
 
     @DeleteMapping(value = "/greyList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeRowFromGreyList(@RequestBody PaymentCountInfo record) {
         Row row = countInfoListRecordToRowConverter.convert(record);
         log.info("WbListResource greyList remove record {}", record);
@@ -105,7 +105,7 @@ public class WbListResource {
     }
 
     @GetMapping(value = "/greyList")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<PaymentCountInfo>> getGreyList(@RequestParam(required = false) String partyId,
                                                               @RequestParam(required = false) String shopId,
                                                               @RequestParam String listName) {

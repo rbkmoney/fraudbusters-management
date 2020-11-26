@@ -29,7 +29,7 @@ public class GroupCommandResource {
     private final PaymentGroupReferenceModelToCommandConverter groupReferenceToCommandConverter;
 
     @PostMapping(value = "/group")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertGroup(@RequestBody GroupModel groupModel) {
         log.info("insertTemplate groupModel: {}", groupModel);
         Command command = groupModelToCommandConverter.convert(groupModel);
@@ -39,7 +39,7 @@ public class GroupCommandResource {
     }
 
     @PostMapping(value = "/group/{id}/reference")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertGroupReference(@PathVariable(value = "id") String id,
                                                              @Validated @RequestBody List<PaymentGroupReferenceModel> groupReferenceModels) {
         log.info("insertReference referenceModels: {}", groupReferenceModels);
@@ -58,7 +58,7 @@ public class GroupCommandResource {
     }
 
     @DeleteMapping(value = "/group/{id}")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroup(@PathVariable(value = "id") String id) {
         log.info("removeGroup id: {}", id);
         Command command = paymentGroupCommandService.createTemplateCommandById(id);
@@ -68,7 +68,7 @@ public class GroupCommandResource {
     }
 
     @DeleteMapping(value = "/group/{id}/reference")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroupReference(@PathVariable(value = "id") String groupId,
                                                        @RequestParam(value = "partyId") String partyId,
                                                        @RequestParam(value = "shopId") String shopId) {
