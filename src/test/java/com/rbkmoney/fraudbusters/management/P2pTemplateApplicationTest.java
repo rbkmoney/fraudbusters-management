@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Collections;
 import java.util.List;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -67,10 +68,11 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         p2pTemplateCommandResource.insertTemplate(templateModel);
         p2pTemplateCommandResource.removeTemplate(id);
-        Thread.sleep(4000L);
 
-        verify(p2pTemplateDao, times(1)).insert(templateModel);
-        verify(p2pTemplateDao, times(1)).remove(any(TemplateModel.class));
+        await().untilAsserted(() -> {
+            verify(p2pTemplateDao, times(1)).insert(templateModel);
+            verify(p2pTemplateDao, times(1)).remove(any(TemplateModel.class));
+        });
     }
 
     @Test
@@ -84,10 +86,11 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         p2pTemplateCommandResource.deleteReferences("id", Collections.singletonList(referenceModel));
         p2pTemplateCommandResource.insertReference("id", referenceModel);
         p2pTemplateCommandResource.deleteReference(referenceModel.getTemplateId(), referenceModel.getIdentityId());
-        Thread.sleep(2000L);
 
-        verify(referenceDao, times(2)).insert(any());
-        verify(referenceDao, times(2)).remove((P2pReferenceModel) any());
+        await().untilAsserted(() -> {
+            verify(referenceDao, times(2)).insert(any());
+            verify(referenceDao, times(2)).remove((P2pReferenceModel) any());
+        });
     }
 
     @Test
@@ -100,9 +103,10 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         groupCommandResource.insertGroupReference(id, Collections.singletonList(groupReferenceModel));
         groupCommandResource.removeGroupReference(id, identity_id);
-        Thread.sleep(5000L);
 
-        verify(groupReferenceDao, times(1)).insert(any());
-        verify(groupReferenceDao, times(1)).remove((P2pGroupReferenceModel) any());
+        await().untilAsserted(() -> {
+            verify(groupReferenceDao, times(1)).insert(any());
+            verify(groupReferenceDao, times(1)).remove((P2pGroupReferenceModel) any());
+        });
     }
 }

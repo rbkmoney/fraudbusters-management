@@ -210,6 +210,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+        <dependency>
             <groupId>io.github.benas</groupId>
             <artifactId>random-beans</artifactId>
             <version>3.6.0</version>

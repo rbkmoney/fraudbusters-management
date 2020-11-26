@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -79,9 +80,9 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
             producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
         }
-        Thread.sleep(1000L);
-
-        Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
+        await().untilAsserted(() -> {
+            Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
+        });
     }
 
     @Test
@@ -106,9 +107,10 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
             producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
         }
-        Thread.sleep(3000L);
 
-        Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
+        await().untilAsserted(() -> {
+            Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
+        });
     }
 
     @Test
@@ -121,8 +123,10 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
             producer.send(producerRecord).get();
             producer.close();
-            Thread.sleep(3000L);
-            Mockito.verify(wbListDao, Mockito.times(1)).removeRecord((WbListRecords) any());
+
+            await().untilAsserted(() -> {
+                Mockito.verify(wbListDao, Mockito.times(1)).removeRecord((WbListRecords) any());
+            });
         }
     }
 
