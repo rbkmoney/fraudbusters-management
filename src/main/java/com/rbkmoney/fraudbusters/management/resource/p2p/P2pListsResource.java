@@ -51,6 +51,7 @@ public class P2pListsResource {
         return ResponseEntity.ok().body(idMessage);
     }
 
+    //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/lists/filter")
     public ResponseEntity<P2pFilterListRecordsResponse> filterList(@Validated @RequestParam ListType listType,
                                                                    @Validated @RequestParam List<String> listNames,

@@ -64,6 +64,7 @@ public class P2pGroupCommandResource {
         return command;
     }
 
+    // identityId надо вынести в pathVariable
     @DeleteMapping(value = "/group/{id}/reference")
     public ResponseEntity<String> removeGroupReference(@PathVariable(value = "id") String groupId,
                                                        @RequestParam(value = "identityId") String identityId) {

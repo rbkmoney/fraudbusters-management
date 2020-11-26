@@ -24,6 +24,8 @@ public class P2pReferenceQueryResource {
 
     private final P2pReferenceDao referenceDao;
 
+    //isGlobal пора убрать?
+    //identityId можно в PathVariable
     @GetMapping(value = "/reference")
     public ResponseEntity<List<P2pReferenceModel>> getReferencesByFilters(@RequestParam(value = "identityId") String identityId,
                                                                           @RequestParam(value = "isGlobal") Boolean isGlobal,
@@ -33,6 +35,7 @@ public class P2pReferenceQueryResource {
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
+    //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/reference/filter")
     public ResponseEntity<FilterP2pReferenceResponse> filterReferences(@Validated @RequestParam(required = false) String searchValue,
                                                                        @Validated @RequestParam(required = false) Boolean isGlobal,

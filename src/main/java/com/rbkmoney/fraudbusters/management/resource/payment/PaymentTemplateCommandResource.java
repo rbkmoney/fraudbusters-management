@@ -38,6 +38,7 @@ public class PaymentTemplateCommandResource {
     private final PaymentReferenceDao referenceDao;
     private final ValidationTemplateService paymentValidationService;
 
+    //400 при ошибках
     @PostMapping(value = "/template")
     public ResponseEntity<CreateTemplateResponse> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
         log.info("TemplateManagementResource insertTemplate templateModel: {}", templateModel);
@@ -78,6 +79,7 @@ public class PaymentTemplateCommandResource {
         );
     }
 
+    //кажется не используем
     @PostMapping(value = "/template/references")
     public ResponseEntity<List<String>> insertReferences(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
@@ -98,6 +100,7 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(referenceId);
     }
 
+    //кажется не используем
     @PostMapping(value = "/template/{id}/default")
     public ResponseEntity<String> markReferenceAsDefault(@PathVariable(value = "id") String id) {
         log.info("TemplateManagementResource markReferenceAsDefault id: {}", id);
@@ -105,6 +108,7 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(id);
     }
 
+    //кажется не используем
     @PostMapping(value = "/template/default")
     public ResponseEntity<List<String>> insertDefaultReference(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertDefaultReference referenceModels: {}", referenceModels);

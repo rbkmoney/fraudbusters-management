@@ -33,6 +33,7 @@ public class PaymentGroupQueryResource {
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
+    //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/group/reference/filter")
     public ResponseEntity<FilterPaymentGroupsReferenceResponse> filterReference(@Validated @RequestParam(required = false) String idRegexp,
                                                                                 @Validated @RequestParam(required = false) String lastId,

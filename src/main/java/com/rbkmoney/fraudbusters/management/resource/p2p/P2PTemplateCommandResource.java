@@ -38,6 +38,7 @@ public class P2PTemplateCommandResource {
     private final P2pReferenceToCommandConverter referenceToCommandConverter;
     private final ValidationTemplateService p2PValidationService;
 
+    //должен быть код 400 при ошибках
     @PostMapping(value = "/template")
     public ResponseEntity<CreateTemplateResponse> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
         log.info("P2pReferenceCommandResource insertTemplate templateModel: {}", templateModel);
@@ -59,6 +60,7 @@ public class P2PTemplateCommandResource {
         );
     }
 
+    // насколько я помню, у нас только по 1 валидация происходит
     @PostMapping(value = "/template/validate")
     public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
         log.info("P2PTemplateCommandResource validateTemplate templateModels: {}", templateModels);
@@ -120,6 +122,8 @@ public class P2PTemplateCommandResource {
         return command;
     }
 
+    // кажется мы этот метод не используем...
+    // должен быть POST
     @DeleteMapping(value = "/template/{id}/references")
     public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {

@@ -50,6 +50,7 @@ public class ListsResource {
         return ResponseEntity.ok().body(idMessage);
     }
 
+    //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/lists/filter")
     public ResponseEntity<PaymentFilterListRecordsResponse> filterList(@Validated @RequestParam ListType listType,
                                                                        @Validated @RequestParam List<String> listNames,

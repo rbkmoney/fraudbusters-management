@@ -22,6 +22,7 @@ public class PaymentLoadDataResource {
     private final PaymentServiceSrv.Iface paymentServiceSrv;
     private final CSVFraudPaymentParser csvFraudPaymentParser;
 
+    //нужны ограничения на размер, могут разъебать возможно
     @PostMapping(value = "/fraud/load")
     public void loadFraudOperation(@RequestParam("file") MultipartFile file) throws TException {
         if (csvFraudPaymentParser.hasCSVFormat(file)) {

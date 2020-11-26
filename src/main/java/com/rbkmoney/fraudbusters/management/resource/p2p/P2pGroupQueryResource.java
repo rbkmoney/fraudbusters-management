@@ -23,6 +23,7 @@ public class P2pGroupQueryResource {
     private final P2PGroupDao groupDao;
     private final P2pGroupReferenceDao referenceDao;
 
+    // не нужно выдать на фронт 404?
     @GetMapping(value = "/group/{id}/reference")
     public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
                                                                       @Validated @RequestParam(required = false) Integer limit) {
@@ -31,6 +32,8 @@ public class P2pGroupQueryResource {
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
+    // почему find, если это getById?
+    // не нужно выдать на фронт 404?
     @GetMapping(value = "/group/{id}")
     public ResponseEntity<GroupModel> findGroup(@PathVariable String id) {
         log.info("findGroup groupId: {}", id);
@@ -45,6 +48,7 @@ public class P2pGroupQueryResource {
         return ResponseEntity.ok().body(groupModels);
     }
 
+    //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/group/reference/filter")
     public ResponseEntity<FilterP2pGroupsReferenceResponse> filterReference(@Validated @RequestParam(required = false) String idRegexp,
                                                                             @Validated @RequestParam(required = false) String lastId,

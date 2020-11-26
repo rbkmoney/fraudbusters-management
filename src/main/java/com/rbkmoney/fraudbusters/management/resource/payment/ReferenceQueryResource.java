@@ -32,6 +32,7 @@ public class ReferenceQueryResource {
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
+    //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/reference/filter")
     public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(@Validated @RequestParam(required = false) String searchValue,
                                                                            @Validated @RequestParam(required = false) Boolean isGlobal,

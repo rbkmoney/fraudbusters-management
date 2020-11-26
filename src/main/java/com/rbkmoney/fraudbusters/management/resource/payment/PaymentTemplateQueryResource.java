@@ -48,6 +48,7 @@ public class PaymentTemplateQueryResource {
         return ResponseEntity.ok().body(list);
     }
 
+    //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/template/filter")
     public ResponseEntity<FilterTemplateResponse> filterTemplates(@Validated @RequestParam(required = false) String id,
                                                                   @Validated @RequestParam(required = false) String lastId,
