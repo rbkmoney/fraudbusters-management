@@ -79,5 +79,5 @@ keycloak:
   ssl-required: external
   public-client: true
   enabled: false
-  allowed-origins:
-    - http://localhost
+
+cors.allowed-origins: "http://localhost"
