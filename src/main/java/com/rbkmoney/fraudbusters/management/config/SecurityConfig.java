@@ -53,6 +53,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.addAllowedMethod(HttpMethod.PUT);
         configuration.addAllowedMethod(HttpMethod.DELETE);
+        configuration.addAllowedMethod(HttpMethod.POST);
+        configuration.addAllowedMethod(HttpMethod.GET);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
