@@ -48,7 +48,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(@Value("${keycloak.allowed-origins}") List<String> allowedOrigins) {
+    public CorsConfigurationSource corsConfigurationSource(@Value("${cors.allowed-origins}") List<String> allowedOrigins) {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.addAllowedMethod(HttpMethod.PUT);
