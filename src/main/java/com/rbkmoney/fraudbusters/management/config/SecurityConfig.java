@@ -49,11 +49,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Bean
     @Profile("debug")
-    public WebMvcConfigurer corsConfigurer(@Value("${cors.allowed-origins}") List<String> allowedOrigins) {
+    public WebMvcConfigurer corsConfigurer(@Value("${cors.allowed-origins}") String[] allowedOrigins) {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:4200")
+                registry.addMapping("/**").allowedOrigins(allowedOrigins)
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };
@@ -63,6 +63,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http
+                .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()

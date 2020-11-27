@@ -67,7 +67,7 @@ service:
     url: http://fraudbusters:8022/fraud_p2p/v1
     networkTimeout: 5000
   payment:
-    url: http://fraudbusters:8022/fraud_payment/v1
+    url: http://localhost:8999/fraud_payment/v1
     networkTimeout: 5000
 ch.notificator.url: "http://clickhouse-notificator:8080/ch-manager"
 
