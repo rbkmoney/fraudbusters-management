@@ -11,6 +11,7 @@ import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupReferenc
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class GroupCommandResource {
     private final PaymentGroupReferenceModelToCommandConverter groupReferenceToCommandConverter;
 
     @PostMapping(value = "/group")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertGroup(@RequestBody GroupModel groupModel) {
         log.info("insertTemplate groupModel: {}", groupModel);
         Command command = groupModelToCommandConverter.convert(groupModel);
@@ -37,6 +39,7 @@ public class GroupCommandResource {
     }
 
     @PostMapping(value = "/group/{id}/reference")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertGroupReference(@PathVariable(value = "id") String id,
                                                              @Validated @RequestBody List<PaymentGroupReferenceModel> groupReferenceModels) {
         log.info("insertReference referenceModels: {}", groupReferenceModels);
@@ -55,6 +58,7 @@ public class GroupCommandResource {
     }
 
     @DeleteMapping(value = "/group/{id}")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroup(@PathVariable(value = "id") String id) {
         log.info("removeGroup id: {}", id);
         Command command = paymentGroupCommandService.createTemplateCommandById(id);
@@ -64,6 +68,7 @@ public class GroupCommandResource {
     }
 
     @DeleteMapping(value = "/group/{id}/reference")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroupReference(@PathVariable(value = "id") String groupId,
                                                        @RequestParam(value = "partyId") String partyId,
                                                        @RequestParam(value = "shopId") String shopId) {

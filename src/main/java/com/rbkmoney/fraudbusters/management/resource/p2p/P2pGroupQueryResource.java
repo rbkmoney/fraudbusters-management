@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class P2pGroupQueryResource {
 
     // не нужно выдать на фронт 404?
     @GetMapping(value = "/group/{id}/reference")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
                                                                       @Validated @RequestParam(required = false) Integer limit) {
         log.info("getGroupReferences id: {} limit: {}", id, limit);
@@ -35,6 +37,7 @@ public class P2pGroupQueryResource {
     // почему find, если это getById?
     // не нужно выдать на фронт 404?
     @GetMapping(value = "/group/{id}")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<GroupModel> findGroup(@PathVariable String id) {
         log.info("findGroup groupId: {}", id);
         GroupModel groupModel = groupDao.getById(id);
@@ -42,6 +45,7 @@ public class P2pGroupQueryResource {
     }
 
     @GetMapping(value = "/group/filter")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(required = false, value = "id") String idRegexp) {
         log.info("filterGroup groupId: {}", idRegexp);
         List<GroupModel> groupModels = groupDao.filterGroup(idRegexp);
@@ -50,6 +54,7 @@ public class P2pGroupQueryResource {
 
     //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/group/reference/filter")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterP2pGroupsReferenceResponse> filterReference(@Validated @RequestParam(required = false) String idRegexp,
                                                                             @Validated @RequestParam(required = false) String lastId,
                                                                             @Validated @RequestParam(required = false) String sortFieldValue,

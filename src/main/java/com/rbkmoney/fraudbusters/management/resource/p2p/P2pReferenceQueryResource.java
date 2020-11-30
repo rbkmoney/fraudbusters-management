@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ public class P2pReferenceQueryResource {
     //isGlobal пора убрать?
     //identityId можно в PathVariable
     @GetMapping(value = "/reference")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<P2pReferenceModel>> getReferencesByFilters(@RequestParam(value = "identityId") String identityId,
                                                                           @RequestParam(value = "isGlobal") Boolean isGlobal,
                                                                           @Validated @RequestParam(required = false) Integer limit) {
@@ -37,6 +39,7 @@ public class P2pReferenceQueryResource {
 
     //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/reference/filter")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterP2pReferenceResponse> filterReferences(@Validated @RequestParam(required = false) String searchValue,
                                                                        @Validated @RequestParam(required = false) Boolean isGlobal,
                                                                        @Validated @RequestParam(required = false) String lastId,

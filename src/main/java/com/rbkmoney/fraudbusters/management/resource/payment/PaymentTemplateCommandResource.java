@@ -19,6 +19,7 @@ import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateRefer
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,7 @@ public class PaymentTemplateCommandResource {
 
     //400 при ошибках
     @PostMapping(value = "/template")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<CreateTemplateResponse> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
         log.info("TemplateManagementResource insertTemplate templateModel: {}", templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
@@ -60,6 +62,7 @@ public class PaymentTemplateCommandResource {
     }
 
     @PostMapping(value = "/template/validate")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
         log.info("TemplateManagementResource validateTemplate templateModels: {}", templateModels);
         List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(templateModels.stream()
@@ -81,6 +84,7 @@ public class PaymentTemplateCommandResource {
 
     //кажется не используем
     @PostMapping(value = "/template/references")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertReferences(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
@@ -92,6 +96,7 @@ public class PaymentTemplateCommandResource {
     }
 
     @PostMapping(value = "/template/reference")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertReference(@Validated @RequestBody PaymentReferenceModel referenceModel) {
         log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
         Command command = referenceToCommandConverter.convert(referenceModel);
@@ -102,6 +107,7 @@ public class PaymentTemplateCommandResource {
 
     //кажется не используем
     @PostMapping(value = "/template/{id}/default")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> markReferenceAsDefault(@PathVariable(value = "id") String id) {
         log.info("TemplateManagementResource markReferenceAsDefault id: {}", id);
         referenceDao.markReferenceAsDefault(id);
@@ -110,6 +116,7 @@ public class PaymentTemplateCommandResource {
 
     //кажется не используем
     @PostMapping(value = "/template/default")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertDefaultReference(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource insertDefaultReference referenceModels: {}", referenceModels);
         PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
@@ -132,6 +139,7 @@ public class PaymentTemplateCommandResource {
     }
 
     @DeleteMapping(value = "/template/{id}")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeTemplate(@PathVariable(value = "id") String id) {
         log.info("TemplateManagementResource removeTemplate id: {}", id);
         Command command = paymentTemplateCommandService.createTemplateCommandById(id);
@@ -141,6 +149,7 @@ public class PaymentTemplateCommandResource {
     }
 
     @PostMapping(value = "/template/{id}/reference/delete")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource deleteReferences referenceModels: {}", referenceModels);
@@ -153,6 +162,7 @@ public class PaymentTemplateCommandResource {
     }
 
     @DeleteMapping(value = "/template/{templateId}/reference")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> deleteReference(@PathVariable String templateId,
                                                         @RequestParam String partyId,
                                                         @RequestParam String shopId) {

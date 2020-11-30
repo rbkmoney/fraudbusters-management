@@ -11,6 +11,8 @@ management:
         flavor: etsy
 ---
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
   application:
     name: @name@
   output:
@@ -27,6 +29,7 @@ spring:
       maximum-pool-size: 10
     flyway:
       schemas: af
+
 info:
   version: @project.version@
   stage: dev
@@ -64,6 +67,17 @@ service:
     url: http://fraudbusters:8022/fraud_p2p/v1
     networkTimeout: 5000
   payment:
-    url: http://fraudbusters:8022/fraud_payment/v1
+    url: http://localhost:8999/fraud_payment/v1
     networkTimeout: 5000
 ch.notificator.url: "http://clickhouse-notificator:8080/ch-manager"
+
+keycloak:
+  auth-server-url: http://localhost:8080/auth
+  realm: SpringBootKeycloack
+  resource: login-app
+  bearer-only: true
+  ssl-required: external
+  public-client: true
+  enabled: false
+
+cors.allowed-origins: "http://localhost:4200"

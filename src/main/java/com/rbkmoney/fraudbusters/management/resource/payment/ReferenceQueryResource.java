@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,7 @@ public class ReferenceQueryResource {
     private final PaymentReferenceDao referenceDao;
 
     @GetMapping(value = "/reference")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<PaymentReferenceModel>> getReferencesByFilters(@RequestParam(value = "partyId") String partyId,
                                                                               @RequestParam(value = "shopId") String shopId,
                                                                               @RequestParam(value = "isGlobal") Boolean isGlobal,
@@ -34,6 +36,7 @@ public class ReferenceQueryResource {
 
     //Мне кажется стоит вынести в отдельный объект, во многих местах такие параметры
     @GetMapping(value = "/reference/filter")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(@Validated @RequestParam(required = false) String searchValue,
                                                                            @Validated @RequestParam(required = false) Boolean isGlobal,
                                                                            @Validated @RequestParam(required = false) Boolean isDefault,

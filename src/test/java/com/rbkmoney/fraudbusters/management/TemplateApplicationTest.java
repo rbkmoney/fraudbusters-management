@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -72,10 +73,11 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
         paymentTemplateCommandResource.insertTemplate(templateModel);
         paymentTemplateCommandResource.removeTemplate(id);
-        Thread.sleep(TIMEOUT);
 
-        verify(paymentTemplateDao, times(1)).insert(templateModel);
-        verify(paymentTemplateDao, times(1)).remove(any(TemplateModel.class));
+        await().untilAsserted(() -> {
+            verify(paymentTemplateDao, times(1)).insert(templateModel);
+            verify(paymentTemplateDao, times(1)).remove(any(TemplateModel.class));
+        });
     }
 
     @Test
@@ -88,10 +90,10 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupCommandResource.insertGroup(groupModel);
         groupCommandResource.removeGroup(groupModel.getGroupId());
 
-        Thread.sleep(TIMEOUT);
-
-        verify(paymentGroupDao, times(1)).insert(groupModel);
-        verify(paymentGroupDao, times(1)).remove(any(GroupModel.class));
+        await().untilAsserted(() -> {
+            verify(paymentGroupDao, times(1)).insert(groupModel);
+            verify(paymentGroupDao, times(1)).remove(any(GroupModel.class));
+        });
     }
 
     private void checkSerialization(GroupModel groupModel) throws IOException {
@@ -114,13 +116,14 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         paymentTemplateCommandResource.deleteReferences("id", Collections.singletonList(referenceModel));
         paymentTemplateCommandResource.insertReference(referenceModel);
         paymentTemplateCommandResource.deleteReference(referenceModel.getTemplateId(), referenceModel.getPartyId(), referenceModel.getShopId());
-        Thread.sleep(TIMEOUT);
 
-        verify(referenceDao, times(2)).insert(any());
-        verify(referenceDao, times(2)).remove((PaymentReferenceModel) any());
+        await().untilAsserted(() -> {
+            verify(referenceDao, times(2)).insert(any());
+            verify(referenceDao, times(2)).remove((PaymentReferenceModel) any());
+        });
     }
 
-    private PaymentReferenceModel buildDefaultReference(){
+    private PaymentReferenceModel buildDefaultReference() {
         PaymentReferenceModel paymentReferenceModel = new PaymentReferenceModel();
         paymentReferenceModel.setTemplateId("default_template_id");
         paymentReferenceModel.setIsGlobal(false);
@@ -139,9 +142,10 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
         paymentTemplateCommandResource.insertDefaultReference(Collections.singletonList(referenceModel));
-        Thread.sleep(TIMEOUT);
 
-        verify(referenceDao, times(1)).insert(any());
+        await().untilAsserted(() -> {
+            verify(referenceDao, times(1)).insert(any());
+        });
     }
 
     @Test
@@ -153,9 +157,10 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
         groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
         groupCommandResource.removeGroupReference("id", "party_id", "shop_id");
-        Thread.sleep(TIMEOUT);
 
-        verify(groupReferenceDao, times(1)).insert(any());
-        verify(groupReferenceDao, times(1)).remove(any());
+        await().untilAsserted(() -> {
+            verify(groupReferenceDao, times(1)).insert(any());
+            verify(groupReferenceDao, times(1)).remove(any());
+        });
     }
 }
