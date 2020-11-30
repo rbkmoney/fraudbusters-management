@@ -26,7 +26,7 @@ public class P2pReferenceQueryResource {
     private final P2pReferenceDao referenceDao;
 
     @GetMapping(value = "/reference")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<P2pReferenceModel>> getReferencesByFilters(@RequestParam(value = "identityId") String identityId,
                                                                           @RequestParam(value = "isGlobal") Boolean isGlobal,
                                                                           @Validated @RequestParam(required = false) Integer limit) {
@@ -36,7 +36,7 @@ public class P2pReferenceQueryResource {
     }
 
     @GetMapping(value = "/reference/filter")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterP2pReferenceResponse> filterReferences(@Validated @RequestParam(required = false) String searchValue,
                                                                        @Validated @RequestParam(required = false) Boolean isGlobal,
                                                                        @Validated @RequestParam(required = false) String lastId,

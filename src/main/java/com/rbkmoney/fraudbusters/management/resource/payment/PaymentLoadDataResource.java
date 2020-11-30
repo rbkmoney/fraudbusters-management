@@ -24,7 +24,7 @@ public class PaymentLoadDataResource {
     private final CSVFraudPaymentParser csvFraudPaymentParser;
 
     @PostMapping(value = "/fraud/load")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public void loadFraudOperation(@RequestParam("file") MultipartFile file) throws TException {
         if (csvFraudPaymentParser.hasCSVFormat(file)) {
             try {

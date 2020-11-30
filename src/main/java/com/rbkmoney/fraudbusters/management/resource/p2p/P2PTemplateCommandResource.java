@@ -40,7 +40,7 @@ public class P2PTemplateCommandResource {
     private final ValidationTemplateService p2PValidationService;
 
     @PostMapping(value = "/template")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<CreateTemplateResponse> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
         log.info("P2pReferenceCommandResource insertTemplate templateModel: {}", templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
@@ -62,7 +62,7 @@ public class P2PTemplateCommandResource {
     }
 
     @PostMapping(value = "/template/validate")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
         log.info("P2PTemplateCommandResource validateTemplate templateModels: {}", templateModels);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(templateModels.stream()
@@ -84,7 +84,7 @@ public class P2PTemplateCommandResource {
     }
 
     @PostMapping(value = "/template/{id}/references")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("P2pReferenceCommandResource insertReference referenceModels: {}", referenceModels);
@@ -98,7 +98,7 @@ public class P2PTemplateCommandResource {
 
 
     @PostMapping(value = "/template/{id}/reference")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertReference(@PathVariable(value = "id") String id,
                                                   @Validated @RequestBody P2pReferenceModel referenceModel) {
         log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
@@ -111,7 +111,7 @@ public class P2PTemplateCommandResource {
     }
 
     @DeleteMapping(value = "/template/{id}")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeTemplate(@PathVariable(value = "id") String id) {
         log.info("TemplateManagementResource removeTemplate id: {}", id);
         Command command = p2pTemplateCommandService.createTemplateCommandById(id);
@@ -127,7 +127,7 @@ public class P2PTemplateCommandResource {
     }
 
     @DeleteMapping(value = "/template/{id}/references")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("P2pReferenceCommandResource deleteReferences referenceModels: {}", referenceModels);
@@ -141,7 +141,7 @@ public class P2PTemplateCommandResource {
 
 
     @DeleteMapping(value = "/template/{templateId}/reference")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> deleteReference(@PathVariable String templateId,
                                                   @RequestParam String identityId) {
         log.info("TemplateManagementResource deleteReference templateId: {}, identityId: {}", templateId, identityId);

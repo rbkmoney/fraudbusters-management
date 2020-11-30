@@ -27,7 +27,7 @@ public class PaymentGroupQueryResource {
     private final PaymentGroupReferenceDao referenceDao;
 
     @GetMapping(value = "/group/{id}/reference")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<PaymentGroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
                                                                           @Validated @RequestParam(required = false) Integer limit) {
         log.info("getGroupReferences id: {} limit: {}", id, limit);
@@ -36,7 +36,7 @@ public class PaymentGroupQueryResource {
     }
 
     @GetMapping(value = "/group/reference/filter")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterPaymentGroupsReferenceResponse> filterReference(@Validated @RequestParam(required = false) String idRegexp,
                                                                                 @Validated @RequestParam(required = false) String lastId,
                                                                                 @Validated @RequestParam(required = false) String sortFieldValue,
@@ -54,7 +54,7 @@ public class PaymentGroupQueryResource {
     }
 
     @GetMapping(value = "/group/{id}")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<GroupModel> findGroup(@PathVariable String id) {
         log.info("findGroup groupId: {}", id);
         GroupModel groupModel = groupDao.getById(id);
@@ -62,7 +62,7 @@ public class PaymentGroupQueryResource {
     }
 
     @GetMapping(value = "/group/filter")
-    @PreAuthorize("hasAnyAuthority('fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(required = false, value = "id") String idRegexp) {
         log.info("filterGroup groupId: {}", idRegexp);
         List<GroupModel> groupModels = groupDao.filterGroup(idRegexp);

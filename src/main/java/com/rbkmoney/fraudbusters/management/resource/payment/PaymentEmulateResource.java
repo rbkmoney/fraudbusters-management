@@ -37,7 +37,7 @@ public class PaymentEmulateResource {
     private final PaymentReferenceDao referenceDao;
 
     @GetMapping(value = "/rules")
-    @PreAuthorize("hasAnyAuthority('fraud-support', 'fraud-monitoring', 'fraud-officer')")
+    @PreAuthorize("hasAnyRole('fraud-support', 'fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<TemplateModel>> getRulesByPartyAndShop(@Validated @RequestParam String partyId,
                                                                       @Validated @RequestParam String shopId) {
         log.info("EmulateResource getRulesByPartyAndShop partyId: {} shopId: {}", partyId, shopId);
