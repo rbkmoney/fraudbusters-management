@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -37,7 +36,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -64,7 +65,7 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void listenCreated() throws ExecutionException, InterruptedException {
-        Mockito.clearInvocations(wbListDao);
+        clearInvocations(wbListDao);
 
         Event event = new Event();
         Row row = createRow(ListType.black);
@@ -76,14 +77,15 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
             producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
             producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
         }
-        Thread.sleep(1000L);
 
-        Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
+        await().untilAsserted(() -> {
+            verify(wbListDao, times(3)).saveListRecord(any());
+        });
     }
 
     @Test
     public void listenCreatedGrey() throws ExecutionException, InterruptedException {
-        Mockito.clearInvocations(wbListDao);
+        clearInvocations(wbListDao);
 
         Event event = new Event();
         Row row = createRow(ListType.grey);
@@ -103,9 +105,10 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
             producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
             producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
         }
-        Thread.sleep(3000L);
 
-        Mockito.verify(wbListDao, Mockito.times(3)).saveListRecord(any());
+        await().untilAsserted(() -> {
+            verify(wbListDao, times(3)).saveListRecord(any());
+        });
     }
 
     @Test
@@ -118,9 +121,9 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
             ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
             producer.send(producerRecord).get();
             producer.close();
-            Thread.sleep(3000L);
-
-            Mockito.verify(wbListDao, Mockito.times(1)).removeRecord((P2pWbListRecords) any());
+            await().untilAsserted(() -> {
+                verify(wbListDao, times(1)).removeRecord((P2pWbListRecords) any());
+            });
         }
     }
 
@@ -138,7 +141,7 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void executeTest() throws IOException {
-        Mockito.doNothing().when(wbListDao).saveListRecord(any());
+        doNothing().when(wbListDao).saveListRecord(any());
 
         P2pListRecord record = new P2pListRecord();
         record.setListName(LIST_NAME);
