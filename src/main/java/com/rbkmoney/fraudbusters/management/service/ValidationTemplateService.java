@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ValidationTemplateService {
 
-    List<TemplateValidateError> validateTemplate(List<Template> templates);
+    List<TemplateValidateError> validateTemplate(Template template);
 
 }

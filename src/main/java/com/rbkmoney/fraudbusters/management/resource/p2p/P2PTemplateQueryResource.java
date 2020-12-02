@@ -4,10 +4,10 @@ import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.response.FilterTemplateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -52,13 +52,10 @@ public class P2PTemplateQueryResource {
 
     @GetMapping(value = "/template/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterTemplateResponse> filterTemplates(@Validated @RequestParam(required = false) String id,
-                                                                  @Validated @RequestParam(required = false) String lastId,
-                                                                  @Validated @RequestParam(required = false) Integer size,
-                                                                  @Validated @RequestParam(required = false) SortOrder sortOrder) {
-        log.info("filterTemplates id: {} lastId: {} size: {} sortOrder: {}", id, lastId, size, sortOrder);
-        List<TemplateModel> templateModels = p2pTemplateDao.filterModel(id, lastId, size, sortOrder);
-        Integer count = p2pTemplateDao.countFilterModel(id);
+    public ResponseEntity<FilterTemplateResponse> filterTemplates(FilterRequest filterRequest) {
+        log.info("filterTemplates filterRequest: {}", filterRequest);
+        List<TemplateModel> templateModels = p2pTemplateDao.filterModel(filterRequest);
+        Integer count = p2pTemplateDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterTemplateResponse.builder()
                 .count(count)
                 .templateModels(templateModels)

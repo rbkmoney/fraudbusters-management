@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.dao.payment.group;
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupReferenceRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
@@ -71,18 +72,25 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
     }
 
     @Override
-    public List<PaymentGroupReferenceModel> filterReference(String filterValue, String lastId, String sortFieldValue,
-                                                            Integer size, String sortingBy, SortOrder sortOrder) {
+    public List<PaymentGroupReferenceModel> filterReference(FilterRequest filterRequest) {
         SelectWhereStep<FGroupReferenceRecord> from = getDslContext()
                 .selectFrom(F_GROUP_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(sortingBy) ? F_GROUP_REFERENCE.GROUP_ID : F_GROUP_REFERENCE.field(sortingBy, String.class);
-        SelectConditionStep<FGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
-                from.where(DSL.trueCondition()) : from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterValue)
-                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
-                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue))));
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_GROUP_REFERENCE.GROUP_ID : F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class);
+        SelectConditionStep<FGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
+                from.where(DSL.trueCondition()) : from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())
+                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue())
+                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue()))));
         SelectSeekStep2<FGroupReferenceRecord, String, Long> fGroupReferenceRecords = addSortCondition(
-                F_GROUP_REFERENCE.ID, field, sortOrder, whereQuery);
-        return fetch(addSeekIfNeed(parseIfExists(lastId), sortFieldValue, size, fGroupReferenceRecords), listRecordRowMapper);
+                F_GROUP_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
+        return fetch(
+                addSeekIfNeed(
+                        parseIfExists(
+                                filterRequest.getLastId()
+                        ),
+                        filterRequest.getSortFieldValue(),
+                        filterRequest.getSize(),
+                        fGroupReferenceRecords),
+                listRecordRowMapper);
     }
 
     @Override

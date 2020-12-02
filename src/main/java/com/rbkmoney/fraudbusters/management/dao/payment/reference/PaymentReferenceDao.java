@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.dao.payment.reference;
 
 import com.rbkmoney.fraudbusters.management.dao.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import org.jooq.SortOrder;
 
 import java.util.List;
@@ -10,8 +11,7 @@ public interface PaymentReferenceDao extends ReferenceDao<PaymentReferenceModel>
 
     List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, Boolean isDefault, Integer limit);
 
-    List<PaymentReferenceModel> filterReferences(String filterValue, boolean isGlobal, boolean isDefault, String lastId, String sortFieldValue,
-                                                 Integer size, String sortingBy, SortOrder sortOrder);
+    List<PaymentReferenceModel> filterReferences(FilterRequest filterRequest, boolean isGlobal, boolean isDefault);
 
     List<PaymentReferenceModel> getByPartyAndShop(String partyId, String shopId);
 

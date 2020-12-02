@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.dao.payment.wblist;
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
@@ -18,7 +19,6 @@ import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference.F_GROUP_REFERENCE;
 import static com.rbkmoney.fraudbusters.management.domain.tables.WbListRecords.WB_LIST_RECORDS;
 import static org.jooq.Comparator.EQUALS;
 
@@ -114,22 +114,29 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
     }
 
     @Override
-    public <T> List<WbListRecords> filterListRecords(@NonNull ListType listType, @NonNull List<String> listNames,
-                                                     String filterValue, String lastId, T sortFieldValue,
-                                                     Integer size, String sortingBy, SortOrder sortOrder) {
+    public List<WbListRecords> filterListRecords(@NonNull ListType listType,
+                                                 @NonNull List<String> listNames,
+                                                 FilterRequest filterRequest) {
         SelectWhereStep<WbListRecordsRecord> from = getDslContext()
                 .selectFrom(WB_LIST_RECORDS);
         Condition condition = WB_LIST_RECORDS.LIST_NAME.in(listNames).and(WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<WbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
+        SelectConditionStep<WbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
                 from.where(condition) :
                 from.where(condition.and(
-                        WB_LIST_RECORDS.VALUE.like(filterValue)
-                                .or(WB_LIST_RECORDS.PARTY_ID.like(filterValue)
-                                        .or(WB_LIST_RECORDS.SHOP_ID.like(filterValue)))));
-        Field field = StringUtils.isEmpty(sortingBy) ? WB_LIST_RECORDS.INSERT_TIME : WB_LIST_RECORDS.field(sortingBy);
+                        WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
+                                .or(WB_LIST_RECORDS.PARTY_ID.like(filterRequest.getSearchValue())
+                                        .or(WB_LIST_RECORDS.SHOP_ID.like(filterRequest.getSearchValue())))));
+        Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ? WB_LIST_RECORDS.INSERT_TIME : WB_LIST_RECORDS.field(filterRequest.getSortBy());
         SelectSeekStep2<WbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(WB_LIST_RECORDS.ID,
-                field, sortOrder, whereQuery);
-        return fetch(addSeekIfNeed(lastId, sortFieldValue, size, wbListRecordsRecords), listRecordRowMapper);
+                field, filterRequest.getSortOrder(), whereQuery);
+        return fetch(
+                addSeekIfNeed(
+                        filterRequest.getLastId(),
+                        filterRequest.getSortFieldValue(),
+                        filterRequest.getSize(),
+                        wbListRecordsRecords),
+                listRecordRowMapper
+        );
     }
 
     @Override

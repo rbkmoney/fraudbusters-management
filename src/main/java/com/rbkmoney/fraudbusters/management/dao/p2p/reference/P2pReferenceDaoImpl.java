@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.dao.p2p.reference;
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.P2pFReferenceRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
@@ -146,19 +147,18 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
     }
 
     @Override
-    public List<P2pReferenceModel> filterReferences(String filterValue, boolean isGlobal, String lastId, String sortFieldValue,
-                                                    Integer size, String sortingBy, SortOrder sortOrder) {
+    public List<P2pReferenceModel> filterReferences(FilterRequest filterRequest, boolean isGlobal) {
         SelectWhereStep<P2pFReferenceRecord> from = getDslContext()
                 .selectFrom(P2P_F_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(sortingBy) ? P2P_F_REFERENCE.TEMPLATE_ID : P2P_F_REFERENCE.field(sortingBy, String.class);
-        SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_F_REFERENCE.TEMPLATE_ID : P2P_F_REFERENCE.field(filterRequest.getSortBy(), String.class);
+        SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
                 from.where(DSL.trueCondition()) : from.where(
-                P2P_F_REFERENCE.TEMPLATE_ID.like(filterValue)
-                        .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterValue)));
+                P2P_F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
+                        .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterRequest.getSearchValue())));
         whereQuery = addCheckGlobalDefaultIfExist(isGlobal, whereQuery);
         SelectSeekStep2<P2pFReferenceRecord, String, String> fReferenceRecords = addSortCondition(
-                P2P_F_REFERENCE.ID, field, sortOrder, whereQuery);
-        return fetch(addSeekIfNeed(lastId, sortFieldValue, size, fReferenceRecords), listRecordRowMapper);
+                P2P_F_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
+        return fetch(addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSortFieldValue(), filterRequest.getSize(), fReferenceRecords), listRecordRowMapper);
     }
 
     private <T extends Record> SelectConditionStep<T> addCheckGlobalDefaultIfExist(boolean isGlobal,

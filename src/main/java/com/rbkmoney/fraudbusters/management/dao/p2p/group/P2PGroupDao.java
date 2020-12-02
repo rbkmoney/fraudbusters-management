@@ -10,6 +10,7 @@ import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
 import org.jooq.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
@@ -83,12 +84,9 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
                         rs.getString(P2P_F_GROUP.TEMPLATE_ID.getName()),
                         null)
         );
-        GroupModel groupModel = new GroupModel();
-        if (list != null && !list.isEmpty()) {
-            groupModel.setGroupId(id);
-            groupModel.setPriorityTemplates(list);
-        }
-        return groupModel;
+        return CollectionUtils.isEmpty(list)
+                ? GroupModel.builder().groupId(id).priorityTemplates(list).build()
+                : null;
     }
 
     @Override

@@ -20,9 +20,10 @@ public class PaymentValidationService implements ValidationTemplateService {
     private final PaymentServiceSrv.Iface paymentServiceSrv;
 
     @Override
-    public List<TemplateValidateError> validateTemplate(List<Template> templates) {
+    public List<TemplateValidateError> validateTemplate(Template template) {
         try {
-            return paymentServiceSrv.validateCompilationTemplate(templates).getErrors();
+            //todo proto refactoring
+            return paymentServiceSrv.validateCompilationTemplate(List.of(template)).getErrors();
         } catch (TException e) {
             log.error("Error when validateTemplate");
             throw new ValidationException(e);

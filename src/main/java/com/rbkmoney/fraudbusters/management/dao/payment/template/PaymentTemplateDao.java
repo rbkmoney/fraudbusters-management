@@ -4,6 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FTemplateRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
@@ -85,14 +86,14 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
     }
 
     @Override
-    public List<TemplateModel> filterModel(String id, String lastId, Integer size, SortOrder sortOrder) {
+    public List<TemplateModel> filterModel(FilterRequest filterRequest) {
         FTemplateRecord fTemplateRecord = new FTemplateRecord();
-        fTemplateRecord.setId(lastId);
+        fTemplateRecord.setId(filterRequest.getLastId());
         SelectConditionStep<FTemplateRecord> where = getDslContext()
                 .selectFrom(F_TEMPLATE)
-                .where(!StringUtils.isEmpty(id) ? F_TEMPLATE.ID.like(id) : DSL.noCondition());
-        SelectSeekStep1<FTemplateRecord, String> selectSeekStep = addSortCondition(F_TEMPLATE.ID, sortOrder, where);
-        return fetch(addSeekIfNeed(lastId, size, selectSeekStep), listRecordRowMapper);
+                .where(!StringUtils.isEmpty(filterRequest.getSearchValue()) ? F_TEMPLATE.ID.like(filterRequest.getSearchValue()) : DSL.noCondition());
+        SelectSeekStep1<FTemplateRecord, String> selectSeekStep = addSortCondition(F_TEMPLATE.ID, filterRequest.getSortOrder(), where);
+        return fetch(addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSize(), selectSeekStep), listRecordRowMapper);
     }
 
     @Override

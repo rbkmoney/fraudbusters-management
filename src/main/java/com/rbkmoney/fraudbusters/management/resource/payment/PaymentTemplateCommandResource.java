@@ -39,15 +39,16 @@ public class PaymentTemplateCommandResource {
     private final PaymentReferenceDao referenceDao;
     private final ValidationTemplateService paymentValidationService;
 
-    //400 при ошибках
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<CreateTemplateResponse> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
         log.info("TemplateManagementResource insertTemplate templateModel: {}", templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
-        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(List.of(command.getCommandBody().getTemplate()));
+        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(
+                command.getCommandBody().getTemplate()
+        );
         if (!CollectionUtils.isEmpty(templateValidateErrors)) {
-            return ResponseEntity.ok().body(CreateTemplateResponse.builder()
+            return ResponseEntity.badRequest().body(CreateTemplateResponse.builder()
                     .template(templateModel.getTemplate())
                     .errors(templateValidateErrors.get(0).getReason())
                     .build());
@@ -63,13 +64,11 @@ public class PaymentTemplateCommandResource {
 
     @PostMapping(value = "/template/validate")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
-        log.info("TemplateManagementResource validateTemplate templateModels: {}", templateModels);
-        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(templateModels.stream()
-                .map(templateModel -> new Template()
-                        .setId(templateModel.getId())
-                        .setTemplate(templateModel.getTemplate().getBytes()))
-                .collect(Collectors.toList()));
+    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody TemplateModel templateModel) {
+        log.info("TemplateManagementResource validateTemplate templateModel: {}", templateModel);
+        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(new Template()
+                .setId(templateModel.getId())
+                .setTemplate(templateModel.getTemplate().getBytes()));
         log.info("TemplateManagementResource validateTemplate result: {}", templateValidateErrors);
         return ResponseEntity.ok().body(
                 ValidateTemplatesResponse.builder()
@@ -82,7 +81,7 @@ public class PaymentTemplateCommandResource {
         );
     }
 
-    //кажется не используем
+    //todo посмотреть используем ли
     @PostMapping(value = "/template/references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertReferences(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
@@ -105,7 +104,7 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(referenceId);
     }
 
-    //кажется не используем
+    //todo подумать над рефакторингом
     @PostMapping(value = "/template/{id}/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> markReferenceAsDefault(@PathVariable(value = "id") String id) {
@@ -114,7 +113,7 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(id);
     }
 
-    //кажется не используем
+    //todo подумать над рефакторингом
     @PostMapping(value = "/template/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertDefaultReference(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
@@ -148,10 +147,12 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(idMessage);
     }
 
+    //todo проверить использование
+    @Deprecated(forRemoval = true)
     @PostMapping(value = "/template/{id}/reference/delete")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
-                                                        @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
+                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("TemplateManagementResource deleteReferences referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
@@ -164,8 +165,8 @@ public class PaymentTemplateCommandResource {
     @DeleteMapping(value = "/template/{templateId}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> deleteReference(@PathVariable String templateId,
-                                                        @RequestParam String partyId,
-                                                        @RequestParam String shopId) {
+                                                  @RequestParam String partyId,
+                                                  @RequestParam String shopId) {
         log.info("TemplateManagementResource deleteReference templateId: {}, partyId: {}, shopId: {}", templateId, partyId, shopId);
         Command command = paymentTemplateReferenceService.createReferenceCommandByIds(templateId, partyId, shopId);
         command.setCommandType(CommandType.DELETE);

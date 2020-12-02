@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.dao.p2p.wblist;
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.P2pWbListRecordsRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
@@ -109,21 +110,28 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
     }
 
     @Override
-    public <T> List<P2pWbListRecords> filterListRecords(@NonNull ListType listType, @NonNull List<String> listNames,
-                                                        String filterValue, String lastId, T sortFieldValue,
-                                                        Integer size, String sortingBy, SortOrder sortOrder) {
+    public List<P2pWbListRecords> filterListRecords(@NonNull ListType listType, @NonNull List<String> listNames,
+                                                    FilterRequest filterRequest) {
         SelectWhereStep<P2pWbListRecordsRecord> from = getDslContext()
                 .selectFrom(P2P_WB_LIST_RECORDS);
         Condition condition = P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<P2pWbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
+        SelectConditionStep<P2pWbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
                 from.where(condition) :
                 from.where(condition.and(
-                        P2P_WB_LIST_RECORDS.VALUE.like(filterValue)
-                                .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterValue))));
-        Field field = StringUtils.isEmpty(sortingBy) ? P2P_WB_LIST_RECORDS.INSERT_TIME : P2P_WB_LIST_RECORDS.field(sortingBy);
+                        P2P_WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
+                                .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterRequest.getSearchValue()))));
+        Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_WB_LIST_RECORDS.INSERT_TIME : P2P_WB_LIST_RECORDS.field(filterRequest.getSortBy());
         SelectSeekStep2<P2pWbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(P2P_WB_LIST_RECORDS.ID,
-                field, sortOrder, whereQuery);
-        return fetch(addSeekIfNeed(lastId, sortFieldValue, size, wbListRecordsRecords), listRecordRowMapper);
+                field, filterRequest.getSortOrder(), whereQuery);
+        return fetch(
+                addSeekIfNeed(
+                        filterRequest.getLastId(),
+                        filterRequest.getSortFieldValue(),
+                        filterRequest.getSize(),
+                        wbListRecordsRecords
+                ),
+                listRecordRowMapper
+        );
     }
 
     @Override

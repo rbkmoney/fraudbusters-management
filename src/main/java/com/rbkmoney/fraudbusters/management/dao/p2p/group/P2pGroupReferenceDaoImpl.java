@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.dao.p2p.group;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.P2pFGroupReferenceRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
@@ -78,17 +79,25 @@ public class P2pGroupReferenceDaoImpl extends AbstractDao implements P2pGroupRef
     }
 
     @Override
-    public List<P2pGroupReferenceModel> filterReference(String filterValue, String lastId, String sortFieldValue,
-                                                        Integer size, String sortingBy, SortOrder sortOrder) {
+    public List<P2pGroupReferenceModel> filterReference(FilterRequest filterRequest) {
         SelectWhereStep<P2pFGroupReferenceRecord> from = getDslContext()
                 .selectFrom(P2P_F_GROUP_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(sortingBy) ? P2P_F_GROUP_REFERENCE.GROUP_ID : P2P_F_GROUP_REFERENCE.field(sortingBy, String.class);
-        SelectConditionStep<P2pFGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterValue) ?
-                from.where(DSL.trueCondition()) : from.where(P2P_F_GROUP_REFERENCE.GROUP_ID.like(filterValue)
-                .or(P2P_F_GROUP_REFERENCE.IDENTITY_ID.like(filterValue)));
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_F_GROUP_REFERENCE.GROUP_ID : P2P_F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class);
+        SelectConditionStep<P2pFGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
+                from.where(DSL.trueCondition()) : from.where(P2P_F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())
+                .or(P2P_F_GROUP_REFERENCE.IDENTITY_ID.like(filterRequest.getSearchValue())));
         SelectSeekStep2<P2pFGroupReferenceRecord, String, Long> fGroupReferenceRecords = addSortCondition(P2P_F_GROUP_REFERENCE.ID,
-                field, sortOrder, whereQuery);
-        return fetch(addSeekIfNeed(parseIfExists(lastId), sortFieldValue, size, fGroupReferenceRecords), listRecordRowMapper);
+                field, filterRequest.getSortOrder(), whereQuery);
+        return fetch(
+                addSeekIfNeed(
+                        parseIfExists(
+                                filterRequest.getLastId()
+                        ),
+                        filterRequest.getSortFieldValue(),
+                        filterRequest.getSize(),
+                        fGroupReferenceRecords),
+                listRecordRowMapper
+        );
     }
 
     private Long parseIfExists(String lastId) {
