@@ -7,6 +7,7 @@ import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCou
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
@@ -118,17 +119,41 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         assertEquals(5L, countInfoListRecord.getCountInfo().getCount().longValue());
 
         //check sorting
-        List<WbListRecords> wbListRecordsFirst = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), null, null,
-                null, 3, null, SortOrder.ASC);
-        List<WbListRecords> wbListRecordsSecond = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), null, null,
-                null, 3, null, SortOrder.DESC);
+        List<WbListRecords> wbListRecordsFirst = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), FilterRequest.builder()
+                .searchValue(null)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(3)
+                .sortBy(null)
+                .sortOrder(SortOrder.ASC)
+                .build());
+        List<WbListRecords> wbListRecordsSecond = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), FilterRequest.builder()
+                .searchValue(null)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(3)
+                .sortBy(null)
+                .sortOrder(SortOrder.DESC)
+                .build());
         assertEquals(wbListRecordsFirst.get(0).getPartyId(), wbListRecordsSecond.get(1).getPartyId());
 
         //check paging
-        wbListRecordsFirst = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), null, null,
-                null, 1, null, SortOrder.DESC);
-        wbListRecordsSecond = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), null, wbListRecordsFirst.get(0).getId(),
-                wbListRecordsFirst.get(0).getInsertTime(), 1, null, SortOrder.DESC);
+        wbListRecordsFirst = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), FilterRequest.builder()
+                .searchValue(null)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(1)
+                .sortBy(null)
+                .sortOrder(SortOrder.DESC)
+                .build());
+        wbListRecordsSecond = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), FilterRequest.builder()
+                .searchValue(null)
+                .lastId(wbListRecordsFirst.get(0).getId())
+                .sortFieldValue(wbListRecordsFirst.get(0).getInsertTime().toString())
+                .size(1)
+                .sortBy(null)
+                .sortOrder(SortOrder.DESC)
+                .build());
         Integer count = wbListDao.countFilterRecords(ListType.black, List.of(LIST_NAME), null);
         assertEquals(Integer.valueOf(2), count);
         assertNotEquals(wbListRecordsFirst.get(0).getPartyId(), wbListRecordsSecond.get(0).getPartyId());

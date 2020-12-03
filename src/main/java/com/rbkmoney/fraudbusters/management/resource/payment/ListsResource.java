@@ -7,13 +7,13 @@ import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.payment.response.PaymentFilterListRecordsResponse;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -57,17 +57,11 @@ public class ListsResource {
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<PaymentFilterListRecordsResponse> filterList(@Validated @RequestParam ListType listType,
                                                                        @Validated @RequestParam List<String> listNames,
-                                                                       @Validated @RequestParam(required = false) String searchValue,
-                                                                       @Validated @RequestParam(required = false) String lastId,
-                                                                       @Validated @RequestParam(required = false) String sortFieldValue,
-                                                                       @Validated @RequestParam(required = false) Integer size,
-                                                                       @Validated @RequestParam(required = false) String sortBy,
-                                                                       @Validated @RequestParam(required = false) SortOrder sortOrder) {
-        log.info("filterList listType: {} listNames: {} searchValue: {} lastId: {} sortFieldValue: {} size: {} sortBy: {} sortOrder: {}",
-                listType, listNames, searchValue, lastId, sortFieldValue, size, sortBy, sortOrder);
-        List<WbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, searchValue, lastId,
-                sortFieldValue, size, sortBy, sortOrder);
-        Integer count = wbListDao.countFilterRecords(listType, listNames, searchValue);
+                                                                       FilterRequest filterRequest) {
+        log.info("filterList listType: {} listNames: {} filterRequest: {}",
+                listType, listNames, filterRequest);
+        List<WbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, filterRequest);
+        Integer count = wbListDao.countFilterRecords(listType, listNames, filterRequest.getSearchValue());
         return ResponseEntity.ok().body(PaymentFilterListRecordsResponse.builder()
                 .count(count)
                 .wbListRecords(wbListRecords)

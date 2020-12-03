@@ -4,6 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import org.jooq.SortOrder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,16 +42,38 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         Assert.assertTrue(byId.isEmpty());
 
         groupReferenceDao.insert(referenceModel);
-        List<PaymentGroupReferenceModel> paymentGroupReferenceModels = groupReferenceDao.filterReference(GROUP_ID, null, null, 1, null, null);
+
+        List<PaymentGroupReferenceModel> paymentGroupReferenceModels = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(GROUP_ID)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(1)
+                .sortBy(null)
+                .sortOrder(null)
+                .build());
         assertEquals(PARTY_ID, paymentGroupReferenceModels.get(0).getPartyId());
 
         //check size
         referenceModel.setShopId(SHOP_ID + "2");
         groupReferenceDao.insert(referenceModel);
-        paymentGroupReferenceModels = groupReferenceDao.filterReference(GROUP_ID, null, null, 1, null, null);
+        paymentGroupReferenceModels = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(GROUP_ID)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(1)
+                .sortBy(null)
+                .sortOrder(null)
+                .build());
         assertEquals(1, paymentGroupReferenceModels.size());
 
-        paymentGroupReferenceModels = groupReferenceDao.filterReference(GROUP_ID, null, null, 2, null, null);
+        paymentGroupReferenceModels = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(GROUP_ID)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(2)
+                .sortBy(null)
+                .sortOrder(null)
+                .build());
         assertEquals(2, paymentGroupReferenceModels.size());
         Integer integer = groupReferenceDao.countFilterReference(GROUP_ID);
         assertEquals(Integer.valueOf(2), integer);
@@ -58,17 +81,36 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         //check pagination
         referenceModel.setShopId(SHOP_ID + "3");
         groupReferenceDao.insert(referenceModel);
-        paymentGroupReferenceModels = groupReferenceDao.filterReference(GROUP_ID, null, null, 1, null, null);
+        paymentGroupReferenceModels = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(GROUP_ID)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(1)
+                .sortBy(null)
+                .sortOrder(null)
+                .build());
         System.out.println(paymentGroupReferenceModels);
 
-        List<PaymentGroupReferenceModel> secondPage = groupReferenceDao.filterReference(GROUP_ID,
-                paymentGroupReferenceModels.get(0).getId(), GROUP_ID, 1, null, null);
+        List<PaymentGroupReferenceModel> secondPage = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(GROUP_ID)
+                .lastId(paymentGroupReferenceModels.get(0).getId())
+                .sortFieldValue(GROUP_ID)
+                .size(1)
+                .sortBy(null)
+                .sortOrder(null)
+                .build());
         assertNotEquals(paymentGroupReferenceModels.get(0).getShopId(), secondPage.get(0).getShopId());
         integer = groupReferenceDao.countFilterReference(GROUP_ID);
         assertEquals(Integer.valueOf(3), integer);
 
-        secondPage = groupReferenceDao.filterReference(GROUP_ID,
-                secondPage.get(0).getId(), GROUP_ID, 1, null, null);
+        secondPage = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(GROUP_ID)
+                .lastId(secondPage.get(0).getId())
+                .sortFieldValue(GROUP_ID)
+                .size(1)
+                .sortBy(null)
+                .sortOrder(null)
+                .build());
         assertEquals(1, secondPage.size());
         integer = groupReferenceDao.countFilterReference(GROUP_ID);
         assertEquals(Integer.valueOf(3), integer);
@@ -76,18 +118,44 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         //sorting check
         referenceModel.setGroupId(GROUP_ID + "2");
         groupReferenceDao.insert(referenceModel);
-        secondPage = groupReferenceDao.filterReference(null, null, null, 3, null, SortOrder.ASC);
-        paymentGroupReferenceModels = groupReferenceDao.filterReference(null, null, null, 3, null, SortOrder.DESC);
+        secondPage = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(null)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(3)
+                .sortBy(null)
+                .sortOrder(SortOrder.ASC)
+                .build());
+        paymentGroupReferenceModels = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(null)
+                .lastId(null)
+                .sortFieldValue(null)
+                .size(3)
+                .sortBy(null)
+                .sortOrder(SortOrder.DESC)
+                .build());
         assertNotEquals(paymentGroupReferenceModels.get(0).getShopId(), secondPage.get(0).getShopId());
 
         assertNotEquals(paymentGroupReferenceModels.get(0).getGroupId(), secondPage.get(0).getGroupId());
 
-        paymentGroupReferenceModels = groupReferenceDao.filterReference(null, paymentGroupReferenceModels.get(0).getId(),
-                paymentGroupReferenceModels.get(0).getGroupId(), 1, null, SortOrder.DESC);
+        paymentGroupReferenceModels = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(null)
+                .lastId(paymentGroupReferenceModels.get(0).getId())
+                .sortFieldValue(paymentGroupReferenceModels.get(0).getGroupId())
+                .size(1)
+                .sortBy(null)
+                .sortOrder(SortOrder.DESC)
+                .build());
         assertEquals(paymentGroupReferenceModels.get(0).getShopId(), SHOP_ID + 2);
 
-        paymentGroupReferenceModels = groupReferenceDao.filterReference(null, paymentGroupReferenceModels.get(0).getId(),
-                paymentGroupReferenceModels.get(0).getGroupId(), 1, null, SortOrder.DESC);
+        paymentGroupReferenceModels = groupReferenceDao.filterReference(FilterRequest.builder()
+                .searchValue(null)
+                .lastId(paymentGroupReferenceModels.get(0).getId())
+                .sortFieldValue(paymentGroupReferenceModels.get(0).getGroupId())
+                .size(1)
+                .sortBy(null)
+                .sortOrder(SortOrder.DESC)
+                .build());
         assertEquals(paymentGroupReferenceModels.get(0).getShopId(), SHOP_ID);
 
         System.out.println(paymentGroupReferenceModels);

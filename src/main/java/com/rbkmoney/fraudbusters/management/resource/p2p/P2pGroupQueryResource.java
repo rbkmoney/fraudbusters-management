@@ -5,9 +5,9 @@ import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterP2pGroupsReferenceResponse;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.SortOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -24,20 +24,23 @@ public class P2pGroupQueryResource {
     private final P2PGroupDao groupDao;
     private final P2pGroupReferenceDao referenceDao;
 
-    @GetMapping(value = "/group/{id}/reference")
+    @GetMapping(value = "/group/{groupId}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(@PathVariable(value = "id") String id,
+    public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(@PathVariable(value = "groupId") String groupId,
                                                                       @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getGroupReferences id: {} limit: {}", id, limit);
-        List<P2pGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(id);
+        log.info("getGroupReferences id: {} limit: {}", groupId, limit);
+        List<P2pGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(groupId);
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
-    @GetMapping(value = "/group/{id}")
+    @GetMapping(value = "/group/{groupId}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<GroupModel> findGroup(@PathVariable String id) {
-        log.info("findGroup groupId: {}", id);
-        GroupModel groupModel = groupDao.getById(id);
+    public ResponseEntity<GroupModel> getGroupById(@PathVariable String groupId) {
+        log.info("getGroupById groupId: {}", groupId);
+        GroupModel groupModel = groupDao.getById(groupId);
+        if (groupModel == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok().body(groupModel);
     }
 
@@ -51,16 +54,10 @@ public class P2pGroupQueryResource {
 
     @GetMapping(value = "/group/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterP2pGroupsReferenceResponse> filterReference(@Validated @RequestParam(required = false) String idRegexp,
-                                                                            @Validated @RequestParam(required = false) String lastId,
-                                                                            @Validated @RequestParam(required = false) String sortFieldValue,
-                                                                            @Validated @RequestParam(required = false) Integer size,
-                                                                            @Validated @RequestParam(required = false) String sortBy,
-                                                                            @Validated @RequestParam(required = false) SortOrder sortOrder) {
-        log.info("filterReference idRegexp: {}", idRegexp);
-        List<P2pGroupReferenceModel> listByTemplateId = referenceDao.filterReference(idRegexp, lastId, sortFieldValue,
-                size, sortBy, sortOrder);
-        Integer count = referenceDao.countFilterReference(idRegexp);
+    public ResponseEntity<FilterP2pGroupsReferenceResponse> filterReference(FilterRequest filterRequest) {
+        log.info("filterReference idRegexp: {}", filterRequest.getSearchValue());
+        List<P2pGroupReferenceModel> listByTemplateId = referenceDao.filterReference(filterRequest);
+        Integer count = referenceDao.countFilterReference(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterP2pGroupsReferenceResponse.builder()
                 .count(count)
                 .groupsReferenceModels(listByTemplateId)

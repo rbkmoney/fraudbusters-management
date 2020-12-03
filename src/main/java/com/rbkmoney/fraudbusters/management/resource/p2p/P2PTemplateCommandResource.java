@@ -9,7 +9,6 @@ import com.rbkmoney.fraudbusters.management.converter.p2p.P2pReferenceToCommandC
 import com.rbkmoney.fraudbusters.management.domain.ErrorTemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
@@ -45,9 +44,10 @@ public class P2PTemplateCommandResource {
         log.info("P2pReferenceCommandResource insertTemplate templateModel: {}", templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(
-                List.of(command.getCommandBody().getTemplate()));
+                command.getCommandBody().getTemplate()
+        );
         if (!CollectionUtils.isEmpty(templateValidateErrors)) {
-            return ResponseEntity.ok().body(CreateTemplateResponse.builder()
+            return ResponseEntity.badRequest().body(CreateTemplateResponse.builder()
                     .template(templateModel.getTemplate())
                     .errors(templateValidateErrors.get(0).getReason())
                     .build());
@@ -63,14 +63,11 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template/validate")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody List<TemplateModel> templateModels) {
-        log.info("P2PTemplateCommandResource validateTemplate templateModels: {}", templateModels);
-        List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(templateModels.stream()
-                .map(templateModel -> new Template()
-                        .setId(templateModel.getId())
-                        .setTemplate(templateModel.getTemplate().getBytes()))
-                .collect(Collectors.toList())
-        );
+    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody TemplateModel templateModel) {
+        log.info("P2PTemplateCommandResource validateTemplate templateModel: {}", templateModel);
+        List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(new Template()
+                .setId(templateModel.getId())
+                .setTemplate(templateModel.getTemplate().getBytes()));
         log.info("P2PTemplateCommandResource validateTemplate result: {}", templateValidateErrors);
         return ResponseEntity.ok().body(
                 ValidateTemplatesResponse.builder()
@@ -86,7 +83,7 @@ public class P2PTemplateCommandResource {
     @PostMapping(value = "/template/{id}/references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertReferences(@PathVariable(value = "id") String id,
-                                                        @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
+                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("P2pReferenceCommandResource insertReference referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
@@ -126,10 +123,11 @@ public class P2PTemplateCommandResource {
         return command;
     }
 
+    @Deprecated(forRemoval = true)
     @DeleteMapping(value = "/template/{id}/references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
-                                                        @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
+                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("P2pReferenceCommandResource deleteReferences referenceModels: {}", referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))

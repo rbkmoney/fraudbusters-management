@@ -11,6 +11,7 @@ import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
@@ -85,12 +86,9 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                         .lastUpdateTime(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
                         .id(rs.getString(F_GROUP.TEMPLATE_ID.getName())).build()
         );
-        GroupModel groupModel = new GroupModel();
-        if (list != null && !list.isEmpty()) {
-            groupModel.setGroupId(id);
-            groupModel.setPriorityTemplates(list);
-        }
-        return groupModel;
+        return !CollectionUtils.isEmpty(list)
+                ? GroupModel.builder().groupId(id).priorityTemplates(list).build()
+                : null;
     }
 
     @Override

@@ -20,9 +20,10 @@ public class P2PValidationService implements ValidationTemplateService {
     private final P2PServiceSrv.Iface p2pServiceSrv;
 
     @Override
-    public List<TemplateValidateError> validateTemplate(List<Template> templates) {
+    public List<TemplateValidateError> validateTemplate(Template template) {
         try {
-            return p2pServiceSrv.validateCompilationTemplate(templates).getErrors();
+            //todo proto refactoring
+            return p2pServiceSrv.validateCompilationTemplate(List.of(template)).getErrors();
         } catch (TException e) {
             log.error("Error when validateTemplate: ", e);
             throw new ValidationException(e);

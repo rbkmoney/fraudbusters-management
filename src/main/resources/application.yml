@@ -81,3 +81,6 @@ keycloak:
   enabled: false
 
 cors.allowed-origins: "http://localhost:4200"
+
+spring.servlet.multipart.max-file-size: 10MB
+spring.servlet.multipart.max-request-size: 10MB

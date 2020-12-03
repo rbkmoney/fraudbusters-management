@@ -56,7 +56,7 @@ public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
 
         groupDao.remove(groupModel);
         byId = groupDao.getById(GROUP_2);
-        assertNull(byId.getGroupId());
+        assertNull(byId);
     }
 
     @Test

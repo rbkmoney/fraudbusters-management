@@ -68,10 +68,10 @@ public class P2pGroupCommandResource {
         return command;
     }
 
-    @DeleteMapping(value = "/group/{id}/reference")
+    @DeleteMapping(value = "/group/{groupId}/reference/{identityId}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> removeGroupReference(@PathVariable(value = "id") String groupId,
-                                                       @RequestParam(value = "identityId") String identityId) {
+    public ResponseEntity<String> removeGroupReference(@PathVariable(value = "groupId") String groupId,
+                                                       @PathVariable(value = "identityId") String identityId) {
         log.info("removeGroupReference groupId: {} identityId: {}", groupId, identityId);
         P2pGroupReferenceModel groupReferenceModel = new P2pGroupReferenceModel();
         groupReferenceModel.setIdentityId(identityId);
