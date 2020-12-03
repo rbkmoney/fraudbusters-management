@@ -113,7 +113,7 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(id);
     }
 
-    //todo подумать над рефакторингом
+    @Deprecated(forRemoval = true)
     @PostMapping(value = "/template/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertDefaultReference(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {

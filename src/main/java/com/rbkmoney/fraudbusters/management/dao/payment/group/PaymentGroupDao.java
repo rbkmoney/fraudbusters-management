@@ -86,7 +86,7 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                         .lastUpdateTime(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
                         .id(rs.getString(F_GROUP.TEMPLATE_ID.getName())).build()
         );
-        return CollectionUtils.isEmpty(list)
+        return !CollectionUtils.isEmpty(list)
                 ? GroupModel.builder().groupId(id).priorityTemplates(list).build()
                 : null;
     }

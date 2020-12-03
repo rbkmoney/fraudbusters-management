@@ -84,7 +84,7 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
                         rs.getString(P2P_F_GROUP.TEMPLATE_ID.getName()),
                         null)
         );
-        return CollectionUtils.isEmpty(list)
+        return !CollectionUtils.isEmpty(list)
                 ? GroupModel.builder().groupId(id).priorityTemplates(list).build()
                 : null;
     }
