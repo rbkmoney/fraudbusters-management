@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -28,9 +29,10 @@ public class PaymentGroupQueryResource {
 
     @GetMapping(value = "/group/{groupId}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<PaymentGroupReferenceModel>> getReferences(@PathVariable(value = "groupId") String groupId,
+    public ResponseEntity<List<PaymentGroupReferenceModel>> getReferences(Principal principal,
+                                                                          @PathVariable(value = "groupId") String groupId,
                                                                           @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getGroupReferences id: {} limit: {}", groupId, limit);
+        log.info("getGroupReferences initiator: {} id: {} limit: {}", principal.getName(), groupId, limit);
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(groupId);
         return ResponseEntity.ok().body(listByTemplateId);
     }
@@ -49,8 +51,9 @@ public class PaymentGroupQueryResource {
 
     @GetMapping(value = "/group/{groupId}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<GroupModel> getGroupById(@PathVariable String groupId) {
-        log.info("getGroupById groupId: {}", groupId);
+    public ResponseEntity<GroupModel> getGroupById(Principal principal,
+                                                   @PathVariable String groupId) {
+        log.info("getGroupById initiator: {} groupId: {}", principal.getName(), groupId);
         GroupModel groupModel = groupDao.getById(groupId);
         if (groupModel == null) {
             return ResponseEntity.notFound().build();
@@ -60,8 +63,9 @@ public class PaymentGroupQueryResource {
 
     @GetMapping(value = "/group/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(required = false, value = "id") String idRegexp) {
-        log.info("filterGroup groupId: {}", idRegexp);
+    public ResponseEntity<List<GroupModel>> filterGroup(Principal principal,
+                                                        @RequestParam(required = false, value = "id") String idRegexp) {
+        log.info("filterGroup initiator: {} groupId: {}", principal.getName(), idRegexp);
         List<GroupModel> groupModels = groupDao.filterGroup(idRegexp);
         return ResponseEntity.ok().body(groupModels);
     }

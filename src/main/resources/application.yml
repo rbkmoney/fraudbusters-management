@@ -79,6 +79,7 @@ keycloak:
   ssl-required: external
   public-client: true
   enabled: false
+  principal-attribute: preferred_username
 
 cors.allowed-origins: "http://localhost:4200"
 

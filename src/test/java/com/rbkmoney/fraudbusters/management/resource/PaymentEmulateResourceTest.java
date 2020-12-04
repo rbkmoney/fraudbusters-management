@@ -16,6 +16,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReference
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentEmulateResource;
 import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
+import org.apache.http.auth.BasicUserPrincipal;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +91,10 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
         referenceModel1.setIsGlobal(false);
         referenceDao.insert(referenceModel1);
 
-        ResponseEntity<List<TemplateModel>> rulesByPartyAndShop = paymentEmulateResource.getRulesByPartyAndShop(PARTY_ID, SHOP_ID);
+        ResponseEntity<List<TemplateModel>> rulesByPartyAndShop = paymentEmulateResource.getRulesByPartyAndShop(
+                new BasicUserPrincipal("test"),
+                PARTY_ID,
+                SHOP_ID);
 
         Assert.assertTrue(rulesByPartyAndShop.hasBody());
         List<TemplateModel> templateModels = rulesByPartyAndShop.getBody();
@@ -105,7 +109,10 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
 
         referenceDao.remove(referenceModel1);
 
-        rulesByPartyAndShop = paymentEmulateResource.getRulesByPartyAndShop(PARTY_ID, SHOP_ID);
+        rulesByPartyAndShop = paymentEmulateResource.getRulesByPartyAndShop(
+                new BasicUserPrincipal("test"),
+                PARTY_ID,
+                SHOP_ID);
         Assert.assertTrue(rulesByPartyAndShop.hasBody());
         templateModels = rulesByPartyAndShop.getBody();
         Assert.assertFalse(templateModels.isEmpty());

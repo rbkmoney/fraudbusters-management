@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -24,22 +24,12 @@ public class P2pReferenceQueryResource {
 
     private final P2pReferenceDao referenceDao;
 
-    @Deprecated(forRemoval = true)
-    @GetMapping(value = "/reference")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<P2pReferenceModel>> getReferencesByFilters(@RequestParam(value = "identityId") String identityId,
-                                                                          @RequestParam(value = "isGlobal") Boolean isGlobal,
-                                                                          @Validated @RequestParam(required = false) Integer limit) {
-        log.info("P2pReferenceQueryResource getReferences partyId: {} isGlobal: {} limit: {}", identityId, isGlobal, limit);
-        List<P2pReferenceModel> listByTemplateId = referenceDao.getListByTFilters(identityId, isGlobal, limit);
-        return ResponseEntity.ok().body(listByTemplateId);
-    }
-
     @GetMapping(value = "/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterP2pReferenceResponse> filterReferences(FilterRequest filterRequest,
+    public ResponseEntity<FilterP2pReferenceResponse> filterReferences(Principal principal,
+                                                                       FilterRequest filterRequest,
                                                                        @RequestParam(value = "isGlobal") Boolean isGlobal) {
-        log.info("filterReferences filterRequest: {} isGlobal: {}", filterRequest, isGlobal);
+        log.info("filterReferences initiator: {}  filterRequest: {} isGlobal: {}", principal.getName(), filterRequest, isGlobal);
         List<P2pReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest, isGlobal);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue(), isGlobal);
         return ResponseEntity.ok().body(FilterP2pReferenceResponse.builder()

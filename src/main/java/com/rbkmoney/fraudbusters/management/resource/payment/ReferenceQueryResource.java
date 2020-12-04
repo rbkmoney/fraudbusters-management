@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -24,12 +25,14 @@ public class ReferenceQueryResource {
 
     @GetMapping(value = "/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<PaymentReferenceModel>> getReferencesByFilters(@RequestParam(value = "partyId") String partyId,
+    public ResponseEntity<List<PaymentReferenceModel>> getReferencesByFilters(Principal principal,
+                                                                              @RequestParam(value = "partyId") String partyId,
                                                                               @RequestParam(value = "shopId") String shopId,
                                                                               @RequestParam(value = "isGlobal") Boolean isGlobal,
                                                                               @RequestParam(value = "isDefault") Boolean isDefault,
                                                                               @Validated @RequestParam(required = false) Integer limit) {
-        log.info("TemplateManagementResource getReferences partyId: {} shopId: {} isGlobal: {} isDefault: {} limit: {}", partyId, shopId, isGlobal, isDefault, limit);
+        log.info("TemplateManagementResource getReferences initiator: {} partyId: {} shopId: {} isGlobal: {} isDefault: {} limit: {}",
+                principal.getName(), partyId, shopId, isGlobal, isDefault, limit);
         List<PaymentReferenceModel> listByTemplateId = referenceDao.getListByTFilters(partyId, shopId, isGlobal, isDefault, limit);
         return ResponseEntity.ok().body(listByTemplateId);
     }
@@ -37,11 +40,12 @@ public class ReferenceQueryResource {
     //todo isGlobal isDefault
     @GetMapping(value = "/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(FilterRequest filterRequest,
+    public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(Principal principal,
+                                                                           FilterRequest filterRequest,
                                                                            @Validated @RequestParam(required = false) Boolean isGlobal,
                                                                            @Validated @RequestParam(required = false) Boolean isDefault) {
-        log.info("filterReferences filterRequest: {}, isGlobal: {}, isDefault: {}",
-                filterRequest, isGlobal, isDefault);
+        log.info("filterReferences initiator: {} filterRequest: {}, isGlobal: {}, isDefault: {}",
+                principal.getName(), filterRequest, isGlobal, isDefault);
         List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest, isGlobal, isDefault);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue(), isGlobal, isDefault);
         return ResponseEntity.ok().body(FilterPaymentReferenceResponse.builder()

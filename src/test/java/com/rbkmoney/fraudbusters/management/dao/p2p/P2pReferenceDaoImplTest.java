@@ -17,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.List;
 import java.util.UUID;
 
-import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFReference.P2P_F_REFERENCE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -125,87 +124,80 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceModel.setIsGlobal(true);
         p2pReferenceDao.insert(referenceModel);
 
-        List<P2pReferenceModel> paymentReferenceModels = p2pReferenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false);
+        List<P2pReferenceModel> paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                null,
+                null), false);
         System.out.println(paymentReferenceModels);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(3, paymentReferenceModels.size());
 
         //check template field
-        paymentReferenceModels = p2pReferenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(TEMPLATE_ID)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(
+                TEMPLATE_ID,
+                null,
+                null,
+                5,
+                null,
+                null), false);
 
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(2, paymentReferenceModels.size());
 
         //check regexp
-        paymentReferenceModels = p2pReferenceDao.filterReferences(FilterRequest.builder()
-                .searchValue("%" + TEMPLATE_ID + "%")
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(
+                "%" + TEMPLATE_ID + "%",
+                null,
+                null,
+                5,
+                null,
+                null), false);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(3, paymentReferenceModels.size());
 
         //check concrete
-        paymentReferenceModels = p2pReferenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(THIRD + TEMPLATE_ID)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(
+                THIRD + TEMPLATE_ID,
+                null,
+                null,
+                5,
+                null,
+                null), false);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
 
         //check global
-        paymentReferenceModels = p2pReferenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), true);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                null,
+                null), true);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         //check sort
-        paymentReferenceModels = p2pReferenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy("template_id")
-                .sortOrder(null)
-                .build(), false);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                "template_id",
+                null), false);
         assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
-        paymentReferenceModels = p2pReferenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy("template_id")
-                .sortOrder(SortOrder.DESC)
-                .build(), false);
+        paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                "template_id",
+                SortOrder.DESC), false);
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         paymentReferenceModels

@@ -85,54 +85,59 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
         //filter with pagination
         templateModel = createTemplateModel("filter_id_2");
         templateDao.insert(templateModel);
-        List<TemplateModel> list = templateDao.filterModel(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .size(1)
-                .sortOrder(SortOrder.DESC)
-                .build());
+        List<TemplateModel> list = templateDao.filterModel(new FilterRequest(
+                null,
+                null,
+                null,
+                1,
+                null,
+                SortOrder.DESC));
         log.info("list: {}", list);
         assertEquals(1, list.size());
 
         TemplateModel templateModel1 = list.get(0);
-        list = templateDao.filterModel(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(templateModel1.getId())
-                .size(1)
-                .sortOrder(SortOrder.DESC)
-                .build());
+        list = templateDao.filterModel(new FilterRequest(
+                null,
+                templateModel1.getId(),
+                null,
+                1,
+                null,
+                SortOrder.DESC));
         log.info("list: {}", list);
         assertEquals(1, list.size());
         assertNotEquals(templateModel1.getId(), list.get(0).getId());
 
         //filter by id
         String filter_id_regexp = "filter_%";
-        list = templateDao.filterModel(FilterRequest.builder()
-                .searchValue(filter_id_regexp)
-                .lastId(null)
-                .size(2)
-                .sortOrder(SortOrder.DESC)
-                .build());
+        list = templateDao.filterModel(new FilterRequest(
+                filter_id_regexp,
+                null,
+                null,
+                2,
+                null,
+                SortOrder.DESC));
         log.info("list: {}", list);
         assertEquals(2, list.size());
 
         //filter and pagination by id
-        list = templateDao.filterModel(FilterRequest.builder()
-                .searchValue(filter_id_regexp)
-                .lastId(null)
-                .size(1)
-                .sortOrder(SortOrder.DESC)
-                .build());
+        list = templateDao.filterModel(new FilterRequest(
+                filter_id_regexp,
+                null,
+                null,
+                1,
+                null,
+                SortOrder.DESC));
         log.info("list: {}", list);
         assertEquals(1, list.size());
 
         String id = list.get(0).getId();
-        list = templateDao.filterModel(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(id)
-                .size(1)
-                .sortOrder(SortOrder.DESC)
-                .build());
+        list = templateDao.filterModel(new FilterRequest(
+                null,
+                id,
+                null,
+                1,
+                null,
+                SortOrder.DESC));
         log.info("list: {}", list);
         assertEquals(1, list.size());
         assertNotEquals(id, list.get(0).getId());

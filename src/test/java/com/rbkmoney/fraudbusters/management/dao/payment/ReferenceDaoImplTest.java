@@ -117,14 +117,13 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         PaymentReferenceModel referenceModel = createReference(id);
         referenceDao.insert(referenceModel);
         referenceDao.markReferenceAsDefault(id);
-        List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, false);
+        List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                null,
+                null), false, false);
         System.out.println(paymentReferenceModels);
         PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
         PaymentReferenceModel byId = referenceDao.getById(id);
@@ -150,132 +149,121 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceModel.setIsDefault(false);
         referenceDao.insert(referenceModel);
 
-        List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, false);
+        List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                null,
+                null), false, false);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(3, paymentReferenceModels.size());
 
         //check template field
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(TEMPLATE_ID)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                TEMPLATE_ID,
+                null,
+                null,
+                5,
+                null,
+                null), false, false);
 
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
 
         //check regexp
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue("%" + TEMPLATE_ID + "%")
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                "%" + TEMPLATE_ID + "%",
+                null,
+                null,
+                5,
+                null,
+                null), false, false);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(3, paymentReferenceModels.size());
 
         //check concrete
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(THIRD + TEMPLATE_ID)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                THIRD + TEMPLATE_ID,
+                null,
+                null,
+                5,
+                null,
+                null), false, false);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
 
         //check global
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), true, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                null,
+                null), true, false);
 
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         //check default
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, true);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                null,
+                null), false, true);
 
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
         assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
         //check sort
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy("template_id")
-                .sortOrder(SortOrder.ASC)
-                .build(), false, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                "template_id",
+                SortOrder.ASC), false, false);
         assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(5)
-                .sortBy("template_id")
-                .sortOrder(SortOrder.DESC)
-                .build(), false, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                5,
+                "template_id",
+                SortOrder.DESC), false, false);
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         //check paging
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(null)
-                .sortFieldValue(null)
-                .size(1)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                null,
+                null,
+                1,
+                null,
+                null), false, false);
         assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(paymentReferenceModels.get(0).getId())
-                .sortFieldValue(paymentReferenceModels.get(0).getTemplateId())
-                .size(1)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                paymentReferenceModels.get(0).getId(),
+                paymentReferenceModels.get(0).getTemplateId(),
+                1,
+                null,
+                null), false, false);
         assertEquals(id, paymentReferenceModels.get(0).getId());
 
-        paymentReferenceModels = referenceDao.filterReferences(FilterRequest.builder()
-                .searchValue(null)
-                .lastId(paymentReferenceModels.get(0).getId())
-                .sortFieldValue(paymentReferenceModels.get(0).getTemplateId())
-                .size(1)
-                .sortBy(null)
-                .sortOrder(null)
-                .build(), false, false);
+        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
+                null,
+                paymentReferenceModels.get(0).getId(),
+                paymentReferenceModels.get(0).getTemplateId(),
+                1,
+                null,
+                null), false, false);
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         paymentReferenceModels

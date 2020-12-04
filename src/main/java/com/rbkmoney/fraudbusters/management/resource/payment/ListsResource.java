@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -33,33 +34,40 @@ public class ListsResource {
 
     @PostMapping(value = "/lists")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<List<String>> insertRowsToList(@Validated @RequestBody ListRowsInsertRequest request) {
-        log.info("insertRowsToList request {}", request);
-        return wbListCommandService.sendListRecords(request.getRecords(), request.getListType(), paymentCountInfoGenerator::initRow);
+    public ResponseEntity<List<String>> insertRowsToList(Principal principal, @Validated @RequestBody ListRowsInsertRequest request) {
+        log.info("insertRowsToList initiator: {} request {}", principal.getName(), request);
+        return wbListCommandService.sendListRecords(
+                request.getRecords(),
+                request.getListType(),
+                paymentCountInfoGenerator::initRow,
+                principal.getName());
     }
 
     @DeleteMapping(value = "/lists/{id}")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<String> removeRowFromList(@Validated @PathVariable String id) {
+    public ResponseEntity<String> removeRowFromList(Principal principal, @Validated @PathVariable String id) {
         WbListRecords record = wbListDao.getById(id);
         if (record == null) {
             log.error("List remove record not fount: {}", id);
             throw new NotFoundException(String.format("List record not found with id: %s", id));
         }
-        log.info("removeRowFromList record {}", record);
+        log.info("removeRowFromList initiator: {} record {}", principal.getName(), record);
         Row row = wbListRecordToRowConverter.convert(record);
         String idMessage = wbListCommandService.sendCommandSync(row,
-                com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()), Command.DELETE);
+                com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
+                Command.DELETE,
+                principal.getName());
         return ResponseEntity.ok().body(idMessage);
     }
 
     @GetMapping(value = "/lists/filter")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<PaymentFilterListRecordsResponse> filterList(@Validated @RequestParam ListType listType,
+    public ResponseEntity<PaymentFilterListRecordsResponse> filterList(Principal principal,
+                                                                       @Validated @RequestParam ListType listType,
                                                                        @Validated @RequestParam List<String> listNames,
                                                                        FilterRequest filterRequest) {
-        log.info("filterList listType: {} listNames: {} filterRequest: {}",
-                listType, listNames, filterRequest);
+        log.info("filterList initiator: {} listType: {} listNames: {} filterRequest: {}",
+                principal.getName(), listType, listNames, filterRequest);
         List<WbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, filterRequest);
         Integer count = wbListDao.countFilterRecords(listType, listNames, filterRequest.getSearchValue());
         return ResponseEntity.ok().body(PaymentFilterListRecordsResponse.builder()
@@ -70,8 +78,8 @@ public class ListsResource {
 
     @GetMapping(value = "/lists/names")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<List<String>> getNames(@Validated @RequestParam ListType listType) {
-        log.info("getNames listType: {}", listType);
+    public ResponseEntity<List<String>> getNames(Principal principal, @Validated @RequestParam ListType listType) {
+        log.info("getNames initiator: {} listType: {}", principal.getName(), listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
         return ResponseEntity.ok().body(currentListNames);
     }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,9 +39,10 @@ public class PaymentEmulateResource {
 
     @GetMapping(value = "/rules")
     @PreAuthorize("hasAnyRole('fraud-support', 'fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<List<TemplateModel>> getRulesByPartyAndShop(@Validated @RequestParam String partyId,
+    public ResponseEntity<List<TemplateModel>> getRulesByPartyAndShop(Principal principal,
+                                                                      @Validated @RequestParam String partyId,
                                                                       @Validated @RequestParam String shopId) {
-        log.info("EmulateResource getRulesByPartyAndShop partyId: {} shopId: {}", partyId, shopId);
+        log.info("EmulateResource getRulesByPartyAndShop initiator: {} partyId: {} shopId: {}", principal.getName(), partyId, shopId);
         List<TemplateModel> resultModels = new ArrayList<>();
         ReferenceModel globalReference = referenceDao.getGlobalReference();
 

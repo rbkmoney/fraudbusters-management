@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -26,17 +27,18 @@ public class P2pGroupQueryResource {
 
     @GetMapping(value = "/group/{groupId}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(@PathVariable(value = "groupId") String groupId,
+    public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(Principal principal,
+                                                                      @PathVariable(value = "groupId") String groupId,
                                                                       @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getGroupReferences id: {} limit: {}", groupId, limit);
+        log.info("getGroupReferences initiator: {} id: {} limit: {}", principal.getName(), groupId, limit);
         List<P2pGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(groupId);
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
     @GetMapping(value = "/group/{groupId}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<GroupModel> getGroupById(@PathVariable String groupId) {
-        log.info("getGroupById groupId: {}", groupId);
+    public ResponseEntity<GroupModel> getGroupById(Principal principal, @PathVariable String groupId) {
+        log.info("getGroupById initiator: {} groupId: {}", principal.getName(), groupId);
         GroupModel groupModel = groupDao.getById(groupId);
         if (groupModel == null) {
             return ResponseEntity.notFound().build();
@@ -46,16 +48,17 @@ public class P2pGroupQueryResource {
 
     @GetMapping(value = "/group/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<GroupModel>> filterGroup(@RequestParam(required = false, value = "id") String idRegexp) {
-        log.info("filterGroup groupId: {}", idRegexp);
+    public ResponseEntity<List<GroupModel>> filterGroup(Principal principal,
+                                                        @RequestParam(required = false, value = "id") String idRegexp) {
+        log.info("filterGroup initiator: {} groupId: {}", principal.getName(), idRegexp);
         List<GroupModel> groupModels = groupDao.filterGroup(idRegexp);
         return ResponseEntity.ok().body(groupModels);
     }
 
     @GetMapping(value = "/group/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterP2pGroupsReferenceResponse> filterReference(FilterRequest filterRequest) {
-        log.info("filterReference idRegexp: {}", filterRequest.getSearchValue());
+    public ResponseEntity<FilterP2pGroupsReferenceResponse> filterReference(Principal principal, FilterRequest filterRequest) {
+        log.info("filterReference initiator: {} idRegexp: {}", principal.getName(), filterRequest.getSearchValue());
         List<P2pGroupReferenceModel> listByTemplateId = referenceDao.filterReference(filterRequest);
         Integer count = referenceDao.countFilterReference(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterP2pGroupsReferenceResponse.builder()

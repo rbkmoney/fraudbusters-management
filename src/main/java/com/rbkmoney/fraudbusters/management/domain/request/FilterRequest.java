@@ -1,13 +1,15 @@
 package com.rbkmoney.fraudbusters.management.domain.request;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jooq.SortOrder;
 import org.springframework.validation.annotation.Validated;
 
 @Data
-@Builder
 @Validated
+@NoArgsConstructor
+@AllArgsConstructor
 public class FilterRequest {
     String searchValue;
     String lastId;

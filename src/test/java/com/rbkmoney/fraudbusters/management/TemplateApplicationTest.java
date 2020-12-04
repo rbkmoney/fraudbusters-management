@@ -15,6 +15,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel
 import com.rbkmoney.fraudbusters.management.resource.payment.GroupCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentTemplateCommandResource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -71,8 +72,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         String id = "id";
         templateModel.setId(id);
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
-        paymentTemplateCommandResource.insertTemplate(templateModel);
-        paymentTemplateCommandResource.removeTemplate(id);
+        paymentTemplateCommandResource.insertTemplate(new BasicUserPrincipal("test"), templateModel);
+        paymentTemplateCommandResource.removeTemplate(new BasicUserPrincipal("test"), id);
 
         await().untilAsserted(() -> {
             verify(paymentTemplateDao, times(1)).insert(templateModel);
@@ -87,8 +88,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupModel.setPriorityTemplates(List.of(new PriorityIdModel(1L, "test", null)));
         checkSerialization(groupModel);
 
-        groupCommandResource.insertGroup(groupModel);
-        groupCommandResource.removeGroup(groupModel.getGroupId());
+        groupCommandResource.insertGroup(new BasicUserPrincipal("test"), groupModel);
+        groupCommandResource.removeGroup(new BasicUserPrincipal("test"), groupModel.getGroupId());
 
         await().untilAsserted(() -> {
             verify(paymentGroupDao, times(1)).insert(groupModel);
@@ -112,10 +113,14 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setIsGlobal(false);
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
-        paymentTemplateCommandResource.insertReferences(Collections.singletonList(referenceModel));
-        paymentTemplateCommandResource.deleteReferences("id", Collections.singletonList(referenceModel));
-        paymentTemplateCommandResource.insertReference(referenceModel);
-        paymentTemplateCommandResource.deleteReference(referenceModel.getTemplateId(), referenceModel.getPartyId(), referenceModel.getShopId());
+        paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal("test"),
+                Collections.singletonList(referenceModel));
+        paymentTemplateCommandResource.insertReference(new BasicUserPrincipal("test"),
+                referenceModel);
+        paymentTemplateCommandResource.deleteReference(new BasicUserPrincipal("test"),
+                referenceModel.getTemplateId(),
+                referenceModel.getPartyId(),
+                referenceModel.getShopId());
 
         await().untilAsserted(() -> {
             verify(referenceDao, times(2)).insert(any());
@@ -141,7 +146,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setIsGlobal(false);
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
-        paymentTemplateCommandResource.insertDefaultReference(Collections.singletonList(referenceModel));
+        paymentTemplateCommandResource.insertDefaultReference(new BasicUserPrincipal("test"),
+                Collections.singletonList(referenceModel));
 
         await().untilAsserted(() -> {
             verify(referenceDao, times(1)).insert(any());
@@ -155,8 +161,13 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupReferenceModel.setPartyId("party_id");
         groupReferenceModel.setShopId("shop_id");
 
-        groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
-        groupCommandResource.removeGroupReference("id", "party_id", "shop_id");
+        groupCommandResource.insertGroupReference(new BasicUserPrincipal("test"),
+                "id",
+                Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference(new BasicUserPrincipal("test"),
+                "id",
+                "party_id",
+                "shop_id");
 
         await().untilAsserted(() -> {
             verify(groupReferenceDao, times(1)).insert(any());

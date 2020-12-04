@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -28,34 +29,37 @@ public class PaymentTemplateQueryResource {
 
     @GetMapping(value = "/template/{id}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<PaymentReferenceModel>> getReferences(@PathVariable(value = "id") String id,
+    public ResponseEntity<List<PaymentReferenceModel>> getReferences(Principal principal,
+                                                                     @PathVariable(value = "id") String id,
                                                                      @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getReferences id: {} limit: {}", id, limit);
+        log.info("getReferences initiator: {} id: {} limit: {}", principal.getName(), id, limit);
         List<PaymentReferenceModel> listByTemplateId = referenceDao.getListByTemplateId(id, limit);
         return ResponseEntity.ok().body(listByTemplateId);
     }
 
     @GetMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<TemplateModel>> getListTemplate(
-            @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getListTemplate limit: {}", limit);
+    public ResponseEntity<List<TemplateModel>> getListTemplate(Principal principal,
+                                                               @Validated @RequestParam(required = false) Integer limit) {
+        log.info("getListTemplate initiator: {} limit: {}", principal.getName(), limit);
         List<TemplateModel> list = paymentTemplateDao.getList(limit);
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/template/names")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> getTemplatesName(@Validated @RequestParam(required = false) String regexpName) {
-        log.info("getTemplatesName regexpName: {}", regexpName);
+    public ResponseEntity<List<String>> getTemplatesName(Principal principal,
+                                                         @Validated @RequestParam(required = false) String regexpName) {
+        log.info("getTemplatesName initiator: {} regexpName: {}", principal.getName(), regexpName);
         List<String> list = paymentTemplateDao.getListNames(regexpName);
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/template/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterTemplateResponse> filterTemplates(FilterRequest filterRequest) {
-        log.info("filterTemplates filterRequest: {}", filterRequest);
+    public ResponseEntity<FilterTemplateResponse> filterTemplates(Principal principal,
+                                                                  FilterRequest filterRequest) {
+        log.info("filterTemplates initiator: {} filterRequest: {}", principal.getName(), filterRequest);
         List<TemplateModel> templateModels = paymentTemplateDao.filterModel(filterRequest);
         Integer count = paymentTemplateDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterTemplateResponse.builder()

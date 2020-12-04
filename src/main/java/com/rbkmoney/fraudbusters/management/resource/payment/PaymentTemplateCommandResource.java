@@ -1,9 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.damsel.fraudbusters.Command;
-import com.rbkmoney.damsel.fraudbusters.CommandType;
-import com.rbkmoney.damsel.fraudbusters.Template;
-import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
+import com.rbkmoney.damsel.fraudbusters.*;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
@@ -24,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,8 +39,9 @@ public class PaymentTemplateCommandResource {
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<CreateTemplateResponse> insertTemplate(@Validated @RequestBody TemplateModel templateModel) {
-        log.info("TemplateManagementResource insertTemplate templateModel: {}", templateModel);
+    public ResponseEntity<CreateTemplateResponse> insertTemplate(Principal principal,
+                                                                 @Validated @RequestBody TemplateModel templateModel) {
+        log.info("TemplateManagementResource insertTemplate initiator: {} templateModel: {}", principal.getName(), templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
         List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(
                 command.getCommandBody().getTemplate()
@@ -54,6 +53,8 @@ public class PaymentTemplateCommandResource {
                     .build());
         }
         command.setCommandType(CommandType.CREATE);
+        command.setUserInfo(new UserInfo()
+                .setUserId(principal.getName()));
         String idMessage = paymentTemplateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(CreateTemplateResponse.builder()
                 .id(idMessage)
@@ -64,8 +65,9 @@ public class PaymentTemplateCommandResource {
 
     @PostMapping(value = "/template/validate")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Validated @RequestBody TemplateModel templateModel) {
-        log.info("TemplateManagementResource validateTemplate templateModel: {}", templateModel);
+    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(Principal principal,
+                                                                      @Validated @RequestBody TemplateModel templateModel) {
+        log.info("TemplateManagementResource validateTemplate initiator: {} templateModel: {}", principal.getName(), templateModel);
         List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(new Template()
                 .setId(templateModel.getId())
                 .setTemplate(templateModel.getTemplate().getBytes()));
@@ -84,11 +86,19 @@ public class PaymentTemplateCommandResource {
     //todo посмотреть используем ли
     @PostMapping(value = "/template/references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertReferences(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
-        log.info("TemplateManagementResource insertReference referenceModels: {}", referenceModels);
+    public ResponseEntity<List<String>> insertReferences(Principal principal,
+                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
+        log.info("TemplateManagementResource insertReference initiator: {} referenceModels: {}",
+                principal.getName(),
+                referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(referenceToCommandConverter::convert)
-                .map(command -> command.setCommandType(CommandType.CREATE))
+                .map(command -> {
+                    command.setCommandType(CommandType.CREATE);
+                    command.setUserInfo(new UserInfo()
+                            .setUserId(principal.getName()));
+                    return command;
+                })
                 .map(paymentTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
@@ -96,8 +106,9 @@ public class PaymentTemplateCommandResource {
 
     @PostMapping(value = "/template/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> insertReference(@Validated @RequestBody PaymentReferenceModel referenceModel) {
-        log.info("TemplateManagementResource insertReference referenceModel: {}", referenceModel);
+    public ResponseEntity<String> insertReference(Principal principal,
+                                                  @Validated @RequestBody PaymentReferenceModel referenceModel) {
+        log.info("TemplateManagementResource insertReference initiator: {} referenceModel: {}", principal.getName(), referenceModel);
         Command command = referenceToCommandConverter.convert(referenceModel);
         command.setCommandType(CommandType.CREATE);
         String referenceId = paymentTemplateReferenceService.sendCommandSync(command);
@@ -107,8 +118,9 @@ public class PaymentTemplateCommandResource {
     //todo подумать над рефакторингом
     @PostMapping(value = "/template/{id}/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> markReferenceAsDefault(@PathVariable(value = "id") String id) {
-        log.info("TemplateManagementResource markReferenceAsDefault id: {}", id);
+    public ResponseEntity<String> markReferenceAsDefault(Principal principal,
+                                                         @PathVariable(value = "id") String id) {
+        log.info("TemplateManagementResource markReferenceAsDefault initiator: {} id: {}", principal.getName(), id);
         referenceDao.markReferenceAsDefault(id);
         return ResponseEntity.ok().body(id);
     }
@@ -116,8 +128,11 @@ public class PaymentTemplateCommandResource {
     @Deprecated(forRemoval = true)
     @PostMapping(value = "/template/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertDefaultReference(@Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
-        log.info("TemplateManagementResource insertDefaultReference referenceModels: {}", referenceModels);
+    public ResponseEntity<List<String>> insertDefaultReference(Principal principal,
+                                                               @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
+        log.info("TemplateManagementResource insertDefaultReference initiator: {} referenceModels: {}",
+                principal.getName(),
+                referenceModels);
         PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
         if (defaultReference == null) {
             throw new NotFoundException("Couldn't insert default reference: Default template not found");
@@ -125,7 +140,12 @@ public class PaymentTemplateCommandResource {
         String id = defaultReference.getTemplateId();
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> command.setCommandType(CommandType.CREATE))
+                .map(command -> {
+                    command.setCommandType(CommandType.CREATE);
+                    command.setUserInfo(new UserInfo()
+                            .setUserId(principal.getName()));
+                    return command;
+                })
                 .map(paymentTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
@@ -139,37 +159,28 @@ public class PaymentTemplateCommandResource {
 
     @DeleteMapping(value = "/template/{id}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> removeTemplate(@PathVariable(value = "id") String id) {
-        log.info("TemplateManagementResource removeTemplate id: {}", id);
+    public ResponseEntity<String> removeTemplate(Principal principal, @PathVariable(value = "id") String id) {
+        log.info("TemplateManagementResource removeTemplate initiator: {} id: {}", principal.getName(), id);
         Command command = paymentTemplateCommandService.createTemplateCommandById(id);
         command.setCommandType(CommandType.DELETE);
+        command.setUserInfo(new UserInfo()
+                .setUserId(principal.getName()));
         String idMessage = paymentTemplateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
 
-    //todo проверить использование
-    @Deprecated(forRemoval = true)
-    @PostMapping(value = "/template/{id}/reference/delete")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> deleteReferences(@PathVariable(value = "id") String id,
-                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
-        log.info("TemplateManagementResource deleteReferences referenceModels: {}", referenceModels);
-        List<String> ids = referenceModels.stream()
-                .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> command.setCommandType(CommandType.DELETE))
-                .map(paymentTemplateReferenceService::sendCommandSync)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(ids);
-    }
-
     @DeleteMapping(value = "/template/{templateId}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> deleteReference(@PathVariable String templateId,
+    public ResponseEntity<String> deleteReference(Principal principal,
+                                                  @PathVariable String templateId,
                                                   @RequestParam String partyId,
                                                   @RequestParam String shopId) {
-        log.info("TemplateManagementResource deleteReference templateId: {}, partyId: {}, shopId: {}", templateId, partyId, shopId);
+        log.info("TemplateManagementResource deleteReference initiator: {} templateId: {}, partyId: {}, shopId: {}",
+                principal.getName(), templateId, partyId, shopId);
         Command command = paymentTemplateReferenceService.createReferenceCommandByIds(templateId, partyId, shopId);
         command.setCommandType(CommandType.DELETE);
+        command.setUserInfo(new UserInfo()
+                .setUserId(principal.getName()));
         String id = paymentTemplateReferenceService.sendCommandSync(command);
         return ResponseEntity.ok().body(id);
     }
