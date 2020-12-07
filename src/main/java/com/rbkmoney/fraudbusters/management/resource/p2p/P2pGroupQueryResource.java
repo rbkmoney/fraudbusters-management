@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterP2pGroupsReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +25,14 @@ public class P2pGroupQueryResource {
 
     private final P2PGroupDao groupDao;
     private final P2pGroupReferenceDao referenceDao;
+    private final UserInfoService userInfoService;
 
     @GetMapping(value = "/group/{groupId}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(Principal principal,
                                                                       @PathVariable(value = "groupId") String groupId,
                                                                       @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getGroupReferences initiator: {} id: {} limit: {}", principal.getName(), groupId, limit);
+        log.info("getGroupReferences initiator: {} id: {} limit: {}", userInfoService.getUserName(principal), groupId, limit);
         List<P2pGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(groupId);
         return ResponseEntity.ok().body(listByTemplateId);
     }
@@ -38,7 +40,7 @@ public class P2pGroupQueryResource {
     @GetMapping(value = "/group/{groupId}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<GroupModel> getGroupById(Principal principal, @PathVariable String groupId) {
-        log.info("getGroupById initiator: {} groupId: {}", principal.getName(), groupId);
+        log.info("getGroupById initiator: {} groupId: {}", userInfoService.getUserName(principal), groupId);
         GroupModel groupModel = groupDao.getById(groupId);
         if (groupModel == null) {
             return ResponseEntity.notFound().build();
@@ -50,7 +52,7 @@ public class P2pGroupQueryResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<GroupModel>> filterGroup(Principal principal,
                                                         @RequestParam(required = false, value = "id") String idRegexp) {
-        log.info("filterGroup initiator: {} groupId: {}", principal.getName(), idRegexp);
+        log.info("filterGroup initiator: {} groupId: {}", userInfoService.getUserName(principal), idRegexp);
         List<GroupModel> groupModels = groupDao.filterGroup(idRegexp);
         return ResponseEntity.ok().body(groupModels);
     }
@@ -58,7 +60,7 @@ public class P2pGroupQueryResource {
     @GetMapping(value = "/group/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterP2pGroupsReferenceResponse> filterReference(Principal principal, FilterRequest filterRequest) {
-        log.info("filterReference initiator: {} idRegexp: {}", principal.getName(), filterRequest.getSearchValue());
+        log.info("filterReference initiator: {} idRegexp: {}", userInfoService.getUserName(principal), filterRequest.getSearchValue());
         List<P2pGroupReferenceModel> listByTemplateId = referenceDao.filterReference(filterRequest);
         Integer count = referenceDao.countFilterReference(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterP2pGroupsReferenceResponse.builder()

@@ -94,7 +94,7 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         List<PaymentGroupReferenceModel> secondPage = groupReferenceDao.filterReference(new FilterRequest(
                 GROUP_ID,
                 paymentGroupReferenceModels.get(0).getId(),
-                null,
+                GROUP_ID,
                 1,
                 null,
                 null)
@@ -106,7 +106,7 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         secondPage = groupReferenceDao.filterReference(new FilterRequest(
                 GROUP_ID,
                 secondPage.get(0).getId(),
-                null,
+                GROUP_ID,
                 1,
                 null,
                 null));
@@ -118,19 +118,19 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceModel.setGroupId(GROUP_ID + "2");
         groupReferenceDao.insert(referenceModel);
         secondPage = groupReferenceDao.filterReference(new FilterRequest(
-                GROUP_ID,
-                paymentGroupReferenceModels.get(0).getId(),
+                null,
+                null,
                 null,
                 3,
                 null,
                 SortOrder.ASC));
         paymentGroupReferenceModels = groupReferenceDao.filterReference(new FilterRequest(
-                GROUP_ID,
+                null,
                 null,
                 null,
                 3,
                 null,
-                SortOrder.ASC));
+                SortOrder.DESC));
         assertNotEquals(paymentGroupReferenceModels.get(0).getShopId(), secondPage.get(0).getShopId());
 
         assertNotEquals(paymentGroupReferenceModels.get(0).getGroupId(), secondPage.get(0).getGroupId());

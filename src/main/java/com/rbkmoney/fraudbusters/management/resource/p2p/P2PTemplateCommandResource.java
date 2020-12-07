@@ -11,6 +11,7 @@ import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesRes
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.p2p.P2PTemplateReferenceService;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +36,13 @@ public class P2PTemplateCommandResource {
     private final TemplateModelToCommandConverter templateModelToCommandConverter;
     private final P2pReferenceToCommandConverter referenceToCommandConverter;
     private final ValidationTemplateService p2PValidationService;
+    private final UserInfoService userInfoService;
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<CreateTemplateResponse> insertTemplate(Principal principal,
                                                                  @Validated @RequestBody TemplateModel templateModel) {
-        log.info("P2pReferenceCommandResource insertTemplate userName: {} templateModel: {}", principal.getName(), templateModel);
+        log.info("P2pReferenceCommandResource insertTemplate userName: {} templateModel: {}", userInfoService.getUserName(principal), templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(
                 command.getCommandBody().getTemplate()
@@ -53,7 +55,7 @@ public class P2PTemplateCommandResource {
         }
         command.setCommandType(CommandType.CREATE);
         command.setUserInfo(new UserInfo()
-                .setUserId(principal.getName()));
+                .setUserId(userInfoService.getUserName(principal)));
         String idMessage = p2pTemplateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(CreateTemplateResponse.builder()
                 .id(idMessage)
@@ -66,7 +68,7 @@ public class P2PTemplateCommandResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ValidateTemplatesResponse> validateTemplate(Principal principal,
                                                                       @Validated @RequestBody TemplateModel templateModel) {
-        log.info("P2PTemplateCommandResource validateTemplate userName: {} templateModel: {}", principal.getName(), templateModel);
+        log.info("P2PTemplateCommandResource validateTemplate userName: {} templateModel: {}", userInfoService.getUserName(principal), templateModel);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(new Template()
                 .setId(templateModel.getId())
                 .setTemplate(templateModel.getTemplate().getBytes()));
@@ -87,13 +89,13 @@ public class P2PTemplateCommandResource {
     public ResponseEntity<List<String>> insertReferences(Principal principal,
                                                          @PathVariable(value = "id") String id,
                                                          @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
-        log.info("P2pReferenceCommandResource insertReference userName: {} referenceModels: {}", principal.getName(), referenceModels);
+        log.info("P2pReferenceCommandResource insertReference userName: {} referenceModels: {}", userInfoService.getUserName(principal), referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> {
                     command.setCommandType(CommandType.CREATE);
                     command.setUserInfo(new UserInfo()
-                            .setUserId(principal.getName()));
+                            .setUserId(userInfoService.getUserName(principal)));
                     return command;
                 })
                 .map(p2PTemplateReferenceService::sendCommandSync)
@@ -101,33 +103,14 @@ public class P2PTemplateCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
-
-    @PostMapping(value = "/template/{id}/reference")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> insertReference(Principal principal, @PathVariable(value = "id") String id,
-                                                  @Validated @RequestBody P2pReferenceModel referenceModel) {
-        log.info("TemplateManagementResource insertReference userName: {}  referenceModel: {}", principal.getName(), referenceModel);
-        String referenceId = Optional.of(referenceModel)
-                .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> {
-                    command.setCommandType(CommandType.CREATE);
-                    command.setUserInfo(new UserInfo()
-                            .setUserId(principal.getName()));
-                    return command;
-                })
-                .map(p2PTemplateReferenceService::sendCommandSync)
-                .orElseThrow();
-        return ResponseEntity.ok().body(referenceId);
-    }
-
     @DeleteMapping(value = "/template/{id}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeTemplate(Principal principal, @PathVariable(value = "id") String id) {
-        log.info("TemplateManagementResource removeTemplate initiator: {} id: {}", principal.getName(), id);
+        log.info("TemplateManagementResource removeTemplate initiator: {} id: {}", userInfoService.getUserName(principal), id);
         Command command = p2pTemplateCommandService.createTemplateCommandById(id);
         command.setCommandType(CommandType.DELETE);
         command.setUserInfo(new UserInfo()
-                .setUserId(principal.getName()));
+                .setUserId(userInfoService.getUserName(principal)));
         String idMessage = p2pTemplateCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
@@ -144,11 +127,11 @@ public class P2PTemplateCommandResource {
                                                   @PathVariable String templateId,
                                                   @RequestParam String identityId) {
         log.info("TemplateManagementResource deleteReference initiator: {}  templateId: {}, identityId: {}",
-                principal.getName(), templateId, identityId);
+                userInfoService.getUserName(principal), templateId, identityId);
         Command command = p2PTemplateReferenceService.createReferenceCommandByIds(templateId, identityId);
         command.setCommandType(CommandType.DELETE);
         command.setUserInfo(new UserInfo()
-                .setUserId(principal.getName()));
+                .setUserId(userInfoService.getUserName(principal)));
         String id = p2PTemplateReferenceService.sendCommandSync(command);
         return ResponseEntity.ok().body(id);
     }

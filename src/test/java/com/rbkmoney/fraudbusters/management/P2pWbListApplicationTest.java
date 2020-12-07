@@ -1,10 +1,11 @@
 package com.rbkmoney.fraudbusters.management;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.damsel.wb_list.*;
 import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
-import com.rbkmoney.fraudbusters.management.domain.ListRecord;
+import com.rbkmoney.fraudbusters.management.domain.p2p.P2pCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pListRecord;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
+import com.rbkmoney.fraudbusters.management.domain.p2p.request.P2pListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -27,14 +29,16 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,7 +57,8 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
     @LocalServerPort
     private int port;
 
-    TestRestTemplate restTemplate = new TestRestTemplate();
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
@@ -62,6 +67,9 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     @MockBean
     public P2PWbListDao wbListDao;
+
+    @Autowired
+    TestRestTemplate restTemplate;
 
     @Test
     public void listenCreated() throws ExecutionException, InterruptedException {
@@ -140,7 +148,8 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void executeTest() throws IOException {
+    @WithMockUser("customUsername")
+    public void executeTest() throws Exception {
         doNothing().when(wbListDao).saveListRecord(any());
 
         P2pListRecord record = new P2pListRecord();
@@ -148,24 +157,27 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
         record.setIdentityId(IDENTITY_ID);
         record.setValue(VALUE);
 
-        PaymentListRecord recordSecond = new PaymentListRecord();
-        recordSecond.setListName(LIST_NAME);
-        record.setIdentityId(IDENTITY_ID);
-        recordSecond.setValue(VALUE + 2);
-
-        insertToBlackList(record, recordSecond);
+        insertToBlackList(record);
 
         try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
             consumer.subscribe(Collections.singletonList(topicCommand));
             List<ChangeCommand> eventList = consumeCommand(consumer);
 
-            Assert.assertEquals(2, eventList.size());
+            Assert.assertEquals(1, eventList.size());
             Assert.assertEquals(eventList.get(0).command, Command.CREATE);
             Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
 
-            deleteFromWhiteList(record);
         }
 
+        String test = "test";
+        when(wbListDao.getById(test)).thenReturn(new P2pWbListRecords("id",
+                "identity",
+                com.rbkmoney.fraudbusters.management.domain.enums.ListType.white,
+                "test",
+                "test",
+                "test",
+                LocalDateTime.now()));
+        deleteFromWhiteList(test);
         try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
             consumer.subscribe(Collections.singletonList(topicCommand));
             List<ChangeCommand> eventList = consumeCommand(consumer);
@@ -176,20 +188,27 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
         }
     }
 
-    private void insertToBlackList(ListRecord... values) {
-        HttpEntity<List<ListRecord>> entity = new HttpEntity<>(List.of(values), new org.springframework.http.HttpHeaders());
+    private void insertToBlackList(P2pListRecord... values) throws Exception {
+        List<P2pCountInfo> collect = List.of(values).stream()
+                .map(p2pListRecord -> {
+                    P2pCountInfo p2pCountInfo = new P2pCountInfo();
+                    p2pCountInfo.setListRecord(p2pListRecord);
+                    return p2pCountInfo;
+                })
+                .collect(Collectors.toList());
+        P2pListRowsInsertRequest p2pListRowsInsertRequest = new P2pListRowsInsertRequest();
+        p2pListRowsInsertRequest.setListType(ListType.black);
+        p2pListRowsInsertRequest.setRecords(collect);
+        HttpEntity<P2pListRowsInsertRequest> entity = new HttpEntity<>(p2pListRowsInsertRequest,
+                new org.springframework.http.HttpHeaders());
         ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:" + port + "/fb-management/v1/p2p/blackList",
+                "http://localhost:" + port + "/fb-management/v1/p2p/lists",
                 HttpMethod.POST, entity, String.class);
         System.out.println(response);
     }
 
-    private void deleteFromWhiteList(ListRecord value) {
-        HttpEntity<ListRecord> entity = new HttpEntity<>(value, new org.springframework.http.HttpHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:" + port + "/fb-management/v1/p2p/whiteList",
-                HttpMethod.DELETE, entity, String.class);
-        System.out.println(response);
+    private void deleteFromWhiteList(String id) throws Exception {
+        restTemplate.delete("http://localhost:" + port + "/fb-management/v1/p2p/lists/" + id);
     }
 
     @NotNull

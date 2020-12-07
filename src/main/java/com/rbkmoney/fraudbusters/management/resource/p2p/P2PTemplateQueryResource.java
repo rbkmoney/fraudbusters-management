@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.response.FilterTemplateResponse;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,32 +24,13 @@ import java.util.List;
 public class P2PTemplateQueryResource {
 
     private final TemplateDao p2pTemplateDao;
-    private final P2pReferenceDao p2pReferenceDao;
-
-    @GetMapping(value = "/template/{id}/reference")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<P2pReferenceModel>> getReferences(Principal principal,
-                                                                 @PathVariable(value = "id") String id,
-                                                                 @Validated @RequestParam(required = false) Integer limit) {
-        log.info("P2PTemplateQueryResource getReferences initiator: {} id: {} limit: {}", principal.getName(), id, limit);
-        List<P2pReferenceModel> listByTemplateId = p2pReferenceDao.getListByTemplateId(id, limit);
-        return ResponseEntity.ok().body(listByTemplateId);
-    }
-
-    @GetMapping(value = "/template")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<TemplateModel>> getListTemplate(Principal principal,
-                                                               @Validated @RequestParam(required = false) Integer limit) {
-        log.info("P2PTemplateQueryResource getListTemplate initiator: {} limit: {}", principal.getName(), limit);
-        List<TemplateModel> list = p2pTemplateDao.getList(limit);
-        return ResponseEntity.ok().body(list);
-    }
+    private final UserInfoService userInfoService;
 
     @GetMapping(value = "/template/names")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> getTemplatesName(Principal principal,
                                                          @Validated @RequestParam(required = false) String regexpName) {
-        log.info("getTemplatesName initiator: {} regexpName: {}", principal.getName(), regexpName);
+        log.info("getTemplatesName initiator: {} regexpName: {}", userInfoService.getUserName(principal), regexpName);
         List<String> list = p2pTemplateDao.getListNames(regexpName);
         return ResponseEntity.ok().body(list);
     }
@@ -56,7 +38,7 @@ public class P2PTemplateQueryResource {
     @GetMapping(value = "/template/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterTemplateResponse> filterTemplates(Principal principal, FilterRequest filterRequest) {
-        log.info("filterTemplates initiator: {} filterRequest: {}", principal.getName(), filterRequest);
+        log.info("filterTemplates initiator: {} filterRequest: {}", userInfoService.getUserName(principal), filterRequest);
         List<TemplateModel> templateModels = p2pTemplateDao.filterModel(filterRequest);
         Integer count = p2pTemplateDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterTemplateResponse.builder()

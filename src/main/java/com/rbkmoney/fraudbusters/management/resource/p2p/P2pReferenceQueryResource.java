@@ -4,6 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterP2pReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +24,14 @@ import java.util.List;
 public class P2pReferenceQueryResource {
 
     private final P2pReferenceDao referenceDao;
+    private final UserInfoService userInfoService;
 
     @GetMapping(value = "/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterP2pReferenceResponse> filterReferences(Principal principal,
                                                                        FilterRequest filterRequest,
                                                                        @RequestParam(value = "isGlobal") Boolean isGlobal) {
-        log.info("filterReferences initiator: {}  filterRequest: {} isGlobal: {}", principal.getName(), filterRequest, isGlobal);
+        log.info("filterReferences initiator: {}  filterRequest: {} isGlobal: {}", userInfoService.getUserName(principal), filterRequest, isGlobal);
         List<P2pReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest, isGlobal);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue(), isGlobal);
         return ResponseEntity.ok().body(FilterP2pReferenceResponse.builder()

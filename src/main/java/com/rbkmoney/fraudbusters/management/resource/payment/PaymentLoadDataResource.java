@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 import com.rbkmoney.damsel.fraudbusters.FraudPayment;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.fraudbusters.management.utils.CSVFraudPaymentParser;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -23,6 +24,7 @@ public class PaymentLoadDataResource {
 
     private final PaymentServiceSrv.Iface paymentServiceSrv;
     private final CSVFraudPaymentParser csvFraudPaymentParser;
+    private final UserInfoService userInfoService;
 
     @PostMapping(value = "/fraud/load")
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -31,7 +33,7 @@ public class PaymentLoadDataResource {
             try {
                 List<FraudPayment> fraudPayments = csvFraudPaymentParser.parse(file.getInputStream());
                 log.info("PaymentLoadDataResource loadFraudOperation initiator: {} fraudPaymentRecords: {}",
-                        principal.getName(),
+                        userInfoService.getUserName(principal),
                         fraudPayments);
                 paymentServiceSrv.insertFraudPayments(fraudPayments);
 

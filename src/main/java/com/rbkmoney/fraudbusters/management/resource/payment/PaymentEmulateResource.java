@@ -10,6 +10,7 @@ import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.misc.Pair;
@@ -36,13 +37,14 @@ public class PaymentEmulateResource {
     private final PaymentTemplateDao templateDao;
     private final PaymentGroupReferenceDao groupReferenceDao;
     private final PaymentReferenceDao referenceDao;
+    private final UserInfoService userInfoService;
 
     @GetMapping(value = "/rules")
     @PreAuthorize("hasAnyRole('fraud-support', 'fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<TemplateModel>> getRulesByPartyAndShop(Principal principal,
                                                                       @Validated @RequestParam String partyId,
                                                                       @Validated @RequestParam String shopId) {
-        log.info("EmulateResource getRulesByPartyAndShop initiator: {} partyId: {} shopId: {}", principal.getName(), partyId, shopId);
+        log.info("EmulateResource getRulesByPartyAndShop initiator: {} partyId: {} shopId: {}", userInfoService.getUserName(principal), partyId, shopId);
         List<TemplateModel> resultModels = new ArrayList<>();
         ReferenceModel globalReference = referenceDao.getGlobalReference();
 

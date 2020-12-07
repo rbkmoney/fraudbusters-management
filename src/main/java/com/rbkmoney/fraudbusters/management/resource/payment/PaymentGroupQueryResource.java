@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.response.FilterPaymentGroupsReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +27,14 @@ public class PaymentGroupQueryResource {
 
     private final PaymentGroupDao groupDao;
     private final PaymentGroupReferenceDao referenceDao;
+    private final UserInfoService userInfoService;
 
     @GetMapping(value = "/group/{groupId}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<PaymentGroupReferenceModel>> getReferences(Principal principal,
                                                                           @PathVariable(value = "groupId") String groupId,
                                                                           @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getGroupReferences initiator: {} id: {} limit: {}", principal.getName(), groupId, limit);
+        log.info("getGroupReferences initiator: {} id: {} limit: {}", userInfoService.getUserName(principal), groupId, limit);
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(groupId);
         return ResponseEntity.ok().body(listByTemplateId);
     }
@@ -53,7 +55,7 @@ public class PaymentGroupQueryResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<GroupModel> getGroupById(Principal principal,
                                                    @PathVariable String groupId) {
-        log.info("getGroupById initiator: {} groupId: {}", principal.getName(), groupId);
+        log.info("getGroupById initiator: {} groupId: {}", userInfoService.getUserName(principal), groupId);
         GroupModel groupModel = groupDao.getById(groupId);
         if (groupModel == null) {
             return ResponseEntity.notFound().build();
@@ -65,7 +67,7 @@ public class PaymentGroupQueryResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<GroupModel>> filterGroup(Principal principal,
                                                         @RequestParam(required = false, value = "id") String idRegexp) {
-        log.info("filterGroup initiator: {} groupId: {}", principal.getName(), idRegexp);
+        log.info("filterGroup initiator: {} groupId: {}", userInfoService.getUserName(principal), idRegexp);
         List<GroupModel> groupModels = groupDao.filterGroup(idRegexp);
         return ResponseEntity.ok().body(groupModels);
     }

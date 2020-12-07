@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.fraudbusters.management.utils.CSVFraudPaymentParser;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
@@ -22,7 +23,7 @@ import java.io.IOException;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {PaymentLoadDataResource.class, CSVFraudPaymentParser.class})
+@ContextConfiguration(classes = {PaymentLoadDataResource.class, CSVFraudPaymentParser.class, UserInfoService.class})
 public class PaymentLoadDataResourceTest {
 
     @Autowired

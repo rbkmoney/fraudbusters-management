@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.response.FilterTemplateResponse;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,32 +26,13 @@ import java.util.List;
 public class PaymentTemplateQueryResource {
 
     private final TemplateDao paymentTemplateDao;
-    private final PaymentReferenceDao referenceDao;
-
-    @GetMapping(value = "/template/{id}/reference")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<PaymentReferenceModel>> getReferences(Principal principal,
-                                                                     @PathVariable(value = "id") String id,
-                                                                     @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getReferences initiator: {} id: {} limit: {}", principal.getName(), id, limit);
-        List<PaymentReferenceModel> listByTemplateId = referenceDao.getListByTemplateId(id, limit);
-        return ResponseEntity.ok().body(listByTemplateId);
-    }
-
-    @GetMapping(value = "/template")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<TemplateModel>> getListTemplate(Principal principal,
-                                                               @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getListTemplate initiator: {} limit: {}", principal.getName(), limit);
-        List<TemplateModel> list = paymentTemplateDao.getList(limit);
-        return ResponseEntity.ok().body(list);
-    }
+    private final UserInfoService userInfoService;
 
     @GetMapping(value = "/template/names")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> getTemplatesName(Principal principal,
                                                          @Validated @RequestParam(required = false) String regexpName) {
-        log.info("getTemplatesName initiator: {} regexpName: {}", principal.getName(), regexpName);
+        log.info("getTemplatesName initiator: {} regexpName: {}", userInfoService.getUserName(principal), regexpName);
         List<String> list = paymentTemplateDao.getListNames(regexpName);
         return ResponseEntity.ok().body(list);
     }
@@ -59,7 +41,7 @@ public class PaymentTemplateQueryResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterTemplateResponse> filterTemplates(Principal principal,
                                                                   FilterRequest filterRequest) {
-        log.info("filterTemplates initiator: {} filterRequest: {}", principal.getName(), filterRequest);
+        log.info("filterTemplates initiator: {} filterRequest: {}", userInfoService.getUserName(principal), filterRequest);
         List<TemplateModel> templateModels = paymentTemplateDao.filterModel(filterRequest);
         Integer count = paymentTemplateDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterTemplateResponse.builder()

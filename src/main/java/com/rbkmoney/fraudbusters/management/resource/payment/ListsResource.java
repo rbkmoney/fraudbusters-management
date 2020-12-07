@@ -12,6 +12,7 @@ import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,16 +32,17 @@ public class ListsResource {
     private final WbListCommandService wbListCommandService;
     private final WbListRecordToRowConverter wbListRecordToRowConverter;
     private final PaymentCountInfoGenerator paymentCountInfoGenerator;
+    private final UserInfoService userInfoService;
 
     @PostMapping(value = "/lists")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<String>> insertRowsToList(Principal principal, @Validated @RequestBody ListRowsInsertRequest request) {
-        log.info("insertRowsToList initiator: {} request {}", principal.getName(), request);
+        log.info("insertRowsToList initiator: {} request {}", userInfoService.getUserName(principal), request);
         return wbListCommandService.sendListRecords(
                 request.getRecords(),
                 request.getListType(),
                 paymentCountInfoGenerator::initRow,
-                principal.getName());
+                userInfoService.getUserName(principal));
     }
 
     @DeleteMapping(value = "/lists/{id}")
@@ -51,12 +53,12 @@ public class ListsResource {
             log.error("List remove record not fount: {}", id);
             throw new NotFoundException(String.format("List record not found with id: %s", id));
         }
-        log.info("removeRowFromList initiator: {} record {}", principal.getName(), record);
+        log.info("removeRowFromList initiator: {} record {}", userInfoService.getUserName(principal), record);
         Row row = wbListRecordToRowConverter.convert(record);
         String idMessage = wbListCommandService.sendCommandSync(row,
                 com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
                 Command.DELETE,
-                principal.getName());
+                userInfoService.getUserName(principal));
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -67,7 +69,7 @@ public class ListsResource {
                                                                        @Validated @RequestParam List<String> listNames,
                                                                        FilterRequest filterRequest) {
         log.info("filterList initiator: {} listType: {} listNames: {} filterRequest: {}",
-                principal.getName(), listType, listNames, filterRequest);
+                userInfoService.getUserName(principal), listType, listNames, filterRequest);
         List<WbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, filterRequest);
         Integer count = wbListDao.countFilterRecords(listType, listNames, filterRequest.getSearchValue());
         return ResponseEntity.ok().body(PaymentFilterListRecordsResponse.builder()
@@ -79,7 +81,7 @@ public class ListsResource {
     @GetMapping(value = "/lists/names")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<String>> getNames(Principal principal, @Validated @RequestParam ListType listType) {
-        log.info("getNames initiator: {} listType: {}", principal.getName(), listType);
+        log.info("getNames initiator: {} listType: {}", userInfoService.getUserName(principal), listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
         return ResponseEntity.ok().body(currentListNames);
     }

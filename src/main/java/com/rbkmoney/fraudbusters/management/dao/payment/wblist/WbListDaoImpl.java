@@ -47,15 +47,6 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
     }
 
     @Override
-    public void removeRecord(String id) {
-        log.info("WbListDaoImpl removeRecord id: {}", id);
-        DeleteConditionStep<WbListRecordsRecord> where = getDslContext()
-                .delete(WB_LIST_RECORDS)
-                .where(WB_LIST_RECORDS.ID.eq(id));
-        execute(where);
-    }
-
-    @Override
     public void removeRecord(WbListRecords listRecord) {
         log.info("WbListDaoImpl removeRecord listRecord: {}", listRecord);
         DeleteConditionStep<WbListRecordsRecord> where = getDslContext()

@@ -133,7 +133,7 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 3,
                 null,
-                SortOrder.ASC));
+                SortOrder.DESC));
         assertEquals(wbListRecordsFirst.get(0).getPartyId(), wbListRecordsSecond.get(1).getPartyId());
 
         //check paging

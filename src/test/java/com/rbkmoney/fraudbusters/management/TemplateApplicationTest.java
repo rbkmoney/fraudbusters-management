@@ -115,16 +115,14 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setShopId("shop_id");
         paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal("test"),
                 Collections.singletonList(referenceModel));
-        paymentTemplateCommandResource.insertReference(new BasicUserPrincipal("test"),
-                referenceModel);
         paymentTemplateCommandResource.deleteReference(new BasicUserPrincipal("test"),
                 referenceModel.getTemplateId(),
                 referenceModel.getPartyId(),
                 referenceModel.getShopId());
 
         await().untilAsserted(() -> {
-            verify(referenceDao, times(2)).insert(any());
-            verify(referenceDao, times(2)).remove((PaymentReferenceModel) any());
+            verify(referenceDao, times(1)).insert(any());
+            verify(referenceDao, times(1)).remove((PaymentReferenceModel) any());
         });
     }
 
