@@ -9,7 +9,7 @@ import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
-import com.rbkmoney.fraudbusters.management.service.ValidationTemplateService;
+import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.p2p.P2PTemplateReferenceService;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j

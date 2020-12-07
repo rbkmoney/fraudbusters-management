@@ -29,7 +29,7 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
         TemplateModel templateModel = createTemplateModel(id);
         templateDao.insert(templateModel);
         TemplateModel byId = templateDao.getById(id);
-        assertEquals(templateModel, byId);
+        assertEquals(templateModel.getId(), byId.getId());
 
         templateDao.remove(id);
         byId = templateDao.getById(id);
@@ -50,29 +50,16 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
         TemplateModel templateModel = createTemplateModel(ded_id);
         templateDao.insert(templateModel);
         TemplateModel byId = templateDao.getById(ded_id);
-        assertEquals(templateModel, byId);
+        assertEquals(templateModel.getId(), byId.getId());
 
         templateModel.setTemplate("rule:blackList_1:inBlackList");
         templateDao.insert(templateModel);
         byId = templateDao.getById(ded_id);
-        assertEquals(templateModel, byId);
+        assertEquals(templateModel.getId(), byId.getId());
 
         templateDao.remove(ded_id);
         byId = templateDao.getById(ded_id);
         assertNull(byId);
-    }
-
-    @Test
-    public void getListTest() {
-        TemplateModel templateModel = createTemplateModel("id");
-        templateDao.insert(templateModel);
-        List<TemplateModel> list = templateDao.getList(10);
-        assertEquals(1, list.size());
-
-        templateModel = createTemplateModel("id_2");
-        templateDao.insert(templateModel);
-        list = templateDao.getList(10);
-        assertEquals(2, list.size());
     }
 
     @Test

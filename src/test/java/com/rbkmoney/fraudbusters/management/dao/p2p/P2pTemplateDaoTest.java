@@ -31,7 +31,7 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
         TemplateModel templateModel = createTemplateModel(id);
         templateDao.insert(templateModel);
         TemplateModel byId = templateDao.getById(id);
-        Assert.assertEquals(templateModel, byId);
+        Assert.assertEquals(templateModel.getId(), byId.getId());
 
         templateDao.remove(id);
         byId = templateDao.getById(id);
@@ -52,29 +52,16 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
         TemplateModel templateModel = createTemplateModel(ded_id);
         templateDao.insert(templateModel);
         TemplateModel byId = templateDao.getById(ded_id);
-        Assert.assertEquals(templateModel, byId);
+        Assert.assertEquals(templateModel.getId(), byId.getId());
 
         templateModel.setTemplate("rule:blackList_1:inBlackList");
         templateDao.insert(templateModel);
         byId = templateDao.getById(ded_id);
-        Assert.assertEquals(templateModel, byId);
+        Assert.assertEquals(templateModel.getId(), byId.getId());
 
         templateDao.remove(ded_id);
         byId = templateDao.getById(ded_id);
         Assert.assertNull(byId);
-    }
-
-    @Test
-    public void getListTest() {
-        TemplateModel templateModel = createTemplateModel("id");
-        templateDao.insert(templateModel);
-        List<TemplateModel> list = templateDao.getList(10);
-        Assert.assertEquals(1, list.size());
-
-        templateModel = createTemplateModel("id_2");
-        templateDao.insert(templateModel);
-        list = templateDao.getList(10);
-        Assert.assertEquals(2, list.size());
     }
 
     @Test

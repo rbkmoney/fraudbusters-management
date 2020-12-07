@@ -32,7 +32,7 @@
         <db.user>postgres</db.user>
         <db.password>postgres</db.password>
         <db.schema>af</db.schema>
-        <wb.list.proto.version>1.33-554d59c</wb.list.proto.version>
+        <wb.list.proto.version>1.35-ddacb05</wb.list.proto.version>
         <fraudbusters.proto.version>1.61-da7ac39</fraudbusters.proto.version>
         <kafka.common.lib.version>0.1.4</kafka.common.lib.version>
         <fraudo.version>0.0.17</fraudo.version>

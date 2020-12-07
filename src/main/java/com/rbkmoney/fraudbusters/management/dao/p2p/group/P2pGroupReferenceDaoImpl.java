@@ -47,7 +47,6 @@ public class P2pGroupReferenceDaoImpl extends AbstractDao implements P2pGroupRef
 
     @Override
     public void remove(P2pGroupReferenceModel referenceModel) {
-        Condition condition = DSL.trueCondition();
         execute(getDslContext()
                 .delete(P2P_F_GROUP_REFERENCE)
                 .where(P2P_F_GROUP_REFERENCE.IDENTITY_ID.eq(referenceModel.getIdentityId()))
@@ -56,32 +55,23 @@ public class P2pGroupReferenceDaoImpl extends AbstractDao implements P2pGroupRef
 
     @Override
     public List<P2pGroupReferenceModel> getByGroupId(String id) {
-        SelectConditionStep<Record3<Long, String, String>> where =
-                getDslContext()
-                        .select(P2P_F_GROUP_REFERENCE.ID,
-                                P2P_F_GROUP_REFERENCE.IDENTITY_ID,
-                                P2P_F_GROUP_REFERENCE.GROUP_ID)
-                        .from(P2P_F_GROUP_REFERENCE)
-                        .where(P2P_F_GROUP_REFERENCE.GROUP_ID.eq(id));
+        SelectConditionStep<P2pFGroupReferenceRecord> where = getDslContext()
+                .selectFrom(P2P_F_GROUP_REFERENCE)
+                .where(P2P_F_GROUP_REFERENCE.GROUP_ID.eq(id));
         return fetch(where, listRecordRowMapper);
     }
 
     @Override
     public List<P2pGroupReferenceModel> getByIdentityId(String identityId) {
-        SelectConditionStep<Record3<Long, String, String>> where =
-                getDslContext()
-                        .select(P2P_F_GROUP_REFERENCE.ID,
-                                P2P_F_GROUP_REFERENCE.IDENTITY_ID,
-                                P2P_F_GROUP_REFERENCE.GROUP_ID)
-                        .from(P2P_F_GROUP_REFERENCE)
-                        .where(P2P_F_GROUP_REFERENCE.IDENTITY_ID.eq(identityId));
+        SelectConditionStep<P2pFGroupReferenceRecord> where = getDslContext()
+                .selectFrom(P2P_F_GROUP_REFERENCE)
+                .where(P2P_F_GROUP_REFERENCE.IDENTITY_ID.eq(identityId));
         return fetch(where, listRecordRowMapper);
     }
 
     @Override
     public List<P2pGroupReferenceModel> filterReference(FilterRequest filterRequest) {
-        SelectWhereStep<P2pFGroupReferenceRecord> from = getDslContext()
-                .selectFrom(P2P_F_GROUP_REFERENCE);
+        SelectWhereStep<P2pFGroupReferenceRecord> from = getDslContext().selectFrom(P2P_F_GROUP_REFERENCE);
         Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_F_GROUP_REFERENCE.GROUP_ID : P2P_F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class);
         SelectConditionStep<P2pFGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
                 from.where(DSL.trueCondition()) : from.where(P2P_F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())

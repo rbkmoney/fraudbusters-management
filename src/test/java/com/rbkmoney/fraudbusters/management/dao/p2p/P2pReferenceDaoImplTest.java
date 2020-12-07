@@ -48,7 +48,7 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         p2pReferenceDao.insert(referenceModel);
 
         P2pReferenceModel byId = p2pReferenceDao.getById(id);
-        Assert.assertEquals(referenceModel, byId);
+        Assert.assertEquals(referenceModel.getId(), byId.getId());
 
         p2pReferenceDao.remove(referenceModel);
 

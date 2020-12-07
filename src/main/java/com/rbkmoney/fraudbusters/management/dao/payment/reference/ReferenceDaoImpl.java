@@ -63,24 +63,10 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
 
     @Override
     public PaymentReferenceModel getById(String id) {
-        Query query = getDslContext().selectFrom(F_REFERENCE)
+        Query query = getDslContext()
+                .selectFrom(F_REFERENCE)
                 .where(F_REFERENCE.ID.eq(id));
         return fetchOne(query, listRecordRowMapper);
-    }
-
-    @Override
-    public List<PaymentReferenceModel> getList(Integer limit) {
-        Query query = getDslContext().selectFrom(F_REFERENCE)
-                .limit(limit != null ? limit : LIMIT_TOTAL);
-        return fetch(query, listRecordRowMapper);
-    }
-
-    @Override
-    public List<PaymentReferenceModel> getListByTemplateId(String templateId, Integer limit) {
-        Query query = getDslContext().selectFrom(F_REFERENCE)
-                .where(F_REFERENCE.TEMPLATE_ID.eq(templateId))
-                .limit(limit != null ? limit : LIMIT_TOTAL);
-        return fetch(query, listRecordRowMapper);
     }
 
     @Override
@@ -116,7 +102,8 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
 
     @Override
     public PaymentReferenceModel getDefaultReference() {
-        Query query = getDslContext().selectFrom(F_REFERENCE)
+        Query query = getDslContext()
+                .selectFrom(F_REFERENCE)
                 .where(F_REFERENCE.IS_DEFAULT.eq(true));
         return fetchOne(query, listRecordRowMapper);
     }

@@ -21,7 +21,6 @@ import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFTemplate.P2
 @Component
 public class P2pTemplateDao extends AbstractDao implements TemplateDao {
 
-    private static final int LIMIT_TOTAL = 100;
     private final RowMapper<TemplateModel> listRecordRowMapper;
 
     public P2pTemplateDao(DataSource dataSource) {
@@ -59,20 +58,10 @@ public class P2pTemplateDao extends AbstractDao implements TemplateDao {
 
     @Override
     public TemplateModel getById(String id) {
-        SelectConditionStep<Record2<String, String>> where = getDslContext()
-                .select(P2P_F_TEMPLATE.ID, P2P_F_TEMPLATE.TEMPLATE)
-                .from(P2P_F_TEMPLATE)
+        SelectConditionStep<P2pFTemplateRecord> where = getDslContext()
+                .selectFrom(P2P_F_TEMPLATE)
                 .where(P2P_F_TEMPLATE.ID.eq(id));
         return fetchOne(where, listRecordRowMapper);
-    }
-
-    @Override
-    public List<TemplateModel> getList(Integer limit) {
-        SelectLimitPercentStep<Record2<String, String>> query = getDslContext()
-                .select(P2P_F_TEMPLATE.ID, P2P_F_TEMPLATE.TEMPLATE)
-                .from(P2P_F_TEMPLATE)
-                .limit(limit != null ? limit : LIMIT_TOTAL);
-        return fetch(query, listRecordRowMapper);
     }
 
     @Override

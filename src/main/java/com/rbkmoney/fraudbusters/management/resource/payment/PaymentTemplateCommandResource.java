@@ -11,7 +11,7 @@ import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateRespon
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
-import com.rbkmoney.fraudbusters.management.service.ValidationTemplateService;
+import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,6 @@ package com.rbkmoney.fraudbusters.management.dao;
 
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import org.jooq.SortOrder;
 
 import java.util.List;
 
@@ -15,8 +14,6 @@ public interface TemplateDao {
     void remove(TemplateModel listRecord);
 
     TemplateModel getById(String id);
-
-    List<TemplateModel> getList(Integer limit);
 
     List<String> getListNames(String idRegexp);
 
