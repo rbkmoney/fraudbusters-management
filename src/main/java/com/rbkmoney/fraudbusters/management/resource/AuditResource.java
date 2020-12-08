@@ -29,10 +29,11 @@ import java.util.stream.Collectors;
 public class AuditResource {
 
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+
     private final CommandAuditDao commandAuditDao;
     private final UserInfoService userInfoService;
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
 
     @GetMapping(value = "/audit/filter")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")

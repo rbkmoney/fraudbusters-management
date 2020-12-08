@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.*;
+
 @ContextConfiguration(classes = {CommandAuditDaoImpl.class})
 public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
 
@@ -41,7 +43,7 @@ public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
         List<CommandAudit> commandAudits = commandAuditDao.filterLog(now.minusHours(10), now, commandTypes,
                 objectTypes, filterRequest);
 
-        Assert.assertEquals(1, commandAudits.size());
+        assertEquals(1, commandAudits.size());
 
         //check by types
         log.setCommandType(CommandType.DELETE);
@@ -49,7 +51,7 @@ public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
 
         commandAudits = commandAuditDao.filterLog(now.minusHours(10), now, List.of(CommandType.CREATE.name()),
                 objectTypes, filterRequest);
-        Assert.assertEquals(1, commandAudits.size());
+        assertEquals(1, commandAudits.size());
 
         //check by searchField
         log.setInitiator(STRUGA);
@@ -57,19 +59,19 @@ public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
         filterRequest.setSearchValue("str%");
         commandAudits = commandAuditDao.filterLog(now.minusHours(10), now, commandTypes,
                 objectTypes, filterRequest);
-        Assert.assertEquals(1, commandAudits.size());
+        assertEquals(1, commandAudits.size());
 
         //sort
         filterRequest.setSearchValue("%");
         filterRequest.setSortOrder(SortOrder.ASC);
         commandAudits = commandAuditDao.filterLog(now.minusHours(10), now, commandTypes,
                 objectTypes, filterRequest);
-        Assert.assertEquals(INITIATOR, commandAudits.get(0).getInitiator());
+        assertEquals(INITIATOR, commandAudits.get(0).getInitiator());
 
         filterRequest.setSortOrder(SortOrder.DESC);
         commandAudits = commandAuditDao.filterLog(now.minusHours(10), now, commandTypes,
                 objectTypes, filterRequest);
-        Assert.assertEquals(STRUGA, commandAudits.get(0).getInitiator());
+        assertEquals(STRUGA, commandAudits.get(0).getInitiator());
     }
 
     @NotNull
