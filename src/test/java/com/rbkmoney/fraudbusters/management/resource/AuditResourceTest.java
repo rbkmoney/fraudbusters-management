@@ -51,7 +51,7 @@ class AuditResourceTest {
     }
 
     @Test
-    void getCommanfTypes() throws Exception {
+    void getCommandTypes() throws Exception {
         this.mockMvc.perform(get("/audit/commandTypes"))
                 .andDo(print())
                 .andExpect(status().isOk());
