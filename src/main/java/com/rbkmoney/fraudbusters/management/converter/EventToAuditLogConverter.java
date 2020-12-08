@@ -2,7 +2,6 @@ package com.rbkmoney.fraudbusters.management.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rbkmoney.damsel.wb_list.ChangeCommand;
 import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.fraudbusters.management.domain.enums.CommandType;
 import com.rbkmoney.fraudbusters.management.domain.enums.ObjectType;
@@ -24,19 +23,18 @@ public class EventToAuditLogConverter implements Converter<Event, CommandAudit> 
     private ObjectMapper objectMapper;
 
     @Override
-    public CommandAudit convert(Event command) {
+    public CommandAudit convert(Event event) {
         CommandAudit model = new CommandAudit();
-        model.setCommandType(CommandType.valueOf(command.getEventType().name()));
-        model.setObjectType(ObjectType.valueOf(command.getRow().getListType().name()));
+        model.setCommandType(CommandType.valueOf(event.getEventType().name()));
+        model.setObjectType(ObjectType.valueOf(event.getRow().getListType().name()));
         try {
-            model.setObject(objectMapper.writeValueAsString(command.getRow()));
+            model.setObject(objectMapper.writeValueAsString(event.getRow()));
         } catch (JsonProcessingException e) {
-            log.error("Error when convert command: {}", command);
+            log.error("Error when convert command: {}", event);
             model.setObject(e.getMessage());
         }
-        //TODO proto
-//        model.setInitiator(command.isSetUserInfo() && StringUtils.isEmpty(command.getUserInfo().getUserId()) ?
-//                command.getUserInfo().getUserId() : UNKNOWN);
+        model.setInitiator(event.getUserInfo() != null && !StringUtils.isEmpty(event.getUserInfo().getUserId()) ?
+                event.getUserInfo().getUserId() : UNKNOWN);
         return model;
     }
 }
