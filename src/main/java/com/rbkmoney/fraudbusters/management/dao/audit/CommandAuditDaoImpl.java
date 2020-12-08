@@ -5,8 +5,8 @@ import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.CommandAuditRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
-import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -50,14 +50,14 @@ public class CommandAuditDaoImpl extends AbstractDao implements CommandAuditDao 
         Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ?
                 COMMAND_AUDIT.INSERT_TIME :
                 COMMAND_AUDIT.field(filterRequest.getSortBy());
-        SelectSeekStep2<CommandAuditRecord, Object, String> wbListRecordsRecords = addSortCondition(COMMAND_AUDIT.ID,
+        SelectSeekStep2<CommandAuditRecord, Object, String> auditRecords = addSortCondition(COMMAND_AUDIT.ID,
                 field, filterRequest.getSortOrder(), where);
         return fetch(
                 addSeekIfNeed(
                         filterRequest.getLastId(),
                         filterRequest.getSortFieldValue(),
                         filterRequest.getSize(),
-                        wbListRecordsRecords),
+                        auditRecords),
                 listRecordRowMapper
         );
     }
