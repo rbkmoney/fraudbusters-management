@@ -11,7 +11,6 @@ import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.SortOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +66,6 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         assertNull(byId);
     }
 
-    @NotNull
     private WbListRecords createListRecord(String id) {
         WbListRecords listRecord = new WbListRecords();
         listRecord.setId(id);

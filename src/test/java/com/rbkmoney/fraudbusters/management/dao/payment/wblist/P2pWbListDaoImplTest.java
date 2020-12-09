@@ -12,7 +12,6 @@ import com.rbkmoney.fraudbusters.management.domain.p2p.P2pCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.P2pCountInfoGenerator;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +62,6 @@ public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
         Assert.assertNull(byId);
     }
 
-    @NotNull
     private P2pWbListRecords createListRecord(String id) {
         P2pWbListRecords listRecord = new P2pWbListRecords();
         listRecord.setId(id);

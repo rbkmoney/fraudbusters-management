@@ -6,7 +6,6 @@ import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -85,7 +84,6 @@ public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
         isChangedTemplatePresent(foundGroupModel);
     }
 
-    @NotNull
     private Optional<PriorityIdModel> isChangedTemplatePresent(GroupModel foundGroupModel) {
         Optional<PriorityIdModel> template = foundGroupModel.getPriorityTemplates().stream()
                 .filter(priorityIdModel -> CHANGED_TEMPLATE_ID.equals(priorityIdModel.getId()))

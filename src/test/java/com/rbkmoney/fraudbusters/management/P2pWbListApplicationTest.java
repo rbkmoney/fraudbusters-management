@@ -13,7 +13,6 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -135,7 +134,6 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
         }
     }
 
-    @NotNull
     private Row createRow(ListType listType) {
         Row row = new Row();
         row.setId(IdInfo.p2p_id(new P2pId()
@@ -211,7 +209,6 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
         restTemplate.delete("http://localhost:" + port + "/fb-management/v1/p2p/lists/" + id);
     }
 
-    @NotNull
     private List<ChangeCommand> consumeCommand(Consumer<String, ChangeCommand> consumer) {
         List<ChangeCommand> eventList = new ArrayList<>();
         ConsumerRecords<String, ChangeCommand> consumerRecords =

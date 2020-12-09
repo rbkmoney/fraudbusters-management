@@ -6,7 +6,6 @@ import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplate
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.SortOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
         assertNull(byId);
     }
 
-    @NotNull
     private TemplateModel createTemplateModel(String id) {
         TemplateModel templateModel = new TemplateModel();
         templateModel.setId(id);

@@ -12,7 +12,6 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -132,7 +131,6 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         }
     }
 
-    @NotNull
     private Row createRow(ListType listType) {
         Row row = new Row();
         row.setPartyId(PARTY_ID);
@@ -208,7 +206,6 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         assertTrue(result.getBody().isEmpty());
     }
 
-    @NotNull
     private ListRowsInsertRequest createListRowsInsertRequest(String value) {
         ListRowsInsertRequest listRowsInsertRequest = new ListRowsInsertRequest();
         listRowsInsertRequest.setListType(ListType.black);
@@ -243,7 +240,6 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         restTemplate.delete("http://localhost:" + port + "/fb-management/v1/lists/" + id);
     }
 
-    @NotNull
     private List<ChangeCommand> consumeCommand(Consumer<String, ChangeCommand> consumer) {
         List<ChangeCommand> eventList = new ArrayList<>();
         ConsumerRecords<String, ChangeCommand> consumerRecords =

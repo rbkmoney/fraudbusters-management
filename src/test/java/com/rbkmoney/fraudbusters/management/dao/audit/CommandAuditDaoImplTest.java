@@ -5,9 +5,7 @@ import com.rbkmoney.fraudbusters.management.domain.enums.CommandType;
 import com.rbkmoney.fraudbusters.management.domain.enums.ObjectType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.SortOrder;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @ContextConfiguration(classes = {CommandAuditDaoImpl.class})
 public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
@@ -74,7 +72,6 @@ public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
         assertEquals(STRUGA, commandAudits.get(0).getInitiator());
     }
 
-    @NotNull
     private FilterRequest initDefaultFilters() {
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setSize(10);
@@ -82,14 +79,12 @@ public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
         return filterRequest;
     }
 
-    @NotNull
     private List<String> getCommandTypes() {
         return Arrays.stream(CommandType.values())
                 .map(CommandType::name)
                 .collect(Collectors.toList());
     }
 
-    @NotNull
     private List<String> getObjectTypes() {
         return Arrays.stream(ObjectType.values())
                 .map(ObjectType::name)

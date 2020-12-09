@@ -16,7 +16,6 @@ import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationExceptio
 import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +85,6 @@ public class ExceptionApplicationTest {
 
     private static String SERVICE_URL = "http://localhost:%s/fb-management/v1";
 
-    @NotNull
     private ListRecord createRow() {
         PaymentListRecord listRecord = new PaymentListRecord();
         listRecord.setShopId(SHOP_ID);

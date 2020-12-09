@@ -6,7 +6,6 @@ import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDaoIm
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.SortOrder;
 import org.junit.After;
 import org.junit.Test;
@@ -58,7 +57,6 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         assertNull(byId);
     }
 
-    @NotNull
     private PaymentReferenceModel createReference(String id) {
         PaymentReferenceModel referenceModel = new PaymentReferenceModel();
         referenceModel.setId(id);

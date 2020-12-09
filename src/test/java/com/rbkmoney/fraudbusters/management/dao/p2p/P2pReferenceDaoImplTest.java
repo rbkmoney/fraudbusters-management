@@ -5,7 +5,6 @@ import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.SortOrder;
 import org.junit.After;
 import org.junit.Assert;
@@ -56,7 +55,6 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         Assert.assertNull(byId);
     }
 
-    @NotNull
     private P2pReferenceModel createReference(String id) {
         P2pReferenceModel referenceModel = new P2pReferenceModel();
         referenceModel.setId(id);
