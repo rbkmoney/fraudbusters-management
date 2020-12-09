@@ -8,6 +8,7 @@ import com.rbkmoney.fraudbusters.management.domain.p2p.P2pListRecord;
 import com.rbkmoney.fraudbusters.management.domain.p2p.request.P2pListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -52,6 +53,9 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
     private static final String VALUE = "value";
     private static final String LIST_NAME = "listName";
     public static final String IDENTITY_ID = "identityId";
+
+    @MockBean
+    public AuditService auditService;
 
     @LocalServerPort
     private int port;

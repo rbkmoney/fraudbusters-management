@@ -22,7 +22,6 @@ public class P2PGroupListener extends CommandListener {
     private final AuditService auditService;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.group.list}", containerFactory = "kafkaP2PGroupListenerContainerFactory")
-    @Transactional(propagation = Propagation.REQUIRED)
     public void listen(Command command) {
         log.info("GroupListener event: {}", command);
         handle(command, converter, p2pGroupDao::insert, p2pGroupDao::remove);

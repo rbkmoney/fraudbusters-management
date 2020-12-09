@@ -22,7 +22,6 @@ public class ReferenceListener extends CommandListener {
     private final CommandToPaymentReferenceModelConverter paymentReferenceConverter;
     private final AuditService auditService;
 
-    @Transactional(propagation = Propagation.REQUIRED)
     @KafkaListener(topics = "${kafka.topic.fraudbusters.payment.reference}", containerFactory = "kafkaReferenceListenerContainerFactory")
     public void listen(Command command) {
         log.info("ReferenceListener command: {}", command);

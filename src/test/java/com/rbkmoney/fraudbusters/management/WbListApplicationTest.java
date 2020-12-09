@@ -7,6 +7,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -28,6 +29,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -64,6 +66,8 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
     @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
 
+    @MockBean
+    public AuditService auditService;
     @MockBean
     public WbListDao wbListDao;
 

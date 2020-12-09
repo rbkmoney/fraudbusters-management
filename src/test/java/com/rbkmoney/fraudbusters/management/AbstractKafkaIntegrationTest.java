@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.fraudbusters.management.config.KafkaConfig;
+import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -20,8 +21,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.Properties;
 
 @Slf4j
@@ -34,7 +35,7 @@ public abstract class AbstractKafkaIntegrationTest {
     public static final String KAFKA_DOCKER_VERSION = "5.0.1";
 
     @ClassRule
-    public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
+    public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_DOCKER_VERSION))
             .withEmbeddedZookeeper()
             .withCommand("bash -c 'echo Waiting for Kafka to be ready... && \n" +
                     "                                cub kafka-ready -b broker:9092 1 60 && \n" +

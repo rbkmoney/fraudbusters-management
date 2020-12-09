@@ -29,7 +29,6 @@ public class WbListEventListener {
     private final P2pEventToListRecordConverter p2pEventToListRecordConverter;
     private final AuditService auditService;
 
-    @Transactional(propagation = Propagation.REQUIRED)
     @KafkaListener(topics = "${kafka.topic.wblist.event.sink}", containerFactory = "kafkaListenerContainerFactory")
     public void listen(Event event) throws DaoException {
         log.info("WbListListener event: {}", event);

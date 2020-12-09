@@ -12,6 +12,7 @@ import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2PTemplateCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2pGroupCommandResource;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
@@ -50,6 +51,8 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public P2pGroupReferenceDao groupReferenceDao;
     @MockBean
     public P2PServiceSrv.Iface iface;
+    @MockBean
+    public AuditService auditService;
 
     @Autowired
     P2PTemplateCommandResource p2pTemplateCommandResource;

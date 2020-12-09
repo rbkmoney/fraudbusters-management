@@ -21,7 +21,6 @@ public class PaymentTemplateListener extends CommandListener {
     private final CommandToTemplateModelConverter converter;
     private final AuditService auditService;
 
-    @Transactional(propagation = Propagation.REQUIRED)
     @KafkaListener(topics = "${kafka.topic.fraudbusters.payment.template}", containerFactory = "kafkaTemplateListenerContainerFactory")
     public void listen(Command command) {
         log.info("PaymentTemplateListener event: {}", command);

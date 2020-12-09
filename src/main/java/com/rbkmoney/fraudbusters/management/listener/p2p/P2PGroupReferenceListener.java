@@ -21,7 +21,6 @@ public class P2PGroupReferenceListener extends CommandListener {
     private final CommandToP2pGroupReferenceModelConverter commandToP2pGroupReferenceModelConverter;
     private final AuditService auditService;
 
-    @Transactional(propagation = Propagation.REQUIRED)
     @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.group.reference}", containerFactory = "kafkaP2PGroupReferenceListenerContainerFactory")
     public void listen(Command command) {
         log.info("P2PGroupReferenceListener command: {}", command);

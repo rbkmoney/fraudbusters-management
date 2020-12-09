@@ -5,7 +5,6 @@ import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConv
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Slf4j
 @RequiredArgsConstructor

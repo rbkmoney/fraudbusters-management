@@ -2,10 +2,7 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.dao.DaoException;
-import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToListRecordConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.*;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.ListRecord;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
@@ -14,7 +11,12 @@ import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInser
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
+import com.rbkmoney.fraudbusters.management.resource.payment.ListsResource;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
+import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
+import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
+import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,7 +50,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {FraudbustersManagementApplication.class})
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ListsResource.class, UserInfoService.class,
+        WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class, CountInfoUtils.class})
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 public class ExceptionApplicationTest {
 
@@ -62,6 +65,8 @@ public class ExceptionApplicationTest {
     @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
 
+    @MockBean
+    public AuditService auditService;
     @MockBean
     public WbListCommandService wbListCommandService;
     @MockBean

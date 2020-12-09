@@ -14,6 +14,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReference
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.resource.payment.GroupCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentTemplateCommandResource;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
@@ -29,6 +30,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +45,6 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = FraudbustersManagementApplication.class)
 public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
-    public static final long TIMEOUT = 5000L;
     @MockBean
     public PaymentTemplateDao paymentTemplateDao;
     @MockBean
@@ -56,6 +57,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public PaymentGroupReferenceDao groupReferenceDao;
     @MockBean
     public PaymentServiceSrv.Iface iface;
+    @MockBean
+    public AuditService auditService;
 
     @Autowired
     PaymentTemplateCommandResource paymentTemplateCommandResource;
