@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.fraudbusters.management.config.KafkaConfig;
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -33,6 +32,8 @@ import java.util.Properties;
 public abstract class AbstractKafkaIntegrationTest {
 
     public static final String KAFKA_DOCKER_VERSION = "5.0.1";
+    public static String UNKNOWN_INITIATING_ENTITY = "unknown_initiating_entity";
+
 
     @ClassRule
     public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_DOCKER_VERSION))
@@ -41,6 +42,7 @@ public abstract class AbstractKafkaIntegrationTest {
                     "                                cub kafka-ready -b broker:9092 1 60 && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic wb-list-event-sink  && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic wb-list-command && \n" +
+                    "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic " + UNKNOWN_INITIATING_ENTITY + " && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template_p2p && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template_reference && \n" +

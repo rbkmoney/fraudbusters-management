@@ -9,7 +9,6 @@ import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
-import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
@@ -113,38 +112,6 @@ public class PaymentTemplateCommandResource {
         log.info("TemplateManagementResource markReferenceAsDefault initiator: {} id: {}", userInfoService.getUserName(principal), id);
         referenceDao.markReferenceAsDefault(id);
         return ResponseEntity.ok().body(id);
-    }
-
-    @Deprecated(forRemoval = true)
-    @PostMapping(value = "/template/default")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertDefaultReference(Principal principal,
-                                                               @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
-        log.info("TemplateManagementResource insertDefaultReference initiator: {} referenceModels: {}",
-                userInfoService.getUserName(principal),
-                referenceModels);
-        PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
-        if (defaultReference == null) {
-            throw new NotFoundException("Couldn't insert default reference: Default template not found");
-        }
-        String id = defaultReference.getTemplateId();
-        List<String> ids = referenceModels.stream()
-                .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> {
-                    command.setCommandType(CommandType.CREATE);
-                    command.setUserInfo(new UserInfo()
-                            .setUserId(userInfoService.getUserName(principal)));
-                    return command;
-                })
-                .map(paymentTemplateReferenceService::sendCommandSync)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(ids);
-    }
-
-    private Command convertReferenceModel(PaymentReferenceModel referenceModel, String templateId) {
-        Command command = referenceToCommandConverter.convert(referenceModel);
-        command.getCommandBody().getReference().setTemplateId(templateId);
-        return command;
     }
 
     @DeleteMapping(value = "/template/{id}")

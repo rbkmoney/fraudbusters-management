@@ -131,7 +131,6 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
         try (Producer<String, Event> producer = createProducer()) {
             ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
             producer.send(producerRecord).get();
-            producer.close();
             await().untilAsserted(() -> {
                 verify(wbListDao, times(1)).removeRecord((P2pWbListRecords) any());
             });

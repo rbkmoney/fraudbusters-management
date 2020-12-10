@@ -1,9 +1,11 @@
 package com.rbkmoney.fraudbusters.management.config;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
+import com.rbkmoney.damsel.fraudbusters.ReferenceInfo;
 import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.fraudbusters.management.serializer.CommandFraudDeserializer;
 import com.rbkmoney.fraudbusters.management.serializer.EventDeserializer;
+import com.rbkmoney.fraudbusters.management.serializer.ReferenceInfoDeserializer;
 import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -91,6 +93,24 @@ public class KafkaConfig {
     @Autowired
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaTemplateListenerContainerFactory(ConsumerFactory<String, Command> consumerTemplateFactory) {
         return createDefaultContainerFactory(consumerTemplateFactory);
+    }
+
+    @Bean
+    public ConsumerFactory<String, ReferenceInfo> consumerReferenceInfoFactory() {
+        Map<String, Object> configs = consumerConfigs();
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ReferenceInfoDeserializer.class);
+        configs.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroupWbList);
+        return new DefaultKafkaConsumerFactory<>(configs);
+    }
+
+    @Bean
+    @Autowired
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ReferenceInfo>> kafkaReferenceInfoListenerContainerFactory(
+            ConsumerFactory<String, ReferenceInfo> consumerReferenceInfoFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, ReferenceInfo> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerReferenceInfoFactory);
+        factory.setErrorHandler(new LoggingErrorHandler());
+        return factory;
     }
 
     @Bean

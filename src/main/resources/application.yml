@@ -55,6 +55,7 @@ kafka:
         group:
           list: "p2p_group"
           reference: "p2p_group_reference"
+      unknown-initiating-entity: unknown_initiating_entity
   ssl:
     enable: false
     keystore-location: src/main/resources/cert/kenny-k.struzhkin.p12

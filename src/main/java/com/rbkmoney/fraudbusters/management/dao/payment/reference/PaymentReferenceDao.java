@@ -3,7 +3,6 @@ package com.rbkmoney.fraudbusters.management.dao.payment.reference;
 import com.rbkmoney.fraudbusters.management.dao.ReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import org.jooq.SortOrder;
 
 import java.util.List;
 
