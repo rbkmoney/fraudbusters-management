@@ -60,14 +60,8 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
 
     @Override
     public List<PaymentGroupReferenceModel> getByGroupId(String id) {
-        SelectConditionStep<Record4<Long, String, String, String>> where =
-                getDslContext()
-                        .select(F_GROUP_REFERENCE.ID,
-                                F_GROUP_REFERENCE.PARTY_ID,
-                                F_GROUP_REFERENCE.SHOP_ID,
-                                F_GROUP_REFERENCE.GROUP_ID)
-                        .from(F_GROUP_REFERENCE)
-                        .where(F_GROUP_REFERENCE.GROUP_ID.eq(id));
+        SelectConditionStep<FGroupReferenceRecord> where = getDslContext().selectFrom(F_GROUP_REFERENCE)
+                .where(F_GROUP_REFERENCE.GROUP_ID.eq(id));
         return fetch(where, listRecordRowMapper);
     }
 
@@ -112,16 +106,11 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
 
     @Override
     public List<PaymentGroupReferenceModel> getByPartyIdAndShopId(String partyId, String shopId) {
-        SelectConditionStep<Record4<Long, String, String, String>> where =
-                getDslContext()
-                        .select(F_GROUP_REFERENCE.ID,
-                                F_GROUP_REFERENCE.PARTY_ID,
-                                F_GROUP_REFERENCE.SHOP_ID,
-                                F_GROUP_REFERENCE.GROUP_ID)
-                        .from(F_GROUP_REFERENCE)
-                        .where(F_GROUP_REFERENCE.PARTY_ID.eq(partyId)
-                                .and((F_GROUP_REFERENCE.SHOP_ID.eq(shopId)
-                                        .or(F_GROUP_REFERENCE.SHOP_ID.isNull()))));
+        SelectConditionStep<FGroupReferenceRecord> where = getDslContext()
+                .selectFrom(F_GROUP_REFERENCE)
+                .where(F_GROUP_REFERENCE.PARTY_ID.eq(partyId)
+                        .and((F_GROUP_REFERENCE.SHOP_ID.eq(shopId)
+                                .or(F_GROUP_REFERENCE.SHOP_ID.isNull()))));
         return fetch(where, listRecordRowMapper);
     }
 }

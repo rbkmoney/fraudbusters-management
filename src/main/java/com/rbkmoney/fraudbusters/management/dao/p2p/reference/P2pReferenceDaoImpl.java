@@ -63,87 +63,31 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
 
     @Override
     public P2pReferenceModel getById(String id) {
-        SelectConditionStep<Record4<String, String, String, Boolean>> where =
-                getDslContext()
-                        .select(P2P_F_REFERENCE.ID,
-                                P2P_F_REFERENCE.IDENTITY_ID,
-                                P2P_F_REFERENCE.TEMPLATE_ID,
-                                P2P_F_REFERENCE.IS_GLOBAL)
-                        .from(P2P_F_REFERENCE)
-                        .where(P2P_F_REFERENCE.ID.eq(id));
+        SelectConditionStep<P2pFReferenceRecord> where = getDslContext()
+                .selectFrom(P2P_F_REFERENCE)
+                .where(P2P_F_REFERENCE.ID.eq(id));
         return fetchOne(where, listRecordRowMapper);
-    }
-
-    @Override
-    public List<P2pReferenceModel> getList(Integer limit) {
-        SelectLimitPercentStep<Record4<String, String, String, Boolean>> query =
-                getDslContext()
-                        .select(P2P_F_REFERENCE.ID,
-                                P2P_F_REFERENCE.IDENTITY_ID,
-                                P2P_F_REFERENCE.TEMPLATE_ID,
-                                P2P_F_REFERENCE.IS_GLOBAL)
-                        .from(P2P_F_REFERENCE)
-                        .limit(limit != null ? limit : LIMIT_TOTAL);
-        return fetch(query, listRecordRowMapper);
-    }
-
-    @Override
-    public List<P2pReferenceModel> getListByTemplateId(String templateId, Integer limit) {
-        SelectLimitPercentStep<Record4<String, String, String, Boolean>> query =
-                getDslContext()
-                        .select(P2P_F_REFERENCE.ID,
-                                P2P_F_REFERENCE.IDENTITY_ID,
-                                P2P_F_REFERENCE.TEMPLATE_ID,
-                                P2P_F_REFERENCE.IS_GLOBAL)
-                        .from(P2P_F_REFERENCE)
-                        .where(P2P_F_REFERENCE.TEMPLATE_ID.eq(templateId))
-                        .limit(limit != null ? limit : LIMIT_TOTAL);
-        return fetch(query, listRecordRowMapper);
     }
 
     @Override
     public List<P2pReferenceModel> getListByTFilters(String identityId, Boolean isGlobal, Integer limit) {
         Condition condition = DSL.trueCondition();
-        SelectLimitPercentStep<Record4<String, String, String, Boolean>> query =
-                getDslContext()
-                        .select(P2P_F_REFERENCE.ID,
-                                P2P_F_REFERENCE.IDENTITY_ID,
-                                P2P_F_REFERENCE.TEMPLATE_ID,
-                                P2P_F_REFERENCE.IS_GLOBAL)
-                        .from(P2P_F_REFERENCE)
-                        .where(appendConditions(condition, Operator.AND,
-                                new ConditionParameterSource()
-                                        .addValue(P2P_F_REFERENCE.IDENTITY_ID, identityId, EQUALS)
-                                        .addValue(P2P_F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)))
-                        .limit(limit != null ? limit : LIMIT_TOTAL);
-        return fetch(query, listRecordRowMapper);
+        SelectLimitPercentStep<P2pFReferenceRecord> referenceRecords = getDslContext()
+                .selectFrom(P2P_F_REFERENCE)
+                .where(appendConditions(condition, Operator.AND,
+                        new ConditionParameterSource()
+                                .addValue(P2P_F_REFERENCE.IDENTITY_ID, identityId, EQUALS)
+                                .addValue(P2P_F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)))
+                .limit(limit != null ? limit : LIMIT_TOTAL);
+        return fetch(referenceRecords, listRecordRowMapper);
     }
 
     @Override
     public P2pReferenceModel getGlobalReference() {
         return fetchOne(getDslContext()
-                        .select(P2P_F_REFERENCE.ID,
-                                P2P_F_REFERENCE.IDENTITY_ID,
-                                P2P_F_REFERENCE.TEMPLATE_ID,
-                                P2P_F_REFERENCE.IS_GLOBAL)
-                        .from(P2P_F_REFERENCE)
+                        .selectFrom(P2P_F_REFERENCE)
                         .where(P2P_F_REFERENCE.IS_GLOBAL.eq(true)),
                 listRecordRowMapper);
-    }
-
-
-    @Override
-    public List<P2pReferenceModel> getByIdentity(String identityId) {
-        SelectConditionStep<Record4<String, String, String, Boolean>> where = getDslContext()
-                .select(P2P_F_REFERENCE.ID,
-                        P2P_F_REFERENCE.IDENTITY_ID,
-                        P2P_F_REFERENCE.TEMPLATE_ID,
-                        P2P_F_REFERENCE.IS_GLOBAL)
-                .from(P2P_F_REFERENCE)
-                .where(P2P_F_REFERENCE.IDENTITY_ID.eq(identityId)
-                        .and(P2P_F_REFERENCE.IS_GLOBAL.eq(false))
-                );
-        return fetch(where, listRecordRowMapper);
     }
 
     @Override

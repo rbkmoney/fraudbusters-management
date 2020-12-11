@@ -8,5 +8,6 @@ public class GroupReferenceModel {
     private String id;
     private String groupId;
     private String lastUpdateDate;
+    private String modifiedByUser;
 
 }

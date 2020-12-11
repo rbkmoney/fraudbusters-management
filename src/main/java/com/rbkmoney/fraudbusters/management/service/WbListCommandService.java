@@ -4,8 +4,6 @@ import com.rbkmoney.damsel.wb_list.ChangeCommand;
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.damsel.wb_list.Row;
-import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +27,8 @@ public class WbListCommandService {
     public String topicCommand;
 
     private final KafkaTemplate<String, TBase> kafkaTemplate;
-    private final PaymentListRecordToRowConverter paymentListRecordToRowConverter;
-    private final PaymentCountInfoRequestToRowConverter countInfoListRecordToRowConverter;
 
-    public String sendCommandSync(Row row, ListType type, Command command) {
+    public String sendCommandSync(Row row, ListType type, Command command, String initiator) {
         row.setListType(type);
         String uuid = UUID.randomUUID().toString();
         try {
@@ -58,13 +54,13 @@ public class WbListCommandService {
         return changeCommand;
     }
 
-    public <T> ResponseEntity<List<String>> sendListRecords(List<T> records, ListType listType, BiFunction<T, ListType, Row> func) {
+    public <T> ResponseEntity<List<String>> sendListRecords(List<T> records, ListType listType, BiFunction<T, ListType, Row> func, String initiator) {
         try {
             List<String> recordIds = records.stream()
                     .map(record -> {
                         Row row = func.apply(record, listType);
                         log.info("WbListResource list add row {}", row);
-                        return sendCommandSync(row, listType, Command.CREATE);
+                        return sendCommandSync(row, listType, Command.CREATE, initiator);
                     })
                     .collect(Collectors.toList());
             return ResponseEntity.ok()

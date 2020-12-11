@@ -4,7 +4,6 @@ import com.rbkmoney.fraudbusters.management.dao.CdDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
-import org.jooq.SortOrder;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -12,9 +11,6 @@ import java.util.List;
 public interface P2PWbListDao extends CdDao<P2pWbListRecords> {
 
     void saveListRecord(P2pWbListRecords listRecord);
-
-    //todo не используется, удалить?
-    void removeRecord(String id);
 
     void removeRecord(P2pWbListRecords listRecord);
 

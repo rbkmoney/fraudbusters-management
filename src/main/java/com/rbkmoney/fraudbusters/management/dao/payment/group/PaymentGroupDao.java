@@ -40,8 +40,8 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
         List<Query> inserts = groupModel.getPriorityTemplates().stream()
                 .map(pair -> getDslContext()
                         .insertInto(F_GROUP)
-                        .columns(F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID)
-                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId())
+                        .columns(F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID, F_GROUP.MODIFIED_BY_USER)
+                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId(), groupModel.getModifiedByUser())
                         .onConflict(F_GROUP.GROUP_ID, F_GROUP.TEMPLATE_ID)
                         .doNothing()
                 ).collect(Collectors.toList());
@@ -76,8 +76,8 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
 
     @Override
     public GroupModel getById(String id) {
-        SelectConditionStep<Record4<Long, String, Long, String>> where = getDslContext()
-                .select(F_GROUP.ID, F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID)
+        SelectConditionStep<Record5<Long, String, Long, String, String>> where = getDslContext()
+                .select(F_GROUP.ID, F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID, F_GROUP.MODIFIED_BY_USER)
                 .from(F_GROUP)
                 .where(F_GROUP.GROUP_ID.eq(id));
         List<PriorityIdModel> list = fetch(where, (rs, rowNum) ->

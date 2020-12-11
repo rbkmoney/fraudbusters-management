@@ -1,7 +1,10 @@
 package com.rbkmoney.fraudbusters.management;
 
+import com.rbkmoney.damsel.fraudbusters.MerchantInfo;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
+import com.rbkmoney.damsel.fraudbusters.ReferenceInfo;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
+import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
@@ -12,14 +15,20 @@ import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.resource.payment.GroupCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentTemplateCommandResource;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.auth.BasicUserPrincipal;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
@@ -42,7 +51,6 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = FraudbustersManagementApplication.class)
 public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
-    public static final long TIMEOUT = 5000L;
     @MockBean
     public PaymentTemplateDao paymentTemplateDao;
     @MockBean
@@ -55,6 +63,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public PaymentGroupReferenceDao groupReferenceDao;
     @MockBean
     public PaymentServiceSrv.Iface iface;
+    @MockBean
+    public AuditService auditService;
 
     @Autowired
     PaymentTemplateCommandResource paymentTemplateCommandResource;
@@ -71,8 +81,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         String id = "id";
         templateModel.setId(id);
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
-        paymentTemplateCommandResource.insertTemplate(templateModel);
-        paymentTemplateCommandResource.removeTemplate(id);
+        paymentTemplateCommandResource.insertTemplate(new BasicUserPrincipal("test"), templateModel);
+        paymentTemplateCommandResource.removeTemplate(new BasicUserPrincipal("test"), id);
 
         await().untilAsserted(() -> {
             verify(paymentTemplateDao, times(1)).insert(templateModel);
@@ -87,8 +97,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupModel.setPriorityTemplates(List.of(new PriorityIdModel(1L, "test", null)));
         checkSerialization(groupModel);
 
-        groupCommandResource.insertGroup(groupModel);
-        groupCommandResource.removeGroup(groupModel.getGroupId());
+        groupCommandResource.insertGroup(new BasicUserPrincipal("test"), groupModel);
+        groupCommandResource.removeGroup(new BasicUserPrincipal("test"), groupModel.getGroupId());
 
         await().untilAsserted(() -> {
             verify(paymentGroupDao, times(1)).insert(groupModel);
@@ -112,14 +122,16 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setIsGlobal(false);
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
-        paymentTemplateCommandResource.insertReferences(Collections.singletonList(referenceModel));
-        paymentTemplateCommandResource.deleteReferences("id", Collections.singletonList(referenceModel));
-        paymentTemplateCommandResource.insertReference(referenceModel);
-        paymentTemplateCommandResource.deleteReference(referenceModel.getTemplateId(), referenceModel.getPartyId(), referenceModel.getShopId());
+        paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal("test"),
+                Collections.singletonList(referenceModel));
+        paymentTemplateCommandResource.deleteReference(new BasicUserPrincipal("test"),
+                referenceModel.getTemplateId(),
+                referenceModel.getPartyId(),
+                referenceModel.getShopId());
 
         await().untilAsserted(() -> {
-            verify(referenceDao, times(2)).insert(any());
-            verify(referenceDao, times(2)).remove((PaymentReferenceModel) any());
+            verify(referenceDao, times(1)).insert(any());
+            verify(referenceDao, times(1)).remove((PaymentReferenceModel) any());
         });
     }
 
@@ -141,8 +153,15 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setIsGlobal(false);
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
-        paymentTemplateCommandResource.insertDefaultReference(Collections.singletonList(referenceModel));
-
+        try (Producer<String, ReferenceInfo> producer = createProducer()) {
+            ProducerRecord<String, ReferenceInfo> producerRecord = new ProducerRecord<>(UNKNOWN_INITIATING_ENTITY, "test",
+                    ReferenceInfo.merchant_info(new MerchantInfo()
+                    .setPartyId("party_id")
+                    .setShopId("shop_id")));
+            producer.send(producerRecord).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         await().untilAsserted(() -> {
             verify(referenceDao, times(1)).insert(any());
         });
@@ -155,8 +174,13 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupReferenceModel.setPartyId("party_id");
         groupReferenceModel.setShopId("shop_id");
 
-        groupCommandResource.insertGroupReference("id", Collections.singletonList(groupReferenceModel));
-        groupCommandResource.removeGroupReference("id", "party_id", "shop_id");
+        groupCommandResource.insertGroupReference(new BasicUserPrincipal("test"),
+                "id",
+                Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference(new BasicUserPrincipal("test"),
+                "id",
+                "party_id",
+                "shop_id");
 
         await().untilAsserted(() -> {
             verify(groupReferenceDao, times(1)).insert(any());

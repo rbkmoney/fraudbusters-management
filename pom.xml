@@ -20,7 +20,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
 
-        <server.port>8081</server.port>
+        <server.port>8080</server.port>
         <exposed.ports>${server.port}</exposed.ports>
         <dockerfile.base.service.tag>57e26d8ee999d7b0b50248c22afc63e6f926d276</dockerfile.base.service.tag>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
@@ -32,8 +32,8 @@
         <db.user>postgres</db.user>
         <db.password>postgres</db.password>
         <db.schema>af</db.schema>
-        <wb.list.proto.version>1.33-554d59c</wb.list.proto.version>
-        <fraudbusters.proto.version>1.57-0ba54ac</fraudbusters.proto.version>
+        <wb.list.proto.version>1.36-feec206</wb.list.proto.version>
+        <fraudbusters.proto.version>1.61-da7ac39</fraudbusters.proto.version>
         <kafka.common.lib.version>0.1.4</kafka.common.lib.version>
         <fraudo.version>0.0.17</fraudo.version>
         <geck.version>0.6.11</geck.version>
@@ -210,6 +210,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <version>4.0.3</version>
@@ -223,13 +228,13 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>1.14.3</version>
+            <version>1.15.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>kafka</artifactId>
-            <version>1.14.3</version>
+            <version>1.15.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

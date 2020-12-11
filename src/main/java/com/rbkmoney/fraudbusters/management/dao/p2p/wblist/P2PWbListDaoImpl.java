@@ -47,15 +47,6 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
     }
 
     @Override
-    public void removeRecord(String id) {
-        log.info("P2PWbListDaoImpl removeRecord id: {}", id);
-        DeleteConditionStep<P2pWbListRecordsRecord> where = getDslContext()
-                .delete(P2P_WB_LIST_RECORDS)
-                .where(P2P_WB_LIST_RECORDS.ID.eq(id));
-        execute(where);
-    }
-
-    @Override
     public void removeRecord(P2pWbListRecords listRecord) {
         log.info("P2PWbListDaoImpl removeRecord listRecord: {}", listRecord);
         DeleteConditionStep<P2pWbListRecordsRecord> where = getDslContext()

@@ -10,6 +10,7 @@ import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.exception.UnknownEventException;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -24,6 +25,7 @@ public class WbListEventListener {
     private final P2PWbListDao p2PWbListDao;
     private final EventToListRecordConverter eventToListRecordConverter;
     private final P2pEventToListRecordConverter p2pEventToListRecordConverter;
+    private final AuditService auditService;
 
     @KafkaListener(topics = "${kafka.topic.wblist.event.sink}", containerFactory = "kafkaListenerContainerFactory")
     public void listen(Event event) throws DaoException {
@@ -31,9 +33,11 @@ public class WbListEventListener {
         if (!event.getRow().isSetId() || event.getRow().getId().isSetPaymentId()) {
             WbListRecords record = eventToListRecordConverter.convert(event);
             applyCommand(event, record, wbListDao);
+            auditService.logEvent(event);
         } else if (event.getRow().getId().isSetP2pId()) {
             P2pWbListRecords p2pWbListRecords = p2pEventToListRecordConverter.convert(event);
             applyCommand(event, p2pWbListRecords, p2PWbListDao);
+            auditService.logEvent(event);
         } else {
             log.error("Unknown event when wbListEventListener listen event: {}", event);
             throw new UnknownEventException(String.format("Unknown event when wbListEventListener listen event: %s", event));

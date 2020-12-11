@@ -20,8 +20,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.Properties;
 
 @Slf4j
@@ -32,14 +32,17 @@ import java.util.Properties;
 public abstract class AbstractKafkaIntegrationTest {
 
     public static final String KAFKA_DOCKER_VERSION = "5.0.1";
+    public static String UNKNOWN_INITIATING_ENTITY = "unknown_initiating_entity";
+
 
     @ClassRule
-    public static KafkaContainer kafka = new KafkaContainer(KAFKA_DOCKER_VERSION)
+    public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_DOCKER_VERSION))
             .withEmbeddedZookeeper()
             .withCommand("bash -c 'echo Waiting for Kafka to be ready... && \n" +
                     "                                cub kafka-ready -b broker:9092 1 60 && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic wb-list-event-sink  && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic wb-list-command && \n" +
+                    "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic " + UNKNOWN_INITIATING_ENTITY + " && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template_p2p && \n" +
                     "                                kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1  --config cleanup.policy=compact --topic template_reference && \n" +

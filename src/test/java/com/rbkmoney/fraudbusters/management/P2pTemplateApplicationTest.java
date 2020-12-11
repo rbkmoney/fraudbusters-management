@@ -12,7 +12,9 @@ import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2PTemplateCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2pGroupCommandResource;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +51,8 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public P2pGroupReferenceDao groupReferenceDao;
     @MockBean
     public P2PServiceSrv.Iface iface;
+    @MockBean
+    public AuditService auditService;
 
     @Autowired
     P2PTemplateCommandResource p2pTemplateCommandResource;
@@ -66,8 +70,8 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         templateModel.setId(id);
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
 
-        p2pTemplateCommandResource.insertTemplate(templateModel);
-        p2pTemplateCommandResource.removeTemplate(id);
+        p2pTemplateCommandResource.insertTemplate(new BasicUserPrincipal("test"), templateModel);
+        p2pTemplateCommandResource.removeTemplate(new BasicUserPrincipal("test"), id);
 
         await().untilAsserted(() -> {
             verify(p2pTemplateDao, times(1)).insert(templateModel);
@@ -82,14 +86,12 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setTemplateId("template_id");
         referenceModel.setIsGlobal(false);
         referenceModel.setIdentityId("identity_id");
-        p2pTemplateCommandResource.insertReferences("id", Collections.singletonList(referenceModel));
-        p2pTemplateCommandResource.deleteReferences("id", Collections.singletonList(referenceModel));
-        p2pTemplateCommandResource.insertReference("id", referenceModel);
-        p2pTemplateCommandResource.deleteReference(referenceModel.getTemplateId(), referenceModel.getIdentityId());
+        p2pTemplateCommandResource.insertReferences(new BasicUserPrincipal("test"), "id", Collections.singletonList(referenceModel));
+        p2pTemplateCommandResource.deleteReference(new BasicUserPrincipal("test"), referenceModel.getTemplateId(), referenceModel.getIdentityId());
 
         await().untilAsserted(() -> {
-            verify(referenceDao, times(2)).insert(any());
-            verify(referenceDao, times(2)).remove((P2pReferenceModel) any());
+            verify(referenceDao, times(1)).insert(any());
+            verify(referenceDao, times(1)).remove((P2pReferenceModel) any());
         });
     }
 
@@ -101,8 +103,8 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         String identity_id = "identity_id";
         groupReferenceModel.setIdentityId(identity_id);
 
-        groupCommandResource.insertGroupReference(id, Collections.singletonList(groupReferenceModel));
-        groupCommandResource.removeGroupReference(id, identity_id);
+        groupCommandResource.insertGroupReference(new BasicUserPrincipal("test"), id, Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference(new BasicUserPrincipal("test"), id, identity_id);
 
         await().untilAsserted(() -> {
             verify(groupReferenceDao, times(1)).insert(any());

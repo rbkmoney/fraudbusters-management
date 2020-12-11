@@ -21,7 +21,6 @@ import static com.rbkmoney.fraudbusters.management.domain.tables.FTemplate.F_TEM
 @Component
 public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
 
-    private static final int LIMIT_TOTAL = 100;
     private final RowMapper<TemplateModel> listRecordRowMapper;
 
     public PaymentTemplateDao(DataSource dataSource) {
@@ -59,20 +58,10 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
 
     @Override
     public TemplateModel getById(String id) {
-        SelectConditionStep<Record2<String, String>> where = getDslContext()
-                .select(F_TEMPLATE.ID, F_TEMPLATE.TEMPLATE)
-                .from(F_TEMPLATE)
+        SelectConditionStep<FTemplateRecord> where = getDslContext()
+                .selectFrom(F_TEMPLATE)
                 .where(F_TEMPLATE.ID.eq(id));
         return fetchOne(where, listRecordRowMapper);
-    }
-
-    @Override
-    public List<TemplateModel> getList(Integer limit) {
-        SelectLimitPercentStep<Record2<String, String>> query = getDslContext()
-                .select(F_TEMPLATE.ID, F_TEMPLATE.TEMPLATE)
-                .from(F_TEMPLATE)
-                .limit(limit != null ? limit : LIMIT_TOTAL);
-        return fetch(query, listRecordRowMapper);
     }
 
     @Override

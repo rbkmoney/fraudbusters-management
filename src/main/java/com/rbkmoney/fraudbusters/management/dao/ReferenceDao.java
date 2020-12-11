@@ -14,10 +14,6 @@ public interface ReferenceDao<T extends ReferenceModel> {
 
     T getById(String id);
 
-    List<T> getList(Integer limit);
-
-    List<T> getListByTemplateId(String templateId, Integer limit);
-
     T getGlobalReference();
 
 }

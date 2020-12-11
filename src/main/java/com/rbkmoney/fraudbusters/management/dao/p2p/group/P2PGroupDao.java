@@ -38,8 +38,8 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
         List<Query> inserts = groupModel.getPriorityTemplates().stream()
                 .map(pair -> getDslContext()
                         .insertInto(P2P_F_GROUP)
-                        .columns(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.PRIORITY, P2P_F_GROUP.TEMPLATE_ID)
-                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId())
+                        .columns(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.PRIORITY, P2P_F_GROUP.TEMPLATE_ID, P2P_F_GROUP.MODIFIED_BY_USER)
+                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId(), groupModel.getModifiedByUser())
                         .onConflict(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.TEMPLATE_ID)
                         .doNothing()
                 ).collect(Collectors.toList());
@@ -74,9 +74,8 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
 
     @Override
     public GroupModel getById(String id) {
-        SelectConditionStep<Record4<Long, String, Long, String>> where = getDslContext()
-                .select(P2P_F_GROUP.ID, P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.PRIORITY, P2P_F_GROUP.TEMPLATE_ID)
-                .from(P2P_F_GROUP)
+        SelectConditionStep<P2pFGroupRecord> where = getDslContext()
+                .selectFrom(P2P_F_GROUP)
                 .where(P2P_F_GROUP.GROUP_ID.eq(id));
         List<PriorityIdModel> list = fetch(where, (rs, rowNum) ->
                 new PriorityIdModel(
@@ -91,8 +90,8 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
 
     @Override
     public List<GroupModel> filterGroup(String filterValue) {
-        SelectJoinStep<Record3<String, String, Long>> from = getDslContext()
-                .select(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.TEMPLATE_ID, P2P_F_GROUP.PRIORITY)
+        SelectJoinStep<Record4<String, String, Long, String>> from = getDslContext()
+                .select(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.TEMPLATE_ID, P2P_F_GROUP.PRIORITY, P2P_F_GROUP.MODIFIED_BY_USER)
                 .from(P2P_F_GROUP);
         SelectConditionStep<Record1<String>> selectGroupsId = null;
         if (!StringUtils.isEmpty(filterValue)) {

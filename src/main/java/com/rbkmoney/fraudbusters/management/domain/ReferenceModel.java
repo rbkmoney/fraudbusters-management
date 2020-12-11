@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReferenceModel {
 
-    protected String id;
-    protected String templateId;
-    protected Boolean isGlobal;
-    protected Boolean isDefault;
-    protected String lastUpdateDate;
+    private String id;
+    private String templateId;
+    private Boolean isGlobal;
+    private Boolean isDefault;
+    private String lastUpdateDate;
+    private String modifiedByUser;
 
 }
