@@ -93,7 +93,7 @@ public class P2pListsResource {
     @GetMapping(value = "/lists/availableListNames")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<List<String>> getAvailableListNames(Principal principal) {
-        log.info("getNames initiator: {}", userInfoService.getUserName(principal));
+        log.info("getAvailableListNames initiator: {}", userInfoService.getUserName(principal));
         return ResponseEntity.ok().body(parametersService.getAvailableListNames());
     }
 }
