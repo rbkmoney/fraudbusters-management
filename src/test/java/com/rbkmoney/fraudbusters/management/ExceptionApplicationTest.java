@@ -15,6 +15,7 @@ import com.rbkmoney.fraudbusters.management.resource.payment.ListsResource;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
+import com.rbkmoney.fraudbusters.management.utils.ParametersService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +51,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ListsResource.class, UserInfoService.class,
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, ListsResource.class, UserInfoService.class,
         WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class, CountInfoUtils.class})
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 public class ExceptionApplicationTest {
