@@ -11,6 +11,7 @@ import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
+import com.rbkmoney.fraudbusters.management.utils.ParametersService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class ListsResource {
     private final WbListRecordToRowConverter wbListRecordToRowConverter;
     private final PaymentCountInfoGenerator paymentCountInfoGenerator;
     private final UserInfoService userInfoService;
+    private final ParametersService parametersService;
 
     @PostMapping(value = "/lists")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
@@ -84,6 +86,13 @@ public class ListsResource {
         log.info("getNames initiator: {} listType: {}", userInfoService.getUserName(principal), listType);
         List<String> currentListNames = wbListDao.getCurrentListNames(listType);
         return ResponseEntity.ok().body(currentListNames);
+    }
+
+    @GetMapping(value = "/lists/availableListNames")
+    @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
+    public ResponseEntity<List<String>> getAvailableListNames(Principal principal) {
+        log.info("getNames initiator: {}", userInfoService.getUserName(principal));
+        return ResponseEntity.ok().body(parametersService.getAvailableListNames());
     }
 
 }

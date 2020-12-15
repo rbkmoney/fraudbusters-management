@@ -12,6 +12,7 @@ import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.P2pCountInfoGenerator;
+import com.rbkmoney.fraudbusters.management.utils.ParametersService;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ public class P2pListsResource {
     private final P2pWbListRecordToRowConverter wbListRecordToRowConverter;
     private final P2pCountInfoGenerator p2pCountInfoGenerator;
     private final UserInfoService userInfoService;
+    private final ParametersService parametersService;
 
     @PostMapping(value = "/lists")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
@@ -88,4 +90,10 @@ public class P2pListsResource {
         return ResponseEntity.ok().body(currentListNames);
     }
 
+    @GetMapping(value = "/lists/availableListNames")
+    @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
+    public ResponseEntity<List<String>> getAvailableListNames(Principal principal) {
+        log.info("getNames initiator: {}", userInfoService.getUserName(principal));
+        return ResponseEntity.ok().body(parametersService.getAvailableListNames());
+    }
 }

@@ -35,6 +35,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -135,6 +136,13 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
                 verify(wbListDao, times(1)).removeRecord((P2pWbListRecords) any());
             });
         }
+    }
+
+    @Test
+    public void getAvailableListNames() {
+        final String[] names = restTemplate.getForObject(
+                "http://localhost:" + port + "/fb-management/v1/p2p/lists/availableListNames", String[].class);
+        Assert.assertEquals(6, names.length);
     }
 
     private Row createRow(ListType listType) {
