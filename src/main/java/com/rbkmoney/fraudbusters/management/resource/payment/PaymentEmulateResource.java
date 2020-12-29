@@ -79,6 +79,9 @@ public class PaymentEmulateResource {
         }
 
         log.info("EmulateResource getRulesByPartyAndShop result: {}", resultModels);
-        return ResponseEntity.ok().body(resultModels);
+        return ResponseEntity.ok().body(resultModels.stream()
+                .filter(model -> model != null)
+                .collect(Collectors.toList())
+        );
     }
 }
