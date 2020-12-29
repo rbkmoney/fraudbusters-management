@@ -25,7 +25,7 @@ public class EventToAuditLogConverter implements Converter<Event, CommandAudit> 
     @Override
     public CommandAudit convert(Event event) {
         CommandAudit model = new CommandAudit();
-        model.setCommandType(CommandType.valueOf(event.getEventType().name()));
+        model.setCommandType(parseEventType(event));
         model.setObjectType(ObjectType.valueOf(event.getRow().getListType().name()));
         try {
             model.setObject(objectMapper.writeValueAsString(event.getRow()));
@@ -36,5 +36,17 @@ public class EventToAuditLogConverter implements Converter<Event, CommandAudit> 
         model.setInitiator(event.getUserInfo() != null && !StringUtils.isEmpty(event.getUserInfo().getUserId()) ?
                 event.getUserInfo().getUserId() : UNKNOWN);
         return model;
+    }
+
+    private CommandType parseEventType(Event event) {
+        switch (event.getEventType()) {
+            case CREATED:
+                return CommandType.CREATE;
+            case DELETED:
+                return CommandType.DELETE;
+            default:
+                log.warn("CommandAudit convert unknown EventType: {}", event.getEventType());
+        }
+        return null;
     }
 }
