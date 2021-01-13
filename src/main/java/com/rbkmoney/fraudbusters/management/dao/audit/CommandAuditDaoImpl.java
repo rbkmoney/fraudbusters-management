@@ -5,7 +5,6 @@ import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.CommandAuditRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;

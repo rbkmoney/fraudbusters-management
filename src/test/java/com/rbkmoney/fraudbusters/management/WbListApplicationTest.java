@@ -29,7 +29,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;

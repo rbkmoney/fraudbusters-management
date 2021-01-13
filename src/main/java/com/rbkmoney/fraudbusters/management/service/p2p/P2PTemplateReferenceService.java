@@ -2,9 +2,7 @@ package com.rbkmoney.fraudbusters.management.service.p2p;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pReferenceToCommandConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
 import com.rbkmoney.fraudbusters.management.utils.P2PReferenceKeyGenerator;
 import lombok.RequiredArgsConstructor;
