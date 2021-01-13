@@ -4,6 +4,7 @@ import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import org.jooq.SortOrder;
@@ -20,7 +21,7 @@ import java.util.UUID;
 import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
 import static org.junit.Assert.*;
 
-@ContextConfiguration(classes = {ReferenceDaoImpl.class})
+@ContextConfiguration(classes = {ReferenceDaoImpl.class, DefaultPaymentReferenceDaoImpl.class})
 public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY_ID = "party_id";
@@ -31,12 +32,14 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
     @Autowired
     PaymentReferenceDao referenceDao;
+    @Autowired
+    DefaultPaymentReferenceDaoImpl defaultReferenceDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @After
-    public void cleanup(){
+    public void cleanup() {
         jdbcTemplate.execute("TRUNCATE " + F_REFERENCE.getSchema().getName() + "." + F_REFERENCE.getName());
     }
 
@@ -64,7 +67,6 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceModel.setShopId(SHOP_ID);
         referenceModel.setPartyId(PARTY_ID);
         referenceModel.setIsGlobal(false);
-        referenceModel.setIsDefault(false);
         return referenceModel;
     }
 
@@ -100,13 +102,9 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         byId = referenceDao.getById(firstGlobal);
         assertNull(byId);
 
-        List<PaymentReferenceModel> listByTFilters = referenceDao.getListByTFilters(PARTY_ID, null, null, null, 10);
+        List<PaymentReferenceModel> listByTFilters = referenceDao.getListByTFilters(PARTY_ID, null, 10);
 
         assertEquals(2, listByTFilters.size());
-
-        listByTFilters = referenceDao.getListByTFilters(null, null, true, false, 10);
-
-        assertEquals(1, listByTFilters.size());
     }
 
     @Test
@@ -114,17 +112,24 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         String id = "id";
         PaymentReferenceModel referenceModel = createReference(id);
         referenceDao.insert(referenceModel);
-        referenceDao.markReferenceAsDefault(id);
+        DefaultPaymentReferenceModel defaultPaymentReferenceModel = new DefaultPaymentReferenceModel();
+        defaultPaymentReferenceModel.setId(id);
+        defaultPaymentReferenceModel.setPartyId(referenceModel.getPartyId());
+        defaultPaymentReferenceModel.setShopId(referenceModel.getShopId());
+        defaultPaymentReferenceModel.setTemplateId("test");
+        defaultReferenceDao.insert(defaultPaymentReferenceModel);
+
         List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
                 null,
                 null,
                 null,
                 5,
                 null,
-                null), false, false);
+                null));
         System.out.println(paymentReferenceModels);
-        PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
-        PaymentReferenceModel byId = referenceDao.getById(id);
+        DefaultPaymentReferenceModel defaultReference = defaultReferenceDao.getByPartyAndShop(referenceModel.getPartyId(),
+                referenceModel.getShopId());
+        DefaultPaymentReferenceModel byId = defaultReferenceDao.getById(id);
         assertEquals(byId, defaultReference);
     }
 
@@ -137,14 +142,12 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         referenceModel.setId(SECOND + id);
         referenceModel.setShopId(SECOND + SHOP_ID);
         referenceModel.setTemplateId(SECOND + TEMPLATE_ID);
-        referenceModel.setIsDefault(true);
         referenceDao.insert(referenceModel);
 
         referenceModel.setId(THIRD + id);
         referenceModel.setShopId(THIRD + SHOP_ID);
         referenceModel.setTemplateId(THIRD + TEMPLATE_ID);
         referenceModel.setIsGlobal(true);
-        referenceModel.setIsDefault(false);
         referenceDao.insert(referenceModel);
 
         List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
@@ -153,7 +156,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 5,
                 null,
-                null), false, false);
+                null));
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(3, paymentReferenceModels.size());
 
@@ -164,7 +167,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 5,
                 null,
-                null), false, false);
+                null));
 
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
@@ -176,7 +179,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 5,
                 null,
-                null), false, false);
+                null));
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(3, paymentReferenceModels.size());
 
@@ -187,35 +190,9 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 5,
                 null,
-                null), false, false);
+                null));
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
-
-        //check global
-        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
-                null,
-                null,
-                null,
-                5,
-                null,
-                null), true, false);
-
-        assertFalse(paymentReferenceModels.isEmpty());
-        assertEquals(1, paymentReferenceModels.size());
-        assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
-
-        //check default
-        paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
-                null,
-                null,
-                null,
-                5,
-                null,
-                null), false, true);
-
-        assertFalse(paymentReferenceModels.isEmpty());
-        assertEquals(1, paymentReferenceModels.size());
-        assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
         //check sort
         paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
@@ -224,7 +201,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 5,
                 "template_id",
-                SortOrder.ASC), false, false);
+                SortOrder.ASC));
         assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
         paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
@@ -233,7 +210,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 5,
                 "template_id",
-                SortOrder.DESC), false, false);
+                SortOrder.DESC));
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         //check paging
@@ -243,7 +220,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 1,
                 null,
-                null), false, false);
+                null));
         assertEquals(SECOND + id, paymentReferenceModels.get(0).getId());
 
         paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
@@ -252,7 +229,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 paymentReferenceModels.get(0).getTemplateId(),
                 1,
                 null,
-                null), false, false);
+                null));
         assertEquals(id, paymentReferenceModels.get(0).getId());
 
         paymentReferenceModels = referenceDao.filterReferences(new FilterRequest(
@@ -261,7 +238,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 paymentReferenceModels.get(0).getTemplateId(),
                 1,
                 null,
-                null), false, false);
+                null));
         assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         paymentReferenceModels

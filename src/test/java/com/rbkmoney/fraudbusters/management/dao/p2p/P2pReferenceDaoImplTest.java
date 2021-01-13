@@ -113,7 +113,6 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
         referenceModel.setId(SECOND + id);
         referenceModel.setIdentityId(SECOND + IDENTITY_ID);
-        referenceModel.setIsDefault(true);
         p2pReferenceDao.insert(referenceModel);
 
         referenceModel.setId(THIRD + id);
@@ -166,18 +165,6 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null), false);
         assertFalse(paymentReferenceModels.isEmpty());
         assertEquals(1, paymentReferenceModels.size());
-
-        //check global
-        paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(
-                null,
-                null,
-                null,
-                5,
-                null,
-                null), true);
-        assertFalse(paymentReferenceModels.isEmpty());
-        assertEquals(1, paymentReferenceModels.size());
-        assertEquals(THIRD + id, paymentReferenceModels.get(0).getId());
 
         //check sort
         paymentReferenceModels = p2pReferenceDao.filterReferences(new FilterRequest(

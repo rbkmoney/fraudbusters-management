@@ -3,9 +3,11 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 import com.rbkmoney.damsel.fraudbusters.*;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
+import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.ErrorTemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,6 +38,7 @@ public class PaymentTemplateCommandResource {
     private final TemplateModelToCommandConverter templateModelToCommandConverter;
     private final ReferenceToCommandConverter referenceToCommandConverter;
     private final PaymentReferenceDao referenceDao;
+    private final DefaultPaymentReferenceDaoImpl defaultReferenceDao;
     private final ValidationTemplateService paymentValidationService;
     private final UserInfoService userInfoService;
 
@@ -102,13 +106,23 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
-    //todo подумать над рефакторингом
     @PostMapping(value = "/template/{id}/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> markReferenceAsDefault(Principal principal,
-                                                         @PathVariable(value = "id") String id) {
-        log.info("markReferenceAsDefault initiator: {} id: {}", userInfoService.getUserName(principal), id);
-        referenceDao.markReferenceAsDefault(id);
+    public ResponseEntity<String> insertDefaultReference(Principal principal,
+                                                         @Validated @RequestBody DefaultPaymentReferenceModel referenceModel) {
+        log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal), referenceModel);
+        String uid = UUID.randomUUID().toString();
+        referenceModel.setId(uid);
+        referenceModel.setModifiedByUser(userInfoService.getUserName(principal));
+        defaultReferenceDao.insert(referenceModel);
+        return ResponseEntity.ok().body(uid);
+    }
+
+    @DeleteMapping(value = "/template/{id}/default")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<String> removeDefaultReference(Principal principal, @PathVariable(value = "id") String id) {
+        log.info("removeDefaultReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
+        defaultReferenceDao.remove(id);
         return ResponseEntity.ok().body(id);
     }
 

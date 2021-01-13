@@ -27,14 +27,11 @@ public class ReferenceQueryResource {
 
     @GetMapping(value = "/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(Principal principal,
-                                                                           FilterRequest filterRequest,
-                                                                           @Validated @RequestParam(required = false) Boolean isGlobal,
-                                                                           @Validated @RequestParam(required = false) Boolean isDefault) {
-        log.info("filterReferences initiator: {} filterRequest: {}, isGlobal: {}, isDefault: {}",
-                userInfoService.getUserName(principal), filterRequest, isGlobal, isDefault);
-        List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest, isGlobal, isDefault);
-        Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue(), isGlobal, isDefault);
+    public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(Principal principal, FilterRequest filterRequest) {
+        log.info("filterReferences initiator: {} filterRequest: {}",
+                userInfoService.getUserName(principal), filterRequest);
+        List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest);
+        Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterPaymentReferenceResponse.builder()
                 .count(count)
                 .referenceModels(paymentReferenceModels)

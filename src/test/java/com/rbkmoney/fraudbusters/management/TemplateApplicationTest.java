@@ -4,14 +4,17 @@ import com.rbkmoney.damsel.fraudbusters.MerchantInfo;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ReferenceInfo;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
+import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.domain.DefaultReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.resource.payment.GroupCommandResource;
@@ -57,6 +60,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public WbListDao wbListDao;
     @MockBean
     public PaymentReferenceDao referenceDao;
+    @MockBean
+    public DefaultPaymentReferenceDaoImpl defaultReferenceDao;
     @MockBean
     public PaymentGroupReferenceDao groupReferenceDao;
     @MockBean
@@ -132,18 +137,16 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         });
     }
 
-    private PaymentReferenceModel buildDefaultReference() {
-        PaymentReferenceModel paymentReferenceModel = new PaymentReferenceModel();
+    private DefaultPaymentReferenceModel buildDefaultReference() {
+        DefaultPaymentReferenceModel paymentReferenceModel = new DefaultPaymentReferenceModel();
         paymentReferenceModel.setTemplateId("default_template_id");
-        paymentReferenceModel.setIsGlobal(false);
-        paymentReferenceModel.setIsDefault(true);
         return paymentReferenceModel;
     }
 
     @Test
     public void defaultReferenceTest() throws InterruptedException {
 
-        when(referenceDao.getDefaultReference()).thenReturn(buildDefaultReference());
+        when(defaultReferenceDao.getByPartyAndShop(any(), any())).thenReturn(buildDefaultReference());
 
         PaymentReferenceModel referenceModel = new PaymentReferenceModel();
         referenceModel.setId("id");
