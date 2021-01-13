@@ -90,7 +90,6 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
         return fetchOne(query, listRecordRowMapper);
     }
 
-
     @Override
     public List<PaymentReferenceModel> getByPartyAndShop(String partyId, String shopId) {
         Query query = getDslContext().selectFrom(F_REFERENCE)

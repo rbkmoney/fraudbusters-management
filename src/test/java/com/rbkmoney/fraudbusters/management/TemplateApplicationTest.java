@@ -4,7 +4,6 @@ import com.rbkmoney.damsel.fraudbusters.MerchantInfo;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ReferenceInfo;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
-import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
@@ -15,7 +14,6 @@ import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.resource.payment.GroupCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentTemplateCommandResource;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
@@ -27,13 +25,14 @@ import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -122,13 +121,12 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setIsGlobal(false);
         referenceModel.setPartyId("party_id");
         referenceModel.setShopId("shop_id");
-        paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal("test"),
-                Collections.singletonList(referenceModel));
-        paymentTemplateCommandResource.deleteReference(new BasicUserPrincipal("test"),
-                referenceModel.getTemplateId(),
-                referenceModel.getPartyId(),
-                referenceModel.getShopId());
 
+        final ResponseEntity<List<String>> references = paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal("test"),
+                Collections.singletonList(referenceModel));
+
+        when(referenceDao.getById(references.getBody().get(0))).thenReturn(referenceModel);
+        paymentTemplateCommandResource.removeReference(new BasicUserPrincipal("test"), references.getBody().get(0));
         await().untilAsserted(() -> {
             verify(referenceDao, times(1)).insert(any());
             verify(referenceDao, times(1)).remove((PaymentReferenceModel) any());

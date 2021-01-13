@@ -2,8 +2,6 @@ package com.rbkmoney.fraudbusters.management.dao;
 
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 
-import java.util.List;
-
 public interface ReferenceDao<T extends ReferenceModel> {
 
     void insert(T referenceModel);
