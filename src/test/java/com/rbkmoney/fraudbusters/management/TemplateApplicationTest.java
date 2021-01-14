@@ -10,7 +10,6 @@ import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupRefere
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
-import com.rbkmoney.fraudbusters.management.domain.DefaultReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
@@ -52,6 +51,11 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = FraudbustersManagementApplication.class)
 public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
+    public static final String PARTY_ID = "party_id";
+    public static final String SHOP_ID = "shop_id";
+    public static final String TEST = "test";
+    public static final String ID = "id";
+
     @MockBean
     public PaymentTemplateDao paymentTemplateDao;
     @MockBean
@@ -76,16 +80,16 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     GroupCommandResource groupCommandResource;
 
     @Test
-    public void templateTest() throws InterruptedException, TException {
+    public void templateTest() throws TException {
         when(iface.validateCompilationTemplate(anyList())).thenReturn(new ValidateTemplateResponse()
                 .setErrors(List.of()));
 
         TemplateModel templateModel = new TemplateModel();
-        String id = "id";
+        String id = ID;
         templateModel.setId(id);
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
-        paymentTemplateCommandResource.insertTemplate(new BasicUserPrincipal("test"), templateModel);
-        paymentTemplateCommandResource.removeTemplate(new BasicUserPrincipal("test"), id);
+        paymentTemplateCommandResource.insertTemplate(new BasicUserPrincipal(TEST), templateModel);
+        paymentTemplateCommandResource.removeTemplate(new BasicUserPrincipal(TEST), id);
 
         await().untilAsserted(() -> {
             verify(paymentTemplateDao, times(1)).insert(templateModel);
@@ -94,14 +98,14 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void groupTest() throws InterruptedException, IOException {
+    public void groupTest() throws IOException {
         GroupModel groupModel = new GroupModel();
-        groupModel.setGroupId("id");
-        groupModel.setPriorityTemplates(List.of(new PriorityIdModel(1L, "test", null)));
+        groupModel.setGroupId(ID);
+        groupModel.setPriorityTemplates(List.of(new PriorityIdModel(1L, TEST, null)));
         checkSerialization(groupModel);
 
-        groupCommandResource.insertGroup(new BasicUserPrincipal("test"), groupModel);
-        groupCommandResource.removeGroup(new BasicUserPrincipal("test"), groupModel.getGroupId());
+        groupCommandResource.insertGroup(new BasicUserPrincipal(TEST), groupModel);
+        groupCommandResource.removeGroup(new BasicUserPrincipal(TEST), groupModel.getGroupId());
 
         await().untilAsserted(() -> {
             verify(paymentGroupDao, times(1)).insert(groupModel);
@@ -118,19 +122,19 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void referenceTest() throws InterruptedException {
+    public void referenceTest() {
         PaymentReferenceModel referenceModel = new PaymentReferenceModel();
-        referenceModel.setId("id");
+        referenceModel.setId(ID);
         referenceModel.setTemplateId("template_id");
         referenceModel.setIsGlobal(false);
-        referenceModel.setPartyId("party_id");
-        referenceModel.setShopId("shop_id");
+        referenceModel.setPartyId(PARTY_ID);
+        referenceModel.setShopId(SHOP_ID);
 
-        final ResponseEntity<List<String>> references = paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal("test"),
+        final ResponseEntity<List<String>> references = paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST),
                 Collections.singletonList(referenceModel));
 
         when(referenceDao.getById(references.getBody().get(0))).thenReturn(referenceModel);
-        paymentTemplateCommandResource.removeReference(new BasicUserPrincipal("test"), references.getBody().get(0));
+        paymentTemplateCommandResource.removeReference(new BasicUserPrincipal(TEST), references.getBody().get(0));
         await().untilAsserted(() -> {
             verify(referenceDao, times(1)).insert(any());
             verify(referenceDao, times(1)).remove((PaymentReferenceModel) any());
@@ -144,20 +148,20 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void defaultReferenceTest() throws InterruptedException {
-
+    public void defaultReferenceTest() {
         when(defaultReferenceDao.getByPartyAndShop(any(), any())).thenReturn(buildDefaultReference());
 
         PaymentReferenceModel referenceModel = new PaymentReferenceModel();
-        referenceModel.setId("id");
+        referenceModel.setId(ID);
         referenceModel.setIsGlobal(false);
-        referenceModel.setPartyId("party_id");
-        referenceModel.setShopId("shop_id");
+        referenceModel.setPartyId(PARTY_ID);
+        referenceModel.setShopId(SHOP_ID);
         try (Producer<String, ReferenceInfo> producer = createProducer()) {
-            ProducerRecord<String, ReferenceInfo> producerRecord = new ProducerRecord<>(UNKNOWN_INITIATING_ENTITY, "test",
+            ProducerRecord<String, ReferenceInfo> producerRecord = new ProducerRecord<>(UNKNOWN_INITIATING_ENTITY, TEST,
                     ReferenceInfo.merchant_info(new MerchantInfo()
-                    .setPartyId("party_id")
-                    .setShopId("shop_id")));
+                            .setPartyId(PARTY_ID)
+                            .setShopId(SHOP_ID))
+            );
             producer.send(producerRecord).get();
         } catch (Exception e) {
             e.printStackTrace();
@@ -168,19 +172,14 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void groupReferenceTest() throws InterruptedException {
+    public void groupReferenceTest() {
         PaymentGroupReferenceModel groupReferenceModel = new PaymentGroupReferenceModel();
-        groupReferenceModel.setId("id");
-        groupReferenceModel.setPartyId("party_id");
-        groupReferenceModel.setShopId("shop_id");
+        groupReferenceModel.setId(ID);
+        groupReferenceModel.setPartyId(PARTY_ID);
+        groupReferenceModel.setShopId(SHOP_ID);
 
-        groupCommandResource.insertGroupReference(new BasicUserPrincipal("test"),
-                "id",
-                Collections.singletonList(groupReferenceModel));
-        groupCommandResource.removeGroupReference(new BasicUserPrincipal("test"),
-                "id",
-                "party_id",
-                "shop_id");
+        groupCommandResource.insertGroupReference(new BasicUserPrincipal(TEST), ID, Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference(new BasicUserPrincipal(TEST), ID, PARTY_ID, SHOP_ID);
 
         await().untilAsserted(() -> {
             verify(groupReferenceDao, times(1)).insert(any());

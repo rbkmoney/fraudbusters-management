@@ -26,8 +26,7 @@ import java.util.Properties;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {KafkaConfig.class},
-        initializers = AbstractKafkaIntegrationTest.Initializer.class)
+@ContextConfiguration(classes = {KafkaConfig.class}, initializers = AbstractKafkaIntegrationTest.Initializer.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public abstract class AbstractKafkaIntegrationTest {
 
