@@ -1,6 +1,9 @@
 package com.rbkmoney.fraudbusters.management.dao;
 
 import com.rbkmoney.fraudbusters.management.domain.DefaultReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+
+import java.util.List;
 
 public interface DefaultReferenceDao<T extends DefaultReferenceModel> {
 
@@ -8,8 +11,9 @@ public interface DefaultReferenceDao<T extends DefaultReferenceModel> {
 
     void remove(String id);
 
-    void remove(T referenceModel);
-
     T getById(String id);
 
+    List<T> filterReferences(FilterRequest filterRequest);
+
+    Integer countFilterModel(String searchValue);
 }
