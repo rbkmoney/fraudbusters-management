@@ -69,13 +69,13 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao implements Defau
     }
 
     public DefaultPaymentReferenceModel getByPartyAndShop(String partyId, String shopId) {
-        Condition condition = DSL.trueCondition();
         Query query = getDslContext()
                 .selectFrom(F_DEFAULT_REF)
-                .where(appendConditions(condition, Operator.AND,
-                        new ConditionParameterSource()
-                                .addValue(F_DEFAULT_REF.PARTY_ID, partyId, EQUALS)
-                                .addValue(F_DEFAULT_REF.SHOP_ID, shopId, EQUALS)));
+                .where(partyId == null ? F_DEFAULT_REF.PARTY_ID.isNull() :
+                        appendConditions(DSL.trueCondition(), Operator.AND,
+                                new ConditionParameterSource()
+                                        .addValue(F_DEFAULT_REF.PARTY_ID, partyId, EQUALS)
+                                        .addValue(F_DEFAULT_REF.SHOP_ID, shopId, EQUALS)));
         return fetchOne(query, listRecordRowMapper);
     }
 }

@@ -141,12 +141,6 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         });
     }
 
-    private DefaultPaymentReferenceModel buildDefaultReference() {
-        DefaultPaymentReferenceModel paymentReferenceModel = new DefaultPaymentReferenceModel();
-        paymentReferenceModel.setTemplateId("default_template_id");
-        return paymentReferenceModel;
-    }
-
     @Test
     public void defaultReferenceTest() {
         when(defaultReferenceDao.getByPartyAndShop(any(), any())).thenReturn(buildDefaultReference());
@@ -169,6 +163,12 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         await().untilAsserted(() -> {
             verify(referenceDao, times(1)).insert(any());
         });
+    }
+
+    private DefaultPaymentReferenceModel buildDefaultReference() {
+        DefaultPaymentReferenceModel paymentReferenceModel = new DefaultPaymentReferenceModel();
+        paymentReferenceModel.setTemplateId("default_template_id");
+        return paymentReferenceModel;
     }
 
     @Test
