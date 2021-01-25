@@ -70,15 +70,13 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
     }
 
     @Override
-    public List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, Boolean isDefault, Integer limit) {
+    public List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Integer limit) {
         Condition condition = DSL.trueCondition();
         Query query = getDslContext().selectFrom(F_REFERENCE)
                 .where(appendConditions(condition, Operator.AND,
                         new ConditionParameterSource()
                                 .addValue(F_REFERENCE.PARTY_ID, partyId, EQUALS)
-                                .addValue(F_REFERENCE.SHOP_ID, shopId, EQUALS)
-                                .addValue(F_REFERENCE.IS_GLOBAL, isGlobal, EQUALS)
-                                .addValue(F_REFERENCE.IS_DEFAULT, isDefault, EQUALS)))
+                                .addValue(F_REFERENCE.SHOP_ID, shopId, EQUALS)))
                 .limit(limit != null ? limit : LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
@@ -90,7 +88,6 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
         return fetchOne(query, listRecordRowMapper);
     }
 
-
     @Override
     public List<PaymentReferenceModel> getByPartyAndShop(String partyId, String shopId) {
         Query query = getDslContext().selectFrom(F_REFERENCE)
@@ -101,23 +98,7 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
     }
 
     @Override
-    public PaymentReferenceModel getDefaultReference() {
-        Query query = getDslContext()
-                .selectFrom(F_REFERENCE)
-                .where(F_REFERENCE.IS_DEFAULT.eq(true));
-        return fetchOne(query, listRecordRowMapper);
-    }
-
-    @Override
-    public void markReferenceAsDefault(String id) {
-        Query query = getDslContext().update(F_REFERENCE)
-                .set(F_REFERENCE.IS_DEFAULT, true)
-                .where(F_REFERENCE.ID.eq(id));
-        executeOne(query);
-    }
-
-    @Override
-    public List<PaymentReferenceModel> filterReferences(FilterRequest filterRequest, boolean isGlobal, boolean isDefault) {
+    public List<PaymentReferenceModel> filterReferences(FilterRequest filterRequest) {
         SelectWhereStep<FReferenceRecord> from = getDslContext()
                 .selectFrom(F_REFERENCE);
         Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_REFERENCE.TEMPLATE_ID : F_REFERENCE.field(filterRequest.getSortBy(), String.class);
@@ -126,7 +107,6 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
                 F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
                         .or(F_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue()))
                         .or(F_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue())));
-        whereQuery = addCheckGlobalDefaultIfExist(isGlobal, isDefault, whereQuery);
         SelectSeekStep2<FReferenceRecord, String, String> fReferenceRecords = addSortCondition(
                 F_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -140,19 +120,8 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
         );
     }
 
-    private <T extends Record> SelectConditionStep<T> addCheckGlobalDefaultIfExist(boolean isGlobal, boolean isDefault,
-                                                                                   SelectConditionStep<T> whereQuery) {
-        if (isDefault) {
-            whereQuery = whereQuery.and(F_REFERENCE.IS_DEFAULT.eq(isDefault));
-        }
-        if (isGlobal) {
-            whereQuery = whereQuery.and(F_REFERENCE.IS_GLOBAL.eq(isGlobal));
-        }
-        return whereQuery;
-    }
-
     @Override
-    public Integer countFilterModel(String filterValue, Boolean isGlobal, Boolean isDefault) {
+    public Integer countFilterModel(String filterValue) {
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(F_REFERENCE)
@@ -161,7 +130,6 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
                                 .or(F_REFERENCE.PARTY_ID.like(filterValue)
                                         .or(F_REFERENCE.SHOP_ID.like(filterValue))) :
                         DSL.noCondition());
-        where = addCheckGlobalDefaultIfExist(isGlobal, isDefault, where);
         return fetchOne(where, Integer.class);
     }
 

@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReferenceModel {
+public class DefaultReferenceModel {
 
     private String id;
     private String templateId;
-    private Boolean isGlobal;
     private String lastUpdateDate;
     private String modifiedByUser;
 

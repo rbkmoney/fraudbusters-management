@@ -1,7 +1,10 @@
 package com.rbkmoney.fraudbusters.management.resource.p2p;
 
+import com.rbkmoney.fraudbusters.management.dao.p2p.DefaultP2pReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
+import com.rbkmoney.fraudbusters.management.domain.p2p.DefaultP2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterDefaultP2pReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterP2pReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
@@ -24,6 +27,7 @@ import java.util.List;
 public class P2pReferenceQueryResource {
 
     private final P2pReferenceDao referenceDao;
+    private final DefaultP2pReferenceDaoImpl defaultP2pReferenceDao;
     private final UserInfoService userInfoService;
 
     @GetMapping(value = "/reference/filter")
@@ -35,6 +39,19 @@ public class P2pReferenceQueryResource {
         List<P2pReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest, isGlobal);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue(), isGlobal);
         return ResponseEntity.ok().body(FilterP2pReferenceResponse.builder()
+                .count(count)
+                .referenceModels(paymentReferenceModels)
+                .build());
+    }
+
+    @GetMapping(value = "/reference/default/filter")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<FilterDefaultP2pReferenceResponse> filterDefaultReferences(Principal principal,
+                                                                                     FilterRequest filterRequest) {
+        log.info("filterReferences initiator: {}  filterRequest: {}", userInfoService.getUserName(principal), filterRequest);
+        List<DefaultP2pReferenceModel> paymentReferenceModels = defaultP2pReferenceDao.filterReferences(filterRequest);
+        Integer count = defaultP2pReferenceDao.countFilterModel(filterRequest.getSearchValue());
+        return ResponseEntity.ok().body(FilterDefaultP2pReferenceResponse.builder()
                 .count(count)
                 .referenceModels(paymentReferenceModels)
                 .build());

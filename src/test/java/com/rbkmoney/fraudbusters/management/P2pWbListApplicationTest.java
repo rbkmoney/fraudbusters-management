@@ -35,7 +35,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -158,7 +157,7 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     @WithMockUser("customUsername")
-    public void executeTest() throws Exception {
+    public void executeTest() {
         doNothing().when(wbListDao).saveListRecord(any());
 
         P2pListRecord record = new P2pListRecord();
@@ -192,12 +191,12 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
             List<ChangeCommand> eventList = consumeCommand(consumer);
 
             Assert.assertEquals(1, eventList.size());
-            Assert.assertEquals(eventList.get(0).command, Command.DELETE);
-            Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.white);
+            Assert.assertEquals(Command.DELETE, eventList.get(0).command);
+            Assert.assertEquals(ListType.white, eventList.get(0).getRow().getListType());
         }
     }
 
-    private void insertToBlackList(P2pListRecord... values) throws Exception {
+    private void insertToBlackList(P2pListRecord... values) {
         List<P2pCountInfo> collect = List.of(values).stream()
                 .map(p2pListRecord -> {
                     P2pCountInfo p2pCountInfo = new P2pCountInfo();
@@ -210,13 +209,12 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
         p2pListRowsInsertRequest.setRecords(collect);
         HttpEntity<P2pListRowsInsertRequest> entity = new HttpEntity<>(p2pListRowsInsertRequest,
                 new org.springframework.http.HttpHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:" + port + "/fb-management/v1/p2p/lists",
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/p2p/lists",
                 HttpMethod.POST, entity, String.class);
         System.out.println(response);
     }
 
-    private void deleteFromWhiteList(String id) throws Exception {
+    private void deleteFromWhiteList(String id) {
         restTemplate.delete("http://localhost:" + port + "/fb-management/v1/p2p/lists/" + id);
     }
 

@@ -3,8 +3,10 @@ package com.rbkmoney.fraudbusters.management.resource.p2p;
 import com.rbkmoney.damsel.fraudbusters.*;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pReferenceToCommandConverter;
+import com.rbkmoney.fraudbusters.management.dao.p2p.DefaultP2pReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.ErrorTemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
+import com.rbkmoney.fraudbusters.management.domain.p2p.DefaultP2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,6 +39,7 @@ public class P2PTemplateCommandResource {
     private final P2pReferenceToCommandConverter referenceToCommandConverter;
     private final ValidationTemplateService p2PValidationService;
     private final UserInfoService userInfoService;
+    private final DefaultP2pReferenceDaoImpl defaultReferenceDao;
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -100,6 +104,26 @@ public class P2PTemplateCommandResource {
                 .map(p2PTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
+    }
+
+    @PostMapping(value = "/template/{id}/default")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<String> insertDefaultReference(Principal principal,
+                                                         @Validated @RequestBody DefaultP2pReferenceModel referenceModel) {
+        log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal), referenceModel);
+        String uid = UUID.randomUUID().toString();
+        referenceModel.setId(uid);
+        referenceModel.setModifiedByUser(userInfoService.getUserName(principal));
+        defaultReferenceDao.insert(referenceModel);
+        return ResponseEntity.ok().body(uid);
+    }
+
+    @DeleteMapping(value = "/template/{id}/default")
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<String> removeDefaultReference(Principal principal, @PathVariable(value = "id") String id) {
+        log.info("removeDefaultReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
+        defaultReferenceDao.remove(id);
+        return ResponseEntity.ok().body(id);
     }
 
     @DeleteMapping(value = "/template/{id}")

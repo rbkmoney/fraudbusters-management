@@ -1,9 +1,8 @@
 package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.fraudbusters.*;
-import com.rbkmoney.dao.DaoException;
-import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
+import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +15,17 @@ import org.springframework.stereotype.Component;
 public class InitiatingEntityEventSinkListener {
 
     public static final String FRAUDBUSTERS = "fraudbusters";
+
     private final PaymentTemplateReferenceService paymentTemplateReferenceService;
-    private final PaymentReferenceDao referenceDao;
+    private final DefaultPaymentReferenceDaoImpl referenceDao;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.unknown-initiating-entity}",
             containerFactory = "kafkaReferenceInfoListenerContainerFactory")
-    public void listen(ReferenceInfo event) throws DaoException {
+    public void listen(ReferenceInfo event) {
         log.info("InitiatingEntityEventSinkListener event: {}", event);
-        PaymentReferenceModel defaultReference = referenceDao.getDefaultReference();
+        DefaultPaymentReferenceModel defaultReference = referenceDao.getByPartyAndShop(
+                event.getMerchantInfo().getPartyId(),
+                event.getMerchantInfo().getShopId());
         if (defaultReference == null) {
             log.warn("default reference for this type event: {} not found", event);
             return;

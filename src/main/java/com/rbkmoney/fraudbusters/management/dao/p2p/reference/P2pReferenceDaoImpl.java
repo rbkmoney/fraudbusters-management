@@ -56,8 +56,7 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
                 .delete(P2P_F_REFERENCE)
                 .where(appendConditions(condition, Operator.AND,
                         new ConditionParameterSource()
-                                .addValue(P2P_F_REFERENCE.IDENTITY_ID, referenceModel.getIdentityId(), EQUALS)
-                                .addValue(P2P_F_REFERENCE.IS_GLOBAL, referenceModel.getIsGlobal(), EQUALS)));
+                                .addValue(P2P_F_REFERENCE.IDENTITY_ID, referenceModel.getIdentityId(), EQUALS)));
         execute(where);
     }
 
@@ -99,18 +98,9 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
                 from.where(DSL.trueCondition()) : from.where(
                 P2P_F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
                         .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterRequest.getSearchValue())));
-        whereQuery = addCheckGlobalDefaultIfExist(isGlobal, whereQuery);
         SelectSeekStep2<P2pFReferenceRecord, String, String> fReferenceRecords = addSortCondition(
                 P2P_F_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSortFieldValue(), filterRequest.getSize(), fReferenceRecords), listRecordRowMapper);
-    }
-
-    private <T extends Record> SelectConditionStep<T> addCheckGlobalDefaultIfExist(boolean isGlobal,
-                                                                                   SelectConditionStep<T> whereQuery) {
-        if (isGlobal) {
-            whereQuery = whereQuery.and(P2P_F_REFERENCE.IS_GLOBAL.eq(isGlobal));
-        }
-        return whereQuery;
     }
 
     @Override
@@ -119,7 +109,6 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
                 .selectCount()
                 .from(P2P_F_REFERENCE)
                 .where(referenceFullFieldSearchCondition(searchValue, isGlobal));
-        where = addCheckGlobalDefaultIfExist(isGlobal, where);
         return fetchOne(where, Integer.class);
     }
 

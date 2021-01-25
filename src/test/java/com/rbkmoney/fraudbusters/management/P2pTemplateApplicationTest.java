@@ -39,6 +39,11 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = FraudbustersManagementApplication.class)
 public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
+    public static final String TEMPLATE_ID = "template_id";
+    public static final String IDENTITY_ID = "identity_id";
+    public static final String TEST = "test";
+    public static final String ID = "id";
+
     @MockBean
     public P2pTemplateDao p2pTemplateDao;
     @MockBean
@@ -61,17 +66,17 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     P2pGroupCommandResource groupCommandResource;
 
     @Test
-    public void templateTest() throws InterruptedException, TException {
+    public void templateTest() throws TException {
         when(iface.validateCompilationTemplate(anyList())).thenReturn(new ValidateTemplateResponse()
                 .setErrors(List.of()));
 
         TemplateModel templateModel = new TemplateModel();
-        String id = "id";
+        String id = ID;
         templateModel.setId(id);
         templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
 
-        p2pTemplateCommandResource.insertTemplate(new BasicUserPrincipal("test"), templateModel);
-        p2pTemplateCommandResource.removeTemplate(new BasicUserPrincipal("test"), id);
+        p2pTemplateCommandResource.insertTemplate(new BasicUserPrincipal(TEST), templateModel);
+        p2pTemplateCommandResource.removeTemplate(new BasicUserPrincipal(TEST), id);
 
         await().untilAsserted(() -> {
             verify(p2pTemplateDao, times(1)).insert(templateModel);
@@ -80,14 +85,14 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void referenceTest() throws InterruptedException {
+    public void referenceTest() {
         P2pReferenceModel referenceModel = new P2pReferenceModel();
-        referenceModel.setId("id");
-        referenceModel.setTemplateId("template_id");
+        referenceModel.setId(ID);
+        referenceModel.setTemplateId(TEMPLATE_ID);
         referenceModel.setIsGlobal(false);
-        referenceModel.setIdentityId("identity_id");
-        p2pTemplateCommandResource.insertReferences(new BasicUserPrincipal("test"), "id", Collections.singletonList(referenceModel));
-        p2pTemplateCommandResource.deleteReference(new BasicUserPrincipal("test"), referenceModel.getTemplateId(), referenceModel.getIdentityId());
+        referenceModel.setIdentityId(IDENTITY_ID);
+        p2pTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST), ID, Collections.singletonList(referenceModel));
+        p2pTemplateCommandResource.deleteReference(new BasicUserPrincipal(TEST), referenceModel.getTemplateId(), referenceModel.getIdentityId());
 
         await().untilAsserted(() -> {
             verify(referenceDao, times(1)).insert(any());
@@ -96,15 +101,14 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void groupReferenceTest() throws InterruptedException {
+    public void groupReferenceTest() {
         P2pGroupReferenceModel groupReferenceModel = new P2pGroupReferenceModel();
-        String id = "id";
-        groupReferenceModel.setId(id);
-        String identity_id = "identity_id";
+        groupReferenceModel.setId(ID);
+        String identity_id = IDENTITY_ID;
         groupReferenceModel.setIdentityId(identity_id);
 
-        groupCommandResource.insertGroupReference(new BasicUserPrincipal("test"), id, Collections.singletonList(groupReferenceModel));
-        groupCommandResource.removeGroupReference(new BasicUserPrincipal("test"), id, identity_id);
+        groupCommandResource.insertGroupReference(new BasicUserPrincipal(TEST), ID, Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference(new BasicUserPrincipal(TEST), ID, identity_id);
 
         await().untilAsserted(() -> {
             verify(groupReferenceDao, times(1)).insert(any());

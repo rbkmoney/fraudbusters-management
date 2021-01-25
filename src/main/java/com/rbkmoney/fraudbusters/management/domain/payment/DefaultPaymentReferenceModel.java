@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.domain.payment;
 
-import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
+import com.rbkmoney.fraudbusters.management.domain.DefaultReferenceModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class PaymentReferenceModel extends ReferenceModel {
+public class DefaultPaymentReferenceModel extends DefaultReferenceModel {
 
     private String partyId;
     private String shopId;

@@ -8,16 +8,12 @@ import java.util.List;
 
 public interface PaymentReferenceDao extends ReferenceDao<PaymentReferenceModel> {
 
-    List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Boolean isGlobal, Boolean isDefault, Integer limit);
+    List<PaymentReferenceModel> getListByTFilters(String partyId, String shopId, Integer limit);
 
-    List<PaymentReferenceModel> filterReferences(FilterRequest filterRequest, boolean isGlobal, boolean isDefault);
+    List<PaymentReferenceModel> filterReferences(FilterRequest filterRequest);
 
     List<PaymentReferenceModel> getByPartyAndShop(String partyId, String shopId);
 
-    PaymentReferenceModel getDefaultReference();
-
-    void markReferenceAsDefault(String id);
-
-    Integer countFilterModel(String searchValue, Boolean isGlobal, Boolean isDefault);
+    Integer countFilterModel(String searchValue);
 
 }
