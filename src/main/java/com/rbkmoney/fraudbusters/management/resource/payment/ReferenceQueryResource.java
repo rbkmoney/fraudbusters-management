@@ -4,9 +4,8 @@ import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceD
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.response.FilterDefaultPaymentReferenceResponse;
-import com.rbkmoney.fraudbusters.management.domain.payment.response.FilterPaymentReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,28 +28,30 @@ public class ReferenceQueryResource {
 
     @GetMapping(value = "/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterPaymentReferenceResponse> filterReferences(Principal principal, FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<PaymentReferenceModel>> filterReferences(Principal principal, FilterRequest filterRequest) {
         log.info("filterReferences initiator: {} filterRequest: {}",
                 userInfoService.getUserName(principal), filterRequest);
         List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue());
-        return ResponseEntity.ok().body(FilterPaymentReferenceResponse.builder()
-                .count(count)
-                .referenceModels(paymentReferenceModels)
-                .build());
+        return ResponseEntity.ok().body(
+                FilterResponse.<PaymentReferenceModel>builder()
+                        .count(count)
+                        .result(paymentReferenceModels)
+                        .build());
     }
 
     @GetMapping(value = "/reference/default/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterDefaultPaymentReferenceResponse> filterDefaultReferences(Principal principal, FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<DefaultPaymentReferenceModel>> filterDefaultReferences(Principal principal, FilterRequest filterRequest) {
         log.info("filterReferences initiator: {} filterRequest: {}",
                 userInfoService.getUserName(principal), filterRequest);
         List<DefaultPaymentReferenceModel> paymentReferenceModels = defaultPaymentReferenceDao.filterReferences(filterRequest);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue());
-        return ResponseEntity.ok().body(FilterDefaultPaymentReferenceResponse.builder()
-                .count(count)
-                .referenceModels(paymentReferenceModels)
-                .build());
+        return ResponseEntity.ok().body(
+                FilterResponse.<DefaultPaymentReferenceModel>builder()
+                        .count(count)
+                        .result(paymentReferenceModels)
+                        .build());
     }
 
 }
