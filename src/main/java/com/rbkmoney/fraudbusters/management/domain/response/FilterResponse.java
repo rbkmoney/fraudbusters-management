@@ -1,6 +1,5 @@
 package com.rbkmoney.fraudbusters.management.domain.response;
 
-import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FilterTemplateResponse {
+public class FilterResponse<T> {
 
-    private List<TemplateModel> templateModels;
+    private List<T> result;
     private Integer count;
 
 }

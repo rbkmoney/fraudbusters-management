@@ -4,8 +4,8 @@ import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.response.FilterPaymentGroupsReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,14 +41,15 @@ public class PaymentGroupQueryResource {
 
     @GetMapping(value = "/group/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterPaymentGroupsReferenceResponse> filterReference(FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<PaymentGroupReferenceModel>> filterReference(FilterRequest filterRequest) {
         log.info("filterReference idRegexp: {}", filterRequest.getSearchValue());
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.filterReference(filterRequest);
         Integer count = referenceDao.countFilterReference(filterRequest.getSearchValue());
-        return ResponseEntity.ok().body(FilterPaymentGroupsReferenceResponse.builder()
-                .count(count)
-                .groupsReferenceModels(listByTemplateId)
-                .build());
+        return ResponseEntity.ok().body(
+                FilterResponse.<PaymentGroupReferenceModel>builder()
+                        .count(count)
+                        .result(listByTemplateId)
+                        .build());
     }
 
     @GetMapping(value = "/group/{groupId}")

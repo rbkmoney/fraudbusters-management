@@ -6,8 +6,8 @@ import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordToRowC
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInsertRequest;
-import com.rbkmoney.fraudbusters.management.domain.payment.response.PaymentFilterListRecordsResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
@@ -66,18 +66,19 @@ public class ListsResource {
 
     @GetMapping(value = "/lists/filter")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<PaymentFilterListRecordsResponse> filterList(Principal principal,
-                                                                       @Validated @RequestParam ListType listType,
-                                                                       @Validated @RequestParam List<String> listNames,
-                                                                       FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<WbListRecords>> filterList(Principal principal,
+                                                                    @Validated @RequestParam ListType listType,
+                                                                    @Validated @RequestParam List<String> listNames,
+                                                                    FilterRequest filterRequest) {
         log.info("filterList initiator: {} listType: {} listNames: {} filterRequest: {}",
                 userInfoService.getUserName(principal), listType, listNames, filterRequest);
         List<WbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, filterRequest);
         Integer count = wbListDao.countFilterRecords(listType, listNames, filterRequest.getSearchValue());
-        return ResponseEntity.ok().body(PaymentFilterListRecordsResponse.builder()
-                .count(count)
-                .wbListRecords(wbListRecords)
-                .build());
+        return ResponseEntity.ok().body(
+                FilterResponse.<WbListRecords>builder()
+                        .count(count)
+                        .result(wbListRecords)
+                        .build());
     }
 
     @GetMapping(value = "/lists/names")
