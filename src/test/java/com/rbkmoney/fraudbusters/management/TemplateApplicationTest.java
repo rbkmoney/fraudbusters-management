@@ -40,6 +40,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
@@ -143,7 +144,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void defaultReferenceTest() {
-        when(defaultReferenceDao.getByPartyAndShop(any(), any())).thenReturn(buildDefaultReference());
+        when(defaultReferenceDao.getByPartyAndShop(any(), any())).thenReturn(Optional.of(buildDefaultReference()));
 
         PaymentReferenceModel referenceModel = new PaymentReferenceModel();
         referenceModel.setId(ID);

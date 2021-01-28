@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -30,12 +31,12 @@ public class DefaultPaymentReferenceDaoImplTest extends AbstractPostgresIntegrat
         referenceDao.insert(referenceModel);
 
         DefaultPaymentReferenceModel byId = referenceDao.getById(uid);
-        DefaultPaymentReferenceModel byPartyAndShop = referenceDao.getByPartyAndShop(PARTY_ID, null);
+        DefaultPaymentReferenceModel byPartyAndShop = referenceDao.getByPartyAndShop(PARTY_ID, null).get();
         assertEquals(PARTY_ID, byPartyAndShop.getPartyId());
         assertEquals(byId.getPartyId(), byPartyAndShop.getPartyId());
 
-        byPartyAndShop = referenceDao.getByPartyAndShop(null, null);
-        assertNull(byPartyAndShop);
+        final Optional<DefaultPaymentReferenceModel> partyAndShop = referenceDao.getByPartyAndShop(null, null);
+        assertTrue(partyAndShop.isEmpty());
 
         referenceDao.remove(uid);
         assertNull(referenceDao.getById(uid));
