@@ -2,7 +2,6 @@ package com.rbkmoney.fraudbusters.management.dao.payment;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.dao.DefaultReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FDefaultRefRecord;
@@ -15,9 +14,9 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 import static com.rbkmoney.fraudbusters.management.domain.Tables.F_DEFAULT_REF;
-import static org.jooq.Comparator.EQUALS;
 
 @Component
 public class DefaultPaymentReferenceDaoImpl extends AbstractDao implements DefaultReferenceDao<DefaultPaymentReferenceModel> {
@@ -92,14 +91,11 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao implements Defau
         return fetchOne(where, Integer.class);
     }
 
-    public DefaultPaymentReferenceModel getByPartyAndShop(String partyId, String shopId) {
+    public Optional<DefaultPaymentReferenceModel> getByPartyAndShop(String partyId, String shopId) {
         Query query = getDslContext()
                 .selectFrom(F_DEFAULT_REF)
-                .where(partyId == null ? F_DEFAULT_REF.PARTY_ID.isNull() :
-                        appendConditions(DSL.trueCondition(), Operator.AND,
-                                new ConditionParameterSource()
-                                        .addValue(F_DEFAULT_REF.PARTY_ID, partyId, EQUALS)
-                                        .addValue(F_DEFAULT_REF.SHOP_ID, shopId, EQUALS)));
-        return fetchOne(query, listRecordRowMapper);
+                .where((partyId == null ? F_DEFAULT_REF.PARTY_ID.isNull() : F_DEFAULT_REF.PARTY_ID.eq(partyId))
+                        .and(shopId == null ? F_DEFAULT_REF.SHOP_ID.isNull() : F_DEFAULT_REF.SHOP_ID.eq(shopId)));
+        return Optional.ofNullable(fetchOne(query, listRecordRowMapper));
     }
 }

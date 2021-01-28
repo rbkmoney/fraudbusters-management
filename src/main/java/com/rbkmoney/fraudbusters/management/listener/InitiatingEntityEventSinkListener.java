@@ -23,9 +23,7 @@ public class InitiatingEntityEventSinkListener {
             containerFactory = "kafkaReferenceInfoListenerContainerFactory")
     public void listen(ReferenceInfo event) {
         log.info("InitiatingEntityEventSinkListener event: {}", event);
-        DefaultPaymentReferenceModel defaultReference = referenceDao.getByPartyAndShop(
-                event.getMerchantInfo().getPartyId(),
-                event.getMerchantInfo().getShopId());
+        DefaultPaymentReferenceModel defaultReference = cascadFindDefaultTemplate(event);
         if (defaultReference == null) {
             log.warn("default reference for this type event: {} not found", event);
             return;
@@ -45,6 +43,13 @@ public class InitiatingEntityEventSinkListener {
         } else {
             log.warn("Handler for this type event: {} not found", event);
         }
+    }
+
+    private DefaultPaymentReferenceModel cascadFindDefaultTemplate(ReferenceInfo event) {
+        return referenceDao.getByPartyAndShop(event.getMerchantInfo().getPartyId(), event.getMerchantInfo().getShopId())
+                .orElse(referenceDao.getByPartyAndShop(event.getMerchantInfo().getPartyId(), null)
+                        .orElse(referenceDao.getByPartyAndShop(null, null)
+                                .orElse(null)));
     }
 
 }

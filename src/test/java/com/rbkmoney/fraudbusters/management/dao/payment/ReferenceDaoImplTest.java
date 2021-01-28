@@ -16,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
@@ -127,10 +128,10 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 null));
         System.out.println(paymentReferenceModels);
-        DefaultPaymentReferenceModel defaultReference = defaultReferenceDao.getByPartyAndShop(referenceModel.getPartyId(),
+        Optional<DefaultPaymentReferenceModel> defaultReference = defaultReferenceDao.getByPartyAndShop(referenceModel.getPartyId(),
                 referenceModel.getShopId());
         DefaultPaymentReferenceModel byId = defaultReferenceDao.getById(id);
-        assertEquals(byId, defaultReference);
+        assertEquals(byId, defaultReference.get());
     }
 
     @Test
