@@ -6,8 +6,8 @@ import com.rbkmoney.fraudbusters.management.converter.p2p.P2pWbListRecordToRowCo
 import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.p2p.request.P2pListRowsInsertRequest;
-import com.rbkmoney.fraudbusters.management.domain.p2p.response.P2pFilterListRecordsResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
@@ -68,17 +68,17 @@ public class P2pListsResource {
 
     @GetMapping(value = "/lists/filter")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<P2pFilterListRecordsResponse> filterList(Principal principal,
-                                                                   @Validated @RequestParam ListType listType,
-                                                                   @Validated @RequestParam List<String> listNames,
-                                                                   FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<P2pWbListRecords>> filterList(Principal principal,
+                                                     @Validated @RequestParam ListType listType,
+                                                     @Validated @RequestParam List<String> listNames,
+                                                     FilterRequest filterRequest) {
         log.info("filterList initiator: {} listType: {} listNames: {} filterRequest: {}",
                 userInfoService.getUserName(principal), listType, listNames, filterRequest);
         List<P2pWbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, filterRequest);
         Integer count = wbListDao.countFilterRecords(listType, listNames, filterRequest.getSortFieldValue());
-        return ResponseEntity.ok().body(P2pFilterListRecordsResponse.builder()
+        return ResponseEntity.ok().body(FilterResponse.<P2pWbListRecords>builder()
                 .count(count)
-                .wbListRecords(wbListRecords)
+                .result(wbListRecords)
                 .build());
     }
 

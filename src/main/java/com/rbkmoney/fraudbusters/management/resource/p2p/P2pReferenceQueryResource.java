@@ -4,9 +4,8 @@ import com.rbkmoney.fraudbusters.management.dao.p2p.DefaultP2pReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.p2p.DefaultP2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterDefaultP2pReferenceResponse;
-import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterP2pReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,28 +31,28 @@ public class P2pReferenceQueryResource {
 
     @GetMapping(value = "/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterP2pReferenceResponse> filterReferences(Principal principal,
-                                                                       FilterRequest filterRequest,
-                                                                       @RequestParam(value = "isGlobal") Boolean isGlobal) {
+    public ResponseEntity<FilterResponse<P2pReferenceModel>> filterReferences(Principal principal,
+                                                           FilterRequest filterRequest,
+                                                           @RequestParam(value = "isGlobal") Boolean isGlobal) {
         log.info("filterReferences initiator: {}  filterRequest: {} isGlobal: {}", userInfoService.getUserName(principal), filterRequest, isGlobal);
         List<P2pReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest, isGlobal);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue(), isGlobal);
-        return ResponseEntity.ok().body(FilterP2pReferenceResponse.builder()
+        return ResponseEntity.ok().body(FilterResponse.<P2pReferenceModel>builder()
                 .count(count)
-                .referenceModels(paymentReferenceModels)
+                .result(paymentReferenceModels)
                 .build());
     }
 
     @GetMapping(value = "/reference/default/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterDefaultP2pReferenceResponse> filterDefaultReferences(Principal principal,
+    public ResponseEntity<FilterResponse<DefaultP2pReferenceModel>> filterDefaultReferences(Principal principal,
                                                                                      FilterRequest filterRequest) {
         log.info("filterReferences initiator: {}  filterRequest: {}", userInfoService.getUserName(principal), filterRequest);
         List<DefaultP2pReferenceModel> paymentReferenceModels = defaultP2pReferenceDao.filterReferences(filterRequest);
         Integer count = defaultP2pReferenceDao.countFilterModel(filterRequest.getSearchValue());
-        return ResponseEntity.ok().body(FilterDefaultP2pReferenceResponse.builder()
+        return ResponseEntity.ok().body(FilterResponse.<DefaultP2pReferenceModel>builder()
                 .count(count)
-                .referenceModels(paymentReferenceModels)
+                .result(paymentReferenceModels)
                 .build());
     }
 

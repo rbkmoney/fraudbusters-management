@@ -4,8 +4,8 @@ import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.p2p.response.FilterP2pGroupsReferenceResponse;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,13 +59,13 @@ public class P2pGroupQueryResource {
 
     @GetMapping(value = "/group/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterP2pGroupsReferenceResponse> filterReference(Principal principal, FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<P2pGroupReferenceModel>> filterReference(Principal principal, FilterRequest filterRequest) {
         log.info("filterReference initiator: {} idRegexp: {}", userInfoService.getUserName(principal), filterRequest.getSearchValue());
         List<P2pGroupReferenceModel> listByTemplateId = referenceDao.filterReference(filterRequest);
         Integer count = referenceDao.countFilterReference(filterRequest.getSearchValue());
-        return ResponseEntity.ok().body(FilterP2pGroupsReferenceResponse.builder()
+        return ResponseEntity.ok().body(FilterResponse.<P2pGroupReferenceModel>builder()
                 .count(count)
-                .groupsReferenceModels(listByTemplateId)
+                .result(listByTemplateId)
                 .build());
     }
 }
