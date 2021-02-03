@@ -4,11 +4,13 @@ import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
+import com.rbkmoney.fraudbusters.management.utils.FilterRequestUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,6 +41,7 @@ public class PaymentTemplateQueryResource {
     public ResponseEntity<FilterResponse<TemplateModel>> filterTemplates(Principal principal,
                                                                          FilterRequest filterRequest) {
         log.info("filterTemplates initiator: {} filterRequest: {}", userInfoService.getUserName(principal), filterRequest);
+        FilterRequestUtils.prepareFilterRequest(filterRequest);
         List<TemplateModel> templateModels = paymentTemplateDao.filterModel(filterRequest);
         Integer count = paymentTemplateDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(

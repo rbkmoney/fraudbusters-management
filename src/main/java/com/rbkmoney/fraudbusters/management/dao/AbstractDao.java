@@ -80,4 +80,5 @@ public abstract class AbstractDao extends AbstractGenericDao {
             return whereQuery.orderBy(sortFieldSecond.asc(), sortField.desc());
         }
     }
+
 }

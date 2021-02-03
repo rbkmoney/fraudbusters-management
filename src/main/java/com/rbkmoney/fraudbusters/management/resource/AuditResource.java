@@ -2,9 +2,9 @@ package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.fraudbusters.management.dao.audit.CommandAuditDao;
-import com.rbkmoney.fraudbusters.management.domain.CommandAuditFilterResponse;
 import com.rbkmoney.fraudbusters.management.domain.enums.ObjectType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +37,12 @@ public class AuditResource {
 
     @GetMapping(value = "/audit/filter")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<CommandAuditFilterResponse> filter(Principal principal,
-                                                             @Validated @RequestParam String from,
-                                                             @Validated @RequestParam String to,
-                                                             @Validated @RequestParam List<String> commandTypes,
-                                                             @Validated @RequestParam List<String> objectTypes,
-                                                             FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<CommandAudit>> filter(Principal principal,
+                                                               @Validated @RequestParam String from,
+                                                               @Validated @RequestParam String to,
+                                                               @Validated @RequestParam List<String> commandTypes,
+                                                               @Validated @RequestParam List<String> objectTypes,
+                                                               FilterRequest filterRequest) {
         log.info("filter initiator: {} from: {} to: {} commandTypes: {} objectTypes: {} filterRequest: {}",
                 userInfoService.getUserName(principal), from, to, commandTypes, objectTypes, filterRequest);
         LocalDateTime fromDate = toDate(from);
@@ -56,9 +56,9 @@ public class AuditResource {
                 commandTypes,
                 objectTypes,
                 filterRequest);
-        return ResponseEntity.ok().body(CommandAuditFilterResponse.builder()
+        return ResponseEntity.ok().body(FilterResponse.<CommandAudit>builder()
                 .count(count)
-                .logs(commandAudits)
+                .result(commandAudits)
                 .build());
     }
 
