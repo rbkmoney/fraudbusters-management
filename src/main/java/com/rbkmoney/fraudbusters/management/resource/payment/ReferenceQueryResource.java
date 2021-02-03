@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferen
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
+import com.rbkmoney.fraudbusters.management.utils.FilterRequestUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,7 @@ public class ReferenceQueryResource {
     public ResponseEntity<FilterResponse<DefaultPaymentReferenceModel>> filterDefaultReferences(Principal principal, FilterRequest filterRequest) {
         log.info("filterReferences initiator: {} filterRequest: {}",
                 userInfoService.getUserName(principal), filterRequest);
+        FilterRequestUtils.prepareFilterRequest(filterRequest);
         List<DefaultPaymentReferenceModel> paymentReferenceModels = defaultPaymentReferenceDao.filterReferences(filterRequest);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(
