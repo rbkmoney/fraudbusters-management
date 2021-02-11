@@ -138,7 +138,7 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(idMessage);
     }
 
-    @DeleteMapping(value = "/template/{templateId}/reference")
+    @DeleteMapping(value = "/template/{templateId}/reference/{id}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeReference(Principal principal, @PathVariable(value = "id") String id) {
         log.info("removeReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
