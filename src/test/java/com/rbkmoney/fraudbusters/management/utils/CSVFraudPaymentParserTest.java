@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.utils;
 
 import com.rbkmoney.damsel.fraudbusters.FraudPayment;
+import com.rbkmoney.fraudbusters.management.utils.parser.CSVFraudPaymentParser;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.thrift.TException;
 import org.junit.Assert;

@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.FraudPayment;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
-import com.rbkmoney.fraudbusters.management.utils.CSVFraudPaymentParser;
+import com.rbkmoney.fraudbusters.management.utils.parser.CSVFraudPaymentParser;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

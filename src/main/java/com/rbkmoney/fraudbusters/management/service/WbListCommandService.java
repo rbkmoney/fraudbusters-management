@@ -54,7 +54,10 @@ public class WbListCommandService {
         return changeCommand;
     }
 
-    public <T> ResponseEntity<List<String>> sendListRecords(List<T> records, ListType listType, BiFunction<T, ListType, Row> func, String initiator) {
+    public <T> ResponseEntity<List<String>> sendListRecords(List<T> records,
+                                                            ListType listType,
+                                                            BiFunction<T, ListType, Row> func,
+                                                            String initiator) {
         try {
             List<String> recordIds = records.stream()
                     .map(record -> {
