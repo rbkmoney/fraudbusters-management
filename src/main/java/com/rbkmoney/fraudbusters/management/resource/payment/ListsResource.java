@@ -102,10 +102,10 @@ public class ListsResource {
         return ResponseEntity.ok().body(parametersService.getAvailableListNames());
     }
 
-    @PostMapping(value = "/lists/insertFromCsv")
+    @PostMapping(value = "/lists/insertFromCsv/{listType}")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public void insertFromCsv(Principal principal, @RequestParam("file") MultipartFile file,
-                              @Validated @RequestParam com.rbkmoney.damsel.wb_list.ListType listType) throws TException {
+                              @Validated @PathVariable com.rbkmoney.damsel.wb_list.ListType listType) throws TException {
         log.info("Insert from csv initiator: {} listType: {}", userInfoService.getUserName(principal), listType);
         if (csvPaymentCountInfoParser.hasCSVFormat(file)) {
             try {
