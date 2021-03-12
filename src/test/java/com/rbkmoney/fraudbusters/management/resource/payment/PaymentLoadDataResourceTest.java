@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
-import com.rbkmoney.fraudbusters.management.utils.CSVFraudPaymentParser;
+import com.rbkmoney.fraudbusters.management.utils.parser.CSVFraudPaymentParser;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.http.auth.BasicUserPrincipal;

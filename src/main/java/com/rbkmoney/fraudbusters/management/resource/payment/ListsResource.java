@@ -5,6 +5,7 @@ import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.response.FilterResponse;
@@ -14,13 +15,17 @@ import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.ParametersService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
+import com.rbkmoney.fraudbusters.management.utils.parser.CSVPaymentCountInfoParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.thrift.TException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -35,6 +40,7 @@ public class ListsResource {
     private final PaymentCountInfoGenerator paymentCountInfoGenerator;
     private final UserInfoService userInfoService;
     private final ParametersService parametersService;
+    private final CSVPaymentCountInfoParser csvPaymentCountInfoParser;
 
     @PostMapping(value = "/lists")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
@@ -96,4 +102,25 @@ public class ListsResource {
         return ResponseEntity.ok().body(parametersService.getAvailableListNames());
     }
 
+    @PostMapping(value = "/lists/insertFromCsv/{listType}")
+    @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
+    public void insertFromCsv(Principal principal, @RequestParam("file") MultipartFile file,
+                              @Validated @PathVariable com.rbkmoney.damsel.wb_list.ListType listType) throws TException {
+        log.info("Insert from csv initiator: {} listType: {}", userInfoService.getUserName(principal), listType);
+        if (csvPaymentCountInfoParser.hasCSVFormat(file)) {
+            try {
+                List<PaymentCountInfo> paymentCountInfos = csvPaymentCountInfoParser.parse(file.getInputStream());
+                log.info("Insert from csv paymentCountInfos size: {}", paymentCountInfos.size());
+                wbListCommandService.sendListRecords(
+                        paymentCountInfos,
+                        listType,
+                        paymentCountInfoGenerator::initRow,
+                        userInfoService.getUserName(principal));
+                log.info("Insert loaded fraudPayments: {}", paymentCountInfos);
+            } catch (IOException e) {
+                log.error("Insert error when loadFraudOperation e: ", e);
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
