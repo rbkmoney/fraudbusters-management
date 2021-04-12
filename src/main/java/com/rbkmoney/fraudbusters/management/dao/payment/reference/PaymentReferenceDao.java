@@ -16,4 +16,6 @@ public interface PaymentReferenceDao extends ReferenceDao<PaymentReferenceModel>
 
     Integer countFilterModel(String searchValue);
 
+    Boolean isReferenceExistForPartyAndShop(String partyId, String shopId);
+
 }
