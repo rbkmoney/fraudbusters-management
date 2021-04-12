@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.dao.payment;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDaoImpl;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
@@ -22,7 +22,7 @@ import java.util.UUID;
 import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
 import static org.junit.Assert.*;
 
-@ContextConfiguration(classes = {ReferenceDaoImpl.class, DefaultPaymentReferenceDaoImpl.class})
+@ContextConfiguration(classes = {PaymentReferenceDaoImpl.class, DefaultPaymentReferenceDaoImpl.class})
 public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
     public static final String PARTY_ID = "party_id";
@@ -128,8 +128,9 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
                 null,
                 null));
         System.out.println(paymentReferenceModels);
-        Optional<DefaultPaymentReferenceModel> defaultReference = defaultReferenceDao.getByPartyAndShop(referenceModel.getPartyId(),
-                referenceModel.getShopId());
+        Optional<DefaultPaymentReferenceModel> defaultReference =
+                defaultReferenceDao.getByPartyAndShop(referenceModel.getPartyId(),
+                        referenceModel.getShopId());
         DefaultPaymentReferenceModel byId = defaultReferenceDao.getById(id);
         assertEquals(byId, defaultReference.get());
     }
@@ -244,5 +245,17 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
         paymentReferenceModels
                 .forEach(paymentReferenceModel -> referenceDao.remove(paymentReferenceModel));
+    }
+
+    @Test
+    public void testExist() {
+        String id = "exist_id";
+        PaymentReferenceModel referenceModel = createReference(id);
+        referenceDao.insert(referenceModel);
+
+        assertTrue(referenceDao.isPartyShopReferenceExist(referenceModel.getPartyId(), referenceModel.getShopId()));
+
+        referenceDao.remove(referenceModel);
+        assertFalse(referenceDao.isPartyShopReferenceExist(referenceModel.getPartyId(), referenceModel.getShopId()));
     }
 }

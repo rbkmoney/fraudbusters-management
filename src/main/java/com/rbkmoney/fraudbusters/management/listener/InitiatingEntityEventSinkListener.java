@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.listener;
 
 import com.rbkmoney.damsel.fraudbusters.*;
 import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,8 @@ public class InitiatingEntityEventSinkListener {
     public static final String FRAUDBUSTERS = "fraudbusters";
 
     private final PaymentTemplateReferenceService paymentTemplateReferenceService;
-    private final DefaultPaymentReferenceDaoImpl referenceDao;
+    private final DefaultPaymentReferenceDaoImpl defaultPaymentReferenceDao;
+    private final PaymentReferenceDaoImpl referenceDao;
 
     @KafkaListener(topics = "${kafka.topic.fraudbusters.unknown-initiating-entity}",
             containerFactory = "kafkaReferenceInfoListenerContainerFactory")
@@ -28,7 +30,9 @@ public class InitiatingEntityEventSinkListener {
             log.warn("default reference for this type event: {} not found", event);
             return;
         }
-        if (event.isSetMerchantInfo()) {
+        if (!referenceDao.isPartyShopReferenceExist(
+                event.getMerchantInfo().getPartyId(), event.getMerchantInfo().getShopId())
+                && event.isSetMerchantInfo()) {
             Command command = new Command();
             command.setCommandBody(CommandBody.reference(new TemplateReference()
                     .setIsGlobal(false)
@@ -41,14 +45,15 @@ public class InitiatingEntityEventSinkListener {
                     .setUserId(FRAUDBUSTERS));
             paymentTemplateReferenceService.sendCommandSync(command);
         } else {
-            log.warn("Handler for this type event: {} not found", event);
+            log.warn("Handler for this type event: {} not found or reference exist", event);
         }
     }
 
     private DefaultPaymentReferenceModel cascadFindDefaultTemplate(ReferenceInfo event) {
-        return referenceDao.getByPartyAndShop(event.getMerchantInfo().getPartyId(), event.getMerchantInfo().getShopId())
-                .orElse(referenceDao.getByPartyAndShop(event.getMerchantInfo().getPartyId(), null)
-                        .orElse(referenceDao.getByPartyAndShop(null, null)
+        return defaultPaymentReferenceDao
+                .getByPartyAndShop(event.getMerchantInfo().getPartyId(), event.getMerchantInfo().getShopId())
+                .orElse(defaultPaymentReferenceDao.getByPartyAndShop(event.getMerchantInfo().getPartyId(), null)
+                        .orElse(defaultPaymentReferenceDao.getByPartyAndShop(null, null)
                                 .orElse(null)));
     }
 

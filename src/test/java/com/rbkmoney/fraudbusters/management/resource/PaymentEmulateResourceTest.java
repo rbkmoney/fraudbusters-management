@@ -7,7 +7,7 @@ import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoI
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.reference.ReferenceDaoImpl;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ContextConfiguration(classes = {PaymentEmulateResource.class, PaymentGroupDao.class, PaymentTemplateDao.class,
-        GroupReferenceDaoImpl.class, ReferenceDaoImpl.class, GroupRowToModelMapper.class, UserInfoService.class})
+        GroupReferenceDaoImpl.class, PaymentReferenceDaoImpl.class, GroupRowToModelMapper.class, UserInfoService.class})
 public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest {
 
     private static final String PARTY_ID = "partyId";

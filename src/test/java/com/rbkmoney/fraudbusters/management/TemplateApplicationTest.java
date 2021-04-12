@@ -7,7 +7,7 @@ import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
-import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
@@ -64,7 +64,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @MockBean
     public WbListDao wbListDao;
     @MockBean
-    public PaymentReferenceDao referenceDao;
+    public PaymentReferenceDaoImpl referenceDao;
     @MockBean
     public DefaultPaymentReferenceDaoImpl defaultReferenceDao;
     @MockBean
@@ -88,7 +88,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         TemplateModel templateModel = new TemplateModel();
         String id = ID;
         templateModel.setId(id);
-        templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
+        templateModel.setTemplate(
+                "rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
         paymentTemplateCommandResource.insertTemplate(new BasicUserPrincipal(TEST), templateModel);
         paymentTemplateCommandResource.removeTemplate(new BasicUserPrincipal(TEST), id);
 
@@ -131,8 +132,9 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setPartyId(PARTY_ID);
         referenceModel.setShopId(SHOP_ID);
 
-        final ResponseEntity<List<String>> references = paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST),
-                Collections.singletonList(referenceModel));
+        final ResponseEntity<List<String>> references =
+                paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST),
+                        Collections.singletonList(referenceModel));
 
         when(referenceDao.getById(references.getBody().get(0))).thenReturn(referenceModel);
         paymentTemplateCommandResource.removeReference(new BasicUserPrincipal(TEST), references.getBody().get(0));
@@ -179,7 +181,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         groupReferenceModel.setPartyId(PARTY_ID);
         groupReferenceModel.setShopId(SHOP_ID);
 
-        groupCommandResource.insertGroupReference(new BasicUserPrincipal(TEST), ID, Collections.singletonList(groupReferenceModel));
+        groupCommandResource
+                .insertGroupReference(new BasicUserPrincipal(TEST), ID, Collections.singletonList(groupReferenceModel));
         groupCommandResource.removeGroupReference(new BasicUserPrincipal(TEST), ID, PARTY_ID, SHOP_ID);
 
         await().untilAsserted(() -> {

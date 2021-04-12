@@ -10,21 +10,23 @@ import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
 import static org.jooq.Comparator.EQUALS;
 
 @Component
-public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao {
+public class PaymentReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao {
 
     private static final int LIMIT_TOTAL = 100;
     private final RowMapper<PaymentReferenceModel> listRecordRowMapper;
 
-    public ReferenceDaoImpl(DataSource dataSource) {
+    public PaymentReferenceDaoImpl(DataSource dataSource) {
         super(dataSource);
         listRecordRowMapper = new RecordRowMapper<>(F_REFERENCE, PaymentReferenceModel.class);
     }
@@ -98,10 +100,20 @@ public class ReferenceDaoImpl extends AbstractDao implements PaymentReferenceDao
     }
 
     @Override
+    public Boolean isPartyShopReferenceExist(String partyId, String shopId) {
+        Query query = getDslContext().selectFrom(F_REFERENCE)
+                .where(F_REFERENCE.PARTY_ID.eq(partyId)
+                        .and(F_REFERENCE.SHOP_ID.eq(shopId)))
+                .and(F_REFERENCE.IS_GLOBAL.eq(false));
+        return !CollectionUtils.isEmpty(fetch(query, listRecordRowMapper));
+    }
+
+    @Override
     public List<PaymentReferenceModel> filterReferences(FilterRequest filterRequest) {
         SelectWhereStep<FReferenceRecord> from = getDslContext()
                 .selectFrom(F_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_REFERENCE.TEMPLATE_ID : F_REFERENCE.field(filterRequest.getSortBy(), String.class);
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_REFERENCE.TEMPLATE_ID :
+                F_REFERENCE.field(filterRequest.getSortBy(), String.class);
         SelectConditionStep<FReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
                 from.where(DSL.trueCondition()) : from.where(
                 F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())

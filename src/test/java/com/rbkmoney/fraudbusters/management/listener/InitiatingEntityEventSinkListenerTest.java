@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.listener;
 import com.rbkmoney.damsel.fraudbusters.MerchantInfo;
 import com.rbkmoney.damsel.fraudbusters.ReferenceInfo;
 import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
+import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
 import org.junit.Before;
@@ -23,7 +24,9 @@ public class InitiatingEntityEventSinkListenerTest {
     @Mock
     PaymentTemplateReferenceService paymentTemplateReferenceService;
     @Mock
-    DefaultPaymentReferenceDaoImpl referenceDao;
+    DefaultPaymentReferenceDaoImpl defaultPaymentReferenceDao;
+    @Mock
+    PaymentReferenceDaoImpl paymentReferenceDaoImpl;
 
     InitiatingEntityEventSinkListener initiatingEntityEventSinkListener;
 
@@ -31,14 +34,15 @@ public class InitiatingEntityEventSinkListenerTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
         initiatingEntityEventSinkListener = new InitiatingEntityEventSinkListener(
-                paymentTemplateReferenceService, referenceDao);
+                paymentTemplateReferenceService, defaultPaymentReferenceDao, paymentReferenceDaoImpl);
     }
 
     @Test
     public void listen() {
-        when(referenceDao.getByPartyAndShop(PARTY_ID, null)).thenReturn(Optional.empty());
-        when(referenceDao.getByPartyAndShop(PARTY_ID, SHOP_ID)).thenReturn(Optional.empty());
-        when(referenceDao.getByPartyAndShop(null, null)).thenReturn(Optional.of(new DefaultPaymentReferenceModel()));
+        when(defaultPaymentReferenceDao.getByPartyAndShop(PARTY_ID, null)).thenReturn(Optional.empty());
+        when(defaultPaymentReferenceDao.getByPartyAndShop(PARTY_ID, SHOP_ID)).thenReturn(Optional.empty());
+        when(defaultPaymentReferenceDao.getByPartyAndShop(null, null))
+                .thenReturn(Optional.of(new DefaultPaymentReferenceModel()));
         final ReferenceInfo referenceInfo = new ReferenceInfo();
         referenceInfo.setMerchantInfo(new MerchantInfo()
                 .setPartyId(PARTY_ID)
@@ -46,7 +50,7 @@ public class InitiatingEntityEventSinkListenerTest {
         );
         initiatingEntityEventSinkListener.listen(referenceInfo);
 
-        verify(referenceDao, times(3)).getByPartyAndShop(any(), any());
+        verify(defaultPaymentReferenceDao, times(3)).getByPartyAndShop(any(), any());
         verify(paymentTemplateReferenceService, times(1)).sendCommandSync(any());
     }
 }
