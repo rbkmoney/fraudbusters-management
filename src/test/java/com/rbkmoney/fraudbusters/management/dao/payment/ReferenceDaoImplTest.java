@@ -253,9 +253,9 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         PaymentReferenceModel referenceModel = createReference(id);
         referenceDao.insert(referenceModel);
 
-        assertTrue(referenceDao.isPartyShopReferenceExist(referenceModel.getPartyId(), referenceModel.getShopId()));
+        assertTrue(referenceDao.isReferenceExistForPartyAndShop(referenceModel.getPartyId(), referenceModel.getShopId()));
 
         referenceDao.remove(referenceModel);
-        assertFalse(referenceDao.isPartyShopReferenceExist(referenceModel.getPartyId(), referenceModel.getShopId()));
+        assertFalse(referenceDao.isReferenceExistForPartyAndShop(referenceModel.getPartyId(), referenceModel.getShopId()));
     }
 }

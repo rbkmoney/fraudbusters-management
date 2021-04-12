@@ -100,7 +100,7 @@ public class PaymentReferenceDaoImpl extends AbstractDao implements PaymentRefer
     }
 
     @Override
-    public Boolean isPartyShopReferenceExist(String partyId, String shopId) {
+    public Boolean isReferenceExistForPartyAndShop(String partyId, String shopId) {
         Query query = getDslContext().selectFrom(F_REFERENCE)
                 .where(F_REFERENCE.PARTY_ID.eq(partyId)
                         .and(F_REFERENCE.SHOP_ID.eq(shopId)))

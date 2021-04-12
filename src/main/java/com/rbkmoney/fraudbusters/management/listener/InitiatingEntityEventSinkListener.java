@@ -30,7 +30,7 @@ public class InitiatingEntityEventSinkListener {
             log.warn("default reference for this type event: {} not found", event);
             return;
         }
-        if (!referenceDao.isPartyShopReferenceExist(
+        if (!referenceDao.isReferenceExistForPartyAndShop(
                 event.getMerchantInfo().getPartyId(), event.getMerchantInfo().getShopId())
                 && event.isSetMerchantInfo()) {
             Command command = new Command();
