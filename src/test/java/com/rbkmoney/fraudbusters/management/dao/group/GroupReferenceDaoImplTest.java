@@ -43,14 +43,15 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
 
         groupReferenceDao.insert(referenceModel);
 
-        List<PaymentGroupReferenceModel> paymentGroupReferenceModels = groupReferenceDao.filterReference(new FilterRequest(
-                GROUP_ID,
-                null,
-                null,
-                1,
-                null,
-                null)
-        );
+        List<PaymentGroupReferenceModel> paymentGroupReferenceModels =
+                groupReferenceDao.filterReference(new FilterRequest(
+                        GROUP_ID,
+                        null,
+                        null,
+                        1,
+                        null,
+                        null)
+                );
         assertEquals(PARTY_ID, paymentGroupReferenceModels.get(0).getPartyId());
 
         //check size

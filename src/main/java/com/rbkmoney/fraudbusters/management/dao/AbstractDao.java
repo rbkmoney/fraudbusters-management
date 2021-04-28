@@ -15,7 +15,8 @@ public abstract class AbstractDao extends AbstractGenericDao {
         super(dataSource);
     }
 
-    protected Condition appendConditions(Condition condition, Operator operator, ConditionParameterSource conditionParameterSource) {
+    protected Condition appendConditions(Condition condition, Operator operator,
+                                         ConditionParameterSource conditionParameterSource) {
         for (ConditionField field : conditionParameterSource.getConditionFields()) {
             if (field.getValue() != null) {
                 condition = DSL.condition(operator, condition, buildCondition(field));
@@ -71,7 +72,8 @@ public abstract class AbstractDao extends AbstractGenericDao {
         return orderQuery;
     }
 
-    protected <T extends Record, E, P> SelectSeekStep2<T, E, P> addSortCondition(Field<P> sortField, Field<E> sortFieldSecond,
+    protected <T extends Record, E, P> SelectSeekStep2<T, E, P> addSortCondition(Field<P> sortField,
+                                                                                 Field<E> sortFieldSecond,
                                                                                  SortOrder sortOrder,
                                                                                  SelectConditionStep<T> whereQuery) {
         if (sortOrder == SortOrder.DESC) {

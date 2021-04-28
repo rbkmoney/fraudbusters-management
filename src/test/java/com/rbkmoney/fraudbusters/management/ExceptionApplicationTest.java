@@ -18,7 +18,7 @@ import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.ParametersService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
-import com.rbkmoney.fraudbusters.management.utils.parser.CSVPaymentCountInfoParser;
+import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,21 +52,22 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, ListsResource.class, UserInfoService.class,
-        WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class, CountInfoUtils.class, CSVPaymentCountInfoParser.class})
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, ListsResource.class,
+        UserInfoService.class,
+        WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class, CountInfoUtils.class,
+        CsvPaymentCountInfoParser.class})
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 public class ExceptionApplicationTest {
 
+    public static final String ID_TEST = "42";
+    public static final String TEST_MESSAGE = "test_message";
     private static final String VALUE = "value";
     private static final String SHOP_ID = "shopId";
     private static final String PARTY_ID = "partyId";
     private static final String LIST_NAME = "listName";
-    public static final String ID_TEST = "42";
-    public static final String TEST_MESSAGE = "test_message";
-
+    private static final String SERVICE_URL = "http://localhost:%s/fb-management/v1";
     @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
-
     @MockBean
     public AuditService auditService;
     @MockBean
@@ -83,14 +84,10 @@ public class ExceptionApplicationTest {
     public PaymentCountInfoRequestToRowConverter countInfoListRecordToRowConverter;
     @MockBean
     public WbListRecordsToCountInfoListRequestConverter wbListRecordsToListRecordWithRowConverter;
-
     @Autowired
     RestTemplateBuilder restTemplateBuilder;
-
     @LocalServerPort
     int serverPort;
-
-    private static String SERVICE_URL = "http://localhost:%s/fb-management/v1";
 
     private ListRecord createRow() {
         PaymentListRecord listRecord = new PaymentListRecord();
@@ -113,7 +110,8 @@ public class ExceptionApplicationTest {
     @Test
     public void executionRestTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any())).thenReturn(ResponseEntity.ok(List.of(ID_TEST)));
+        Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
+                .thenReturn(ResponseEntity.ok(List.of(ID_TEST)));
 
         String format = String.format(SERVICE_URL, serverPort);
         ResponseEntity<List<String>> response = restTemplate.exchange(format + "/lists", HttpMethod.POST,
@@ -126,7 +124,8 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpServerErrorException.InternalServerError.class)
     public void executionRestDaoExceptionTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any())).thenThrow(new DaoException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
+                .thenThrow(new DaoException(TEST_MESSAGE));
 
         String format = String.format(SERVICE_URL, serverPort);
         restTemplate.postForEntity(format + "/lists", createRequest(), ErrorResponse.class);
@@ -144,7 +143,8 @@ public class ExceptionApplicationTest {
     @Test(expected = HttpServerErrorException.InternalServerError.class)
     public void executionRestKafkaSerializationTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
+                .thenThrow(new KafkaSerializationException(TEST_MESSAGE));
 
         String format = String.format(SERVICE_URL, serverPort);
         restTemplate.postForEntity(format + "/lists", createRequest(), ErrorResponse.class);
@@ -152,14 +152,16 @@ public class ExceptionApplicationTest {
 
     @Test(expected = HttpClientErrorException.BadRequest.class)
     public void getRestTestBadRequest() {
-        RestTemplate restTemplate = restTemplateBuilder.build();
-        Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any())).thenThrow(new KafkaSerializationException(TEST_MESSAGE));
+        Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
+                .thenThrow(new KafkaSerializationException(TEST_MESSAGE));
         HashMap<String, Object> uriVariables = new HashMap<>();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(String.format(SERVICE_URL, serverPort) + "/lists/filter")
-                .queryParam("partyId", PARTY_ID)
-                .queryParam("shopId", SHOP_ID);
+        UriComponentsBuilder builder =
+                UriComponentsBuilder.fromUriString(String.format(SERVICE_URL, serverPort) + "/lists/filter")
+                        .queryParam("partyId", PARTY_ID)
+                        .queryParam("shopId", SHOP_ID);
         uriVariables.put("partyId", PARTY_ID);
         uriVariables.put("shopId", SHOP_ID);
+        RestTemplate restTemplate = restTemplateBuilder.build();
         restTemplate.getForEntity(builder.buildAndExpand(uriVariables).toUri(), ErrorResponse.class);
     }
 }

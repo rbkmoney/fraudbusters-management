@@ -19,22 +19,25 @@ public class PaymentFraudoConfig {
 
     @Bean
     public PaymentServiceSrv.Iface paymentServiceSrv(@Value("${service.payment.url}") Resource resource,
-                                                     @Value("${service.payment.networkTimeout}") int networkTimeout) throws IOException {
+                                                     @Value("${service.payment.networkTimeout}") int networkTimeout)
+            throws IOException {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)
                 .withAddress(resource.getURI()).build(PaymentServiceSrv.Iface.class);
     }
 
     @Bean
-    public TemplateCommandService paymentTemplateCommandService(CommandSender commandSender,
-                                                                TemplateModelToCommandConverter templateModelToCommandConverter,
-                                                                @Value("${kafka.topic.fraudbusters.payment.template}") String topic) {
+    public TemplateCommandService paymentTemplateCommandService(
+            CommandSender commandSender,
+            TemplateModelToCommandConverter templateModelToCommandConverter,
+            @Value("${kafka.topic.fraudbusters.payment.template}") String topic) {
         return new TemplateCommandService(commandSender, topic, templateModelToCommandConverter);
     }
 
     @Bean
     public GroupCommandService paymentGroupCommandService(CommandSender commandSender,
-                                                          @Value("${kafka.topic.fraudbusters.payment.group.list}") String topic,
+                                                          @Value("${kafka.topic.fraudbusters.payment.group.list}")
+                                                                  String topic,
                                                           GroupModelToCommandConverter groupModelToCommandConverter) {
         return new GroupCommandService(commandSender, topic, groupModelToCommandConverter);
     }

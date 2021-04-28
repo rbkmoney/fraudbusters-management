@@ -2,8 +2,8 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.FraudPayment;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
-import com.rbkmoney.fraudbusters.management.utils.parser.CSVFraudPaymentParser;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
+import com.rbkmoney.fraudbusters.management.utils.parser.CsvFraudPaymentParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -23,13 +23,13 @@ import java.util.List;
 public class PaymentLoadDataResource {
 
     private final PaymentServiceSrv.Iface paymentServiceSrv;
-    private final CSVFraudPaymentParser csvFraudPaymentParser;
+    private final CsvFraudPaymentParser csvFraudPaymentParser;
     private final UserInfoService userInfoService;
 
     @PostMapping(value = "/fraud/load")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public void loadFraudOperation(Principal principal, @RequestParam("file") MultipartFile file) throws TException {
-        if (csvFraudPaymentParser.hasCSVFormat(file)) {
+        if (csvFraudPaymentParser.hasCsvFormat(file)) {
             try {
                 List<FraudPayment> fraudPayments = csvFraudPaymentParser.parse(file.getInputStream());
                 log.info("PaymentLoadDataResource loadFraudOperation initiator: {} fraudPaymentRecords: {}",

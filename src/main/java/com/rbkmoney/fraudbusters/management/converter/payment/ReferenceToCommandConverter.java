@@ -18,7 +18,6 @@ public class ReferenceToCommandConverter implements Converter<PaymentReferenceMo
     @NonNull
     @Override
     public Command convert(PaymentReferenceModel referenceModel) {
-        Command command = new Command();
         TemplateReference reference = new TemplateReference();
         reference.setIsGlobal(referenceModel.getIsGlobal());
         if (BooleanUtils.isFalse(referenceModel.getIsGlobal())) {
@@ -26,6 +25,7 @@ public class ReferenceToCommandConverter implements Converter<PaymentReferenceMo
             reference.setPartyId(referenceModel.getPartyId());
         }
         reference.setTemplateId(referenceModel.getTemplateId());
+        Command command = new Command();
         command.setCommandBody(CommandBody.reference(reference));
         return command;
     }

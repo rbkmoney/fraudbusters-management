@@ -16,7 +16,8 @@ public class UnknownEventException extends RuntimeException {
         super(cause);
     }
 
-    public UnknownEventException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public UnknownEventException(String message, Throwable cause, boolean enableSuppression,
+                                 boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

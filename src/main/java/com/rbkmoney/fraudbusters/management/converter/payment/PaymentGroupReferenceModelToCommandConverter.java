@@ -15,11 +15,11 @@ public class PaymentGroupReferenceModelToCommandConverter implements Converter<P
 
     @Override
     public Command convert(PaymentGroupReferenceModel groupReferenceModel) {
-        Command command = new Command();
         GroupReference reference = new GroupReference();
         reference.setShopId(groupReferenceModel.getShopId());
         reference.setPartyId(groupReferenceModel.getPartyId());
         reference.setGroupId(groupReferenceModel.getGroupId());
+        Command command = new Command();
         command.setCommandBody(CommandBody.group_reference(reference));
         return command;
     }

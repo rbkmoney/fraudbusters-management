@@ -15,7 +15,7 @@ import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.ParametersService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
-import com.rbkmoney.fraudbusters.management.utils.parser.CSVPaymentCountInfoParser;
+import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -40,11 +40,12 @@ public class ListsResource {
     private final PaymentCountInfoGenerator paymentCountInfoGenerator;
     private final UserInfoService userInfoService;
     private final ParametersService parametersService;
-    private final CSVPaymentCountInfoParser csvPaymentCountInfoParser;
+    private final CsvPaymentCountInfoParser csvPaymentCountInfoParser;
 
     @PostMapping(value = "/lists")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<List<String>> insertRowsToList(Principal principal, @Validated @RequestBody ListRowsInsertRequest request) {
+    public ResponseEntity<List<String>> insertRowsToList(Principal principal,
+                                                         @Validated @RequestBody ListRowsInsertRequest request) {
         log.info("insertRowsToList initiator: {} request {}", userInfoService.getUserName(principal), request);
         return wbListCommandService.sendListRecords(
                 request.getRecords(),
@@ -105,9 +106,10 @@ public class ListsResource {
     @PostMapping(value = "/lists/insertFromCsv/{listType}")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public void insertFromCsv(Principal principal, @RequestParam("file") MultipartFile file,
-                              @Validated @PathVariable com.rbkmoney.damsel.wb_list.ListType listType) throws TException {
+                              @Validated @PathVariable com.rbkmoney.damsel.wb_list.ListType listType)
+            throws TException {
         log.info("Insert from csv initiator: {} listType: {}", userInfoService.getUserName(principal), listType);
-        if (csvPaymentCountInfoParser.hasCSVFormat(file)) {
+        if (csvPaymentCountInfoParser.hasCsvFormat(file)) {
             try {
                 List<PaymentCountInfo> paymentCountInfos = csvPaymentCountInfoParser.parse(file.getInputStream());
                 log.info("Insert from csv paymentCountInfos size: {}", paymentCountInfos.size());

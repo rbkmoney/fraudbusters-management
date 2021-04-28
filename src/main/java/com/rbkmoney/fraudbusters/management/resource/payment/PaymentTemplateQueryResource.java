@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +39,8 @@ public class PaymentTemplateQueryResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterResponse<TemplateModel>> filterTemplates(Principal principal,
                                                                          FilterRequest filterRequest) {
-        log.info("filterTemplates initiator: {} filterRequest: {}", userInfoService.getUserName(principal), filterRequest);
+        log.info("filterTemplates initiator: {} filterRequest: {}", userInfoService.getUserName(principal),
+                filterRequest);
         FilterRequestUtils.prepareFilterRequest(filterRequest);
         List<TemplateModel> templateModels = paymentTemplateDao.filterModel(filterRequest);
         Integer count = paymentTemplateDao.countFilterModel(filterRequest.getSearchValue());

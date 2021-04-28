@@ -14,7 +14,17 @@ import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Component
-public class CSVFraudPaymentParser implements CsvParser<FraudPayment> {
+public class CsvFraudPaymentParser implements CsvParser<FraudPayment> {
+
+    private static void isValidFormat(String value) {
+        try {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd[ HH:mm:ss]");
+            LocalDateTime.parse(value, dateTimeFormatter);
+        } catch (Exception ex) {
+            log.error("validation error when parse date: {}", value);
+            throw new DateFormatException(String.format("validation error when parse date: %s", value), ex);
+        }
+    }
 
     @Override
     public FraudPayment mapFraudPayment(CSVRecord csvRecord) {
@@ -28,16 +38,6 @@ public class CSVFraudPaymentParser implements CsvParser<FraudPayment> {
                 .setId(csvRecord.get(CsvFraudPaymentFields.ID))
                 .setType(csvRecord.get(CsvFraudPaymentFields.FRAUD_TYPE))
                 .setComment(csvRecord.get(CsvFraudPaymentFields.COMMENT));
-    }
-
-    private static void isValidFormat(String value) {
-        try {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd[ HH:mm:ss]");
-            LocalDateTime.parse(value, dateTimeFormatter);
-        } catch (Exception ex) {
-            log.error("validation error when parse date: {}", value);
-            throw new DateFormatException(String.format("validation error when parse date: %s", value), ex);
-        }
     }
 
 }

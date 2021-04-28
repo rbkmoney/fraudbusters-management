@@ -23,10 +23,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WbListCommandService {
 
+    private final KafkaTemplate<String, TBase> kafkaTemplate;
     @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
-
-    private final KafkaTemplate<String, TBase> kafkaTemplate;
 
     public String sendCommandSync(Row row, ListType type, Command command, String initiator) {
         row.setListType(type);

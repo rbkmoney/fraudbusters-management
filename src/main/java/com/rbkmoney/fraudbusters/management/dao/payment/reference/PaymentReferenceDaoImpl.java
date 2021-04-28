@@ -114,19 +114,19 @@ public class PaymentReferenceDaoImpl extends AbstractDao implements PaymentRefer
                 .selectFrom(F_REFERENCE);
         Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_REFERENCE.TEMPLATE_ID :
                 F_REFERENCE.field(filterRequest.getSortBy(), String.class);
-        SelectConditionStep<FReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                from.where(DSL.trueCondition()) : from.where(
-                F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
+        SelectConditionStep<FReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
+                ? from.where(DSL.trueCondition())
+                : from.where(F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
                         .or(F_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue()))
                         .or(F_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue())));
-        SelectSeekStep2<FReferenceRecord, String, String> fReferenceRecords = addSortCondition(
+        SelectSeekStep2<FReferenceRecord, String, String> filterReferenceRecords = addSortCondition(
                 F_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
                 addSeekIfNeed(
                         filterRequest.getLastId(),
                         filterRequest.getSortFieldValue(),
                         filterRequest.getSize(),
-                        fReferenceRecords
+                        filterReferenceRecords
                 ),
                 listRecordRowMapper
         );
@@ -137,11 +137,11 @@ public class PaymentReferenceDaoImpl extends AbstractDao implements PaymentRefer
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(F_REFERENCE)
-                .where(!StringUtils.isEmpty(filterValue) ?
-                        F_REFERENCE.TEMPLATE_ID.like(filterValue)
+                .where(!StringUtils.isEmpty(filterValue)
+                        ? F_REFERENCE.TEMPLATE_ID.like(filterValue)
                                 .or(F_REFERENCE.PARTY_ID.like(filterValue)
-                                        .or(F_REFERENCE.SHOP_ID.like(filterValue))) :
-                        DSL.noCondition());
+                                        .or(F_REFERENCE.SHOP_ID.like(filterValue)))
+                        : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }
 

@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class GroupCommandService {
 
     private final CommandSender commandSender;
-    public final String topic;
-    public final GroupModelToCommandConverter groupModelToCommandConverter;
+    private final String topic;
+    private final GroupModelToCommandConverter groupModelToCommandConverter;
 
     public String sendCommandSync(Command command) {
         String key = command.getCommandBody().getGroup().getGroupId();

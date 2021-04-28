@@ -46,28 +46,25 @@ import static org.mockito.Mockito.when;
 @Slf4j
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@SpringBootTest(classes = FraudbustersManagementApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+        classes = FraudbustersManagementApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     private static final String VALUE = "value";
     private static final String SHOP_ID = "shopId";
     private static final String PARTY_ID = "partyId";
     private static final String LIST_NAME = "listName";
-
-    @LocalServerPort
-    private int port;
-
-    TestRestTemplate restTemplate = new TestRestTemplate();
-
     @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
     @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
-
     @MockBean
     public AuditService auditService;
     @MockBean
     public WbListDao wbListDao;
+    TestRestTemplate restTemplate = new TestRestTemplate();
+    @LocalServerPort
+    private int port;
 
     @Test
     public void listenCreated() throws ExecutionException, InterruptedException {
@@ -189,8 +186,10 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         }
 
         String value = VALUE + 66;
-        HttpEntity<ListRowsInsertRequest> entity = new HttpEntity<>(createListRowsInsertRequest(value), new org.springframework.http.HttpHeaders());
-        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/lists", HttpMethod.POST, entity, String.class);
+        HttpEntity<ListRowsInsertRequest> entity =
+                new HttpEntity<>(createListRowsInsertRequest(value), new org.springframework.http.HttpHeaders());
+        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/lists", HttpMethod.POST, entity,
+                String.class);
 
         try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
             consumer.subscribe(Collections.singletonList(topicCommand));
@@ -203,20 +202,21 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             log.info("{}", eventList.get(0).getRow());
         }
 
-        ResponseEntity<ArrayList> result = restTemplate.getForEntity("http://localhost:" + port + "/fb-management/v1/lists/names?listType={name}",
-                ArrayList.class, "black");
+        ResponseEntity<ArrayList> result =
+                restTemplate.getForEntity("http://localhost:" + port + "/fb-management/v1/lists/names?listType={name}",
+                        ArrayList.class, "black");
         assertTrue(result.getBody().isEmpty());
     }
 
     private ListRowsInsertRequest createListRowsInsertRequest(String value) {
         ListRowsInsertRequest listRowsInsertRequest = new ListRowsInsertRequest();
         listRowsInsertRequest.setListType(ListType.black);
-        PaymentCountInfo paymentCountInfo = new PaymentCountInfo();
         PaymentListRecord listRecord = new PaymentListRecord();
         listRecord.setListName(LIST_NAME);
         listRecord.setPartyId(PARTY_ID);
         listRecord.setShopId(SHOP_ID);
         listRecord.setValue(value);
+        PaymentCountInfo paymentCountInfo = new PaymentCountInfo();
         paymentCountInfo.setListRecord(listRecord);
         listRowsInsertRequest.setRecords(List.of(paymentCountInfo));
         return listRowsInsertRequest;
@@ -235,7 +235,8 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         insertRequest.setRecords(collect);
         HttpEntity<ListRowsInsertRequest> entity = new HttpEntity<>(insertRequest,
                 new org.springframework.http.HttpHeaders());
-        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/lists", HttpMethod.POST, entity, String.class);
+        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/lists", HttpMethod.POST, entity,
+                String.class);
     }
 
     private void deleteFromWhiteList(String id) {

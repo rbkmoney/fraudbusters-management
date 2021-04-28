@@ -18,13 +18,13 @@ public class P2pReferenceToCommandConverter implements Converter<P2pReferenceMod
     @NonNull
     @Override
     public Command convert(P2pReferenceModel referenceModel) {
-        Command command = new Command();
         P2PReference reference = new P2PReference();
         reference.setIsGlobal(referenceModel.getIsGlobal());
         if (BooleanUtils.isFalse(referenceModel.getIsGlobal())) {
             reference.setIdentityId(referenceModel.getIdentityId());
         }
         reference.setTemplateId(referenceModel.getTemplateId());
+        Command command = new Command();
         command.setCommandBody(CommandBody.p2p_reference(reference));
         return command;
     }

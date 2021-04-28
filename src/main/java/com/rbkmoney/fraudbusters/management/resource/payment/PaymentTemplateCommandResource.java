@@ -46,7 +46,8 @@ public class PaymentTemplateCommandResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<CreateTemplateResponse> insertTemplate(Principal principal,
                                                                  @Validated @RequestBody TemplateModel templateModel) {
-        log.info("insertTemplate initiator: {} templateModel: {}", userInfoService.getUserName(principal), templateModel);
+        log.info("insertTemplate initiator: {} templateModel: {}", userInfoService.getUserName(principal),
+                templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
         List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(
                 command.getCommandBody().getTemplate()
@@ -71,8 +72,10 @@ public class PaymentTemplateCommandResource {
     @PostMapping(value = "/template/validate")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ValidateTemplatesResponse> validateTemplate(Principal principal,
-                                                                      @Validated @RequestBody TemplateModel templateModel) {
-        log.info("validateTemplate initiator: {} templateModel: {}", userInfoService.getUserName(principal), templateModel);
+                                                                      @Validated @RequestBody
+                                                                              TemplateModel templateModel) {
+        log.info("validateTemplate initiator: {} templateModel: {}", userInfoService.getUserName(principal),
+                templateModel);
         List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(new Template()
                 .setId(templateModel.getId())
                 .setTemplate(templateModel.getTemplate().getBytes()));
@@ -91,8 +94,10 @@ public class PaymentTemplateCommandResource {
     @PostMapping(value = "/template/references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertReferences(Principal principal,
-                                                         @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
-        log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal), referenceModels);
+                                                         @Validated @RequestBody
+                                                                 List<PaymentReferenceModel> referenceModels) {
+        log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
+                referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(referenceToCommandConverter::convert)
                 .map(command -> {
@@ -109,8 +114,10 @@ public class PaymentTemplateCommandResource {
     @PostMapping(value = "/template/{id}/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertDefaultReference(Principal principal,
-                                                         @Validated @RequestBody DefaultPaymentReferenceModel referenceModel) {
-        log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal), referenceModel);
+                                                         @Validated @RequestBody
+                                                                 DefaultPaymentReferenceModel referenceModel) {
+        log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
+                referenceModel);
         String uid = UUID.randomUUID().toString();
         referenceModel.setId(uid);
         referenceModel.setModifiedByUser(userInfoService.getUserName(principal));

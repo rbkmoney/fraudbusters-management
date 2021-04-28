@@ -19,16 +19,18 @@ public class P2PFraudoConfig {
 
     @Bean
     public P2PServiceSrv.Iface p2pServiceSrv(@Value("${service.p2p.url}") Resource resource,
-                                             @Value("${service.p2p.networkTimeout}") int networkTimeout) throws IOException {
+                                             @Value("${service.p2p.networkTimeout}") int networkTimeout)
+            throws IOException {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)
                 .withAddress(resource.getURI()).build(P2PServiceSrv.Iface.class);
     }
 
     @Bean
-    public TemplateCommandService p2pTemplateCommandService(CommandSender commandSender,
-                                                            TemplateModelToCommandConverter templateModelToCommandConverter,
-                                                            @Value("${kafka.topic.fraudbusters.p2p.template}") String topic) {
+    public TemplateCommandService p2pTemplateCommandService(
+            CommandSender commandSender,
+            TemplateModelToCommandConverter templateModelToCommandConverter,
+            @Value("${kafka.topic.fraudbusters.p2p.template}") String topic) {
         return new TemplateCommandService(commandSender, topic, templateModelToCommandConverter);
     }
 

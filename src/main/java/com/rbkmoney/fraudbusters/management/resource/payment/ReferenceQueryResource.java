@@ -29,7 +29,8 @@ public class ReferenceQueryResource {
 
     @GetMapping(value = "/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterResponse<PaymentReferenceModel>> filterReferences(Principal principal, FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<PaymentReferenceModel>> filterReferences(Principal principal,
+                                                                                  FilterRequest filterRequest) {
         log.info("filterReferences initiator: {} filterRequest: {}",
                 userInfoService.getUserName(principal), filterRequest);
         List<PaymentReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest);
@@ -43,11 +44,13 @@ public class ReferenceQueryResource {
 
     @GetMapping(value = "/reference/default/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterResponse<DefaultPaymentReferenceModel>> filterDefaultReferences(Principal principal, FilterRequest filterRequest) {
+    public ResponseEntity<FilterResponse<DefaultPaymentReferenceModel>> filterDefaultReferences(
+            Principal principal, FilterRequest filterRequest) {
         log.info("filterReferences initiator: {} filterRequest: {}",
                 userInfoService.getUserName(principal), filterRequest);
         FilterRequestUtils.prepareFilterRequest(filterRequest);
-        List<DefaultPaymentReferenceModel> paymentReferenceModels = defaultPaymentReferenceDao.filterReferences(filterRequest);
+        List<DefaultPaymentReferenceModel> paymentReferenceModels =
+                defaultPaymentReferenceDao.filterReferences(filterRequest);
         Integer count = defaultPaymentReferenceDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(
                 FilterResponse.<DefaultPaymentReferenceModel>builder()

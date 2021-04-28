@@ -23,7 +23,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class,
-        PaymentListRecordToRowConverter.class, PaymentCountInfoRequestToRowConverter.class, ListRecordToRowConverterImpl.class,
+        PaymentListRecordToRowConverter.class, PaymentCountInfoRequestToRowConverter.class,
+        ListRecordToRowConverterImpl.class,
         PaymentCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
 public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
@@ -83,15 +84,16 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         String firstId = "1";
         WbListRecords listRecord = createListRecord(firstId);
         String secondId = "2";
-        WbListRecords listRecord_2 = createListRecord(secondId);
-        listRecord_2.setPartyId("party_2");
-        WbListRecords listRecord_3 = createListRecord("3");
+        WbListRecords listRecord2 = createListRecord(secondId);
+        listRecord2.setPartyId("party_2");
+        WbListRecords listRecord3 = createListRecord("3");
 
         wbListDao.saveListRecord(listRecord);
-        wbListDao.saveListRecord(listRecord_2);
-        wbListDao.saveListRecord(listRecord_3);
+        wbListDao.saveListRecord(listRecord2);
+        wbListDao.saveListRecord(listRecord3);
 
-        List<WbListRecords> filteredListRecords = wbListDao.getFilteredListRecords(PARTY, SHOP, ListType.black, LIST_NAME);
+        List<WbListRecords> filteredListRecords =
+                wbListDao.getFilteredListRecords(PARTY, SHOP, ListType.black, LIST_NAME);
 
         assertEquals(1, filteredListRecords.size());
 
@@ -99,20 +101,21 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         assertEquals(2, filteredListRecords.size());
 
-        WbListRecords listRecord_4 = createListRecord("4");
-        listRecord_4.setRowInfo("{ \n" +
+        WbListRecords listRecord4 = createListRecord("4");
+        listRecord4.setRowInfo("{ \n" +
                 "  \"count\":5, \n" +
                 "  \"time_to_live\":\"2019-08-22T13:14:17.443332Z\",\n" +
                 "  \"start_count_time\": \"2019-08-22T11:14:17.443332Z\"\n" +
                 "}");
-        listRecord_4.setListType(ListType.grey);
-        wbListDao.saveListRecord(listRecord_4);
+        listRecord4.setListType(ListType.grey);
+        wbListDao.saveListRecord(listRecord4);
 
         filteredListRecords = wbListDao.getFilteredListRecords(null, SHOP, ListType.grey, null);
         assertEquals(1, filteredListRecords.size());
         assertFalse(filteredListRecords.get(0).getRowInfo().isEmpty());
 
-        PaymentCountInfo countInfoListRecord = wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
+        PaymentCountInfo countInfoListRecord =
+                wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
 
         assertEquals(5L, countInfoListRecord.getCountInfo().getCount().longValue());
 
@@ -125,13 +128,14 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
                         3,
                         null,
                         SortOrder.ASC));
-        List<WbListRecords> wbListRecordsSecond = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), new FilterRequest(
-                null,
-                null,
-                null,
-                3,
-                null,
-                SortOrder.DESC));
+        List<WbListRecords> wbListRecordsSecond =
+                wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME), new FilterRequest(
+                        null,
+                        null,
+                        null,
+                        3,
+                        null,
+                        SortOrder.DESC));
         assertEquals(wbListRecordsFirst.get(0).getPartyId(), wbListRecordsSecond.get(1).getPartyId());
 
         //check paging

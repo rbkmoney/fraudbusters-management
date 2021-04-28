@@ -32,9 +32,12 @@ public class PaymentGroupQueryResource {
     @GetMapping(value = "/group/{groupId}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<PaymentGroupReferenceModel>> getReferences(Principal principal,
-                                                                          @PathVariable(value = "groupId") String groupId,
-                                                                          @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getGroupReferences initiator: {} id: {} limit: {}", userInfoService.getUserName(principal), groupId, limit);
+                                                                          @PathVariable(value = "groupId")
+                                                                                  String groupId,
+                                                                          @Validated @RequestParam(required = false)
+                                                                                  Integer limit) {
+        log.info("getGroupReferences initiator: {} id: {} limit: {}", userInfoService.getUserName(principal), groupId,
+                limit);
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(groupId);
         return ResponseEntity.ok().body(listByTemplateId);
     }

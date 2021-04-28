@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.utils;
 
 import com.rbkmoney.damsel.fraudbusters.FraudPayment;
-import com.rbkmoney.fraudbusters.management.utils.parser.CSVFraudPaymentParser;
+import com.rbkmoney.fraudbusters.management.utils.parser.CsvFraudPaymentParser;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.thrift.TException;
 import org.junit.Assert;
@@ -15,17 +15,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-public class CSVFraudPaymentParserTest {
+public class CsvFraudPaymentParserTest {
 
-    CSVFraudPaymentParser csvFraudPaymentParser = new CSVFraudPaymentParser();
+    CsvFraudPaymentParser csvFraudPaymentParser = new CsvFraudPaymentParser();
 
     @Test
-    public void hasCSVFormat() throws IOException {
+    public void hasCsvFormat() throws IOException {
         File file = new File("src/test/resources/csv/test.csv");
         FileInputStream input = new FileInputStream(file);
-        MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
+        MultipartFile multipartFile =
+                new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
 
-        Assert.assertTrue(csvFraudPaymentParser.hasCSVFormat(multipartFile));
+        Assert.assertTrue(csvFraudPaymentParser.hasCsvFormat(multipartFile));
     }
 
     @Test

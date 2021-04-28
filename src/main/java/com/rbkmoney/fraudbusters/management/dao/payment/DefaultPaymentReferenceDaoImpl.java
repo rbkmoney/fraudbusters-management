@@ -13,13 +13,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.util.List;
 import java.util.Optional;
 
 import static com.rbkmoney.fraudbusters.management.domain.Tables.F_DEFAULT_REF;
 
 @Component
-public class DefaultPaymentReferenceDaoImpl extends AbstractDao implements DefaultReferenceDao<DefaultPaymentReferenceModel> {
+public class DefaultPaymentReferenceDaoImpl extends AbstractDao
+        implements DefaultReferenceDao<DefaultPaymentReferenceModel> {
 
     private final RowMapper<DefaultPaymentReferenceModel> listRecordRowMapper;
 
@@ -59,20 +61,21 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao implements Defau
     public List<DefaultPaymentReferenceModel> filterReferences(FilterRequest filterRequest) {
         SelectWhereStep<FDefaultRefRecord> from = getDslContext()
                 .selectFrom(F_DEFAULT_REF);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_DEFAULT_REF.TEMPLATE_ID : F_DEFAULT_REF.field(filterRequest.getSortBy(), String.class);
-        SelectConditionStep<FDefaultRefRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                from.where(DSL.trueCondition()) : from.where(
-                F_DEFAULT_REF.TEMPLATE_ID.like(filterRequest.getSearchValue())
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_DEFAULT_REF.TEMPLATE_ID :
+                F_DEFAULT_REF.field(filterRequest.getSortBy(), String.class);
+        SelectConditionStep<FDefaultRefRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
+                ? from.where(DSL.trueCondition())
+                : from.where(F_DEFAULT_REF.TEMPLATE_ID.like(filterRequest.getSearchValue())
                         .or(F_DEFAULT_REF.PARTY_ID.like(filterRequest.getSearchValue()))
                         .or(F_DEFAULT_REF.SHOP_ID.like(filterRequest.getSearchValue())));
-        SelectSeekStep2<FDefaultRefRecord, String, String> fReferenceRecords = addSortCondition(
+        SelectSeekStep2<FDefaultRefRecord, String, String> filterReferenceRecords = addSortCondition(
                 F_DEFAULT_REF.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
                 addSeekIfNeed(
                         filterRequest.getLastId(),
                         filterRequest.getSortFieldValue(),
                         filterRequest.getSize(),
-                        fReferenceRecords
+                        filterReferenceRecords
                 ),
                 listRecordRowMapper
         );
@@ -83,11 +86,11 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao implements Defau
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(F_DEFAULT_REF)
-                .where(!StringUtils.isEmpty(filterValue) ?
-                        F_DEFAULT_REF.TEMPLATE_ID.like(filterValue)
+                .where(!StringUtils.isEmpty(filterValue)
+                        ? F_DEFAULT_REF.TEMPLATE_ID.like(filterValue)
                                 .or(F_DEFAULT_REF.PARTY_ID.like(filterValue)
-                                        .or(F_DEFAULT_REF.SHOP_ID.like(filterValue))) :
-                        DSL.noCondition());
+                                        .or(F_DEFAULT_REF.SHOP_ID.like(filterValue)))
+                        : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }
 

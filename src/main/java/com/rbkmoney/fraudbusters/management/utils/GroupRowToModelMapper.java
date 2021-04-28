@@ -16,7 +16,7 @@ public class GroupRowToModelMapper {
         if (!CollectionUtils.isEmpty(groupPriorityRows)) {
             return groupPriorityRows.stream()
                     .collect(Collectors.groupingBy(GroupPriorityRow::getGroupId,
-                            Collectors.mapping( GroupPriorityRow::getPriorityIdModel, Collectors.toList()))
+                            Collectors.mapping(GroupPriorityRow::getPriorityIdModel, Collectors.toList()))
                     ).entrySet().stream()
                     .map(entry -> GroupModel.builder()
                             .groupId(entry.getKey())

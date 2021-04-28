@@ -4,6 +4,6 @@ public enum NotificationStatus {
 
     CREATED,
     ACTIVE,
-    ARCHIVE;
+    ARCHIVE
 
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFTemplate.P2P_F_TEMPLATE;
@@ -70,9 +71,13 @@ public class P2pTemplateDao extends AbstractDao implements TemplateDao {
         p2pFTemplateRecord.setId(filterRequest.getLastId());
         SelectConditionStep<P2pFTemplateRecord> where = getDslContext()
                 .selectFrom(P2P_F_TEMPLATE)
-                .where(!StringUtils.isEmpty(filterRequest.getSearchValue()) ? P2P_F_TEMPLATE.ID.like(filterRequest.getSearchValue()) : DSL.noCondition());
-        SelectSeekStep1<P2pFTemplateRecord, String> selectSeekStep = addSortCondition(P2P_F_TEMPLATE.ID, filterRequest.getSortOrder(), where);
-        return fetch(addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSize(), selectSeekStep), listRecordRowMapper);
+                .where(!StringUtils.isEmpty(filterRequest.getSearchValue())
+                        ? P2P_F_TEMPLATE.ID.like(filterRequest.getSearchValue())
+                        : DSL.noCondition());
+        SelectSeekStep1<P2pFTemplateRecord, String> selectSeekStep =
+                addSortCondition(P2P_F_TEMPLATE.ID, filterRequest.getSortOrder(), where);
+        return fetch(addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSize(), selectSeekStep),
+                listRecordRowMapper);
     }
 
     @Override

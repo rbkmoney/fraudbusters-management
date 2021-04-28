@@ -31,8 +31,10 @@ public class P2pGroupQueryResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<P2pGroupReferenceModel>> getReferences(Principal principal,
                                                                       @PathVariable(value = "groupId") String groupId,
-                                                                      @Validated @RequestParam(required = false) Integer limit) {
-        log.info("getGroupReferences initiator: {} id: {} limit: {}", userInfoService.getUserName(principal), groupId, limit);
+                                                                      @Validated @RequestParam(required = false)
+                                                                              Integer limit) {
+        log.info("getGroupReferences initiator: {} id: {} limit: {}", userInfoService.getUserName(principal), groupId,
+                limit);
         List<P2pGroupReferenceModel> listByTemplateId = referenceDao.getByGroupId(groupId);
         return ResponseEntity.ok().body(listByTemplateId);
     }
@@ -59,8 +61,10 @@ public class P2pGroupQueryResource {
 
     @GetMapping(value = "/group/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterResponse<P2pGroupReferenceModel>> filterReference(Principal principal, FilterRequest filterRequest) {
-        log.info("filterReference initiator: {} idRegexp: {}", userInfoService.getUserName(principal), filterRequest.getSearchValue());
+    public ResponseEntity<FilterResponse<P2pGroupReferenceModel>> filterReference(Principal principal,
+                                                                                  FilterRequest filterRequest) {
+        log.info("filterReference initiator: {} idRegexp: {}", userInfoService.getUserName(principal),
+                filterRequest.getSearchValue());
         List<P2pGroupReferenceModel> listByTemplateId = referenceDao.filterReference(filterRequest);
         Integer count = referenceDao.countFilterReference(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterResponse.<P2pGroupReferenceModel>builder()

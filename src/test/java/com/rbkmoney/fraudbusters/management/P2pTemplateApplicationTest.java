@@ -73,7 +73,8 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         TemplateModel templateModel = new TemplateModel();
         String id = ID;
         templateModel.setId(id);
-        templateModel.setTemplate("rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
+        templateModel.setTemplate(
+                "rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
 
         p2pTemplateCommandResource.insertTemplate(new BasicUserPrincipal(TEST), templateModel);
         p2pTemplateCommandResource.removeTemplate(new BasicUserPrincipal(TEST), id);
@@ -91,8 +92,10 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         referenceModel.setTemplateId(TEMPLATE_ID);
         referenceModel.setIsGlobal(false);
         referenceModel.setIdentityId(IDENTITY_ID);
-        p2pTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST), ID, Collections.singletonList(referenceModel));
-        p2pTemplateCommandResource.deleteReference(new BasicUserPrincipal(TEST), referenceModel.getTemplateId(), referenceModel.getIdentityId());
+        p2pTemplateCommandResource
+                .insertReferences(new BasicUserPrincipal(TEST), ID, Collections.singletonList(referenceModel));
+        p2pTemplateCommandResource.deleteReference(new BasicUserPrincipal(TEST), referenceModel.getTemplateId(),
+                referenceModel.getIdentityId());
 
         await().untilAsserted(() -> {
             verify(referenceDao, times(1)).insert(any());
@@ -104,11 +107,12 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public void groupReferenceTest() {
         P2pGroupReferenceModel groupReferenceModel = new P2pGroupReferenceModel();
         groupReferenceModel.setId(ID);
-        String identity_id = IDENTITY_ID;
-        groupReferenceModel.setIdentityId(identity_id);
+        String identityId = IDENTITY_ID;
+        groupReferenceModel.setIdentityId(identityId);
 
-        groupCommandResource.insertGroupReference(new BasicUserPrincipal(TEST), ID, Collections.singletonList(groupReferenceModel));
-        groupCommandResource.removeGroupReference(new BasicUserPrincipal(TEST), ID, identity_id);
+        groupCommandResource
+                .insertGroupReference(new BasicUserPrincipal(TEST), ID, Collections.singletonList(groupReferenceModel));
+        groupCommandResource.removeGroupReference(new BasicUserPrincipal(TEST), ID, identityId);
 
         await().untilAsserted(() -> {
             verify(groupReferenceDao, times(1)).insert(any());

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference.F_GROUP_REFERENCE;
@@ -69,12 +70,14 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
     public List<PaymentGroupReferenceModel> filterReference(FilterRequest filterRequest) {
         SelectWhereStep<FGroupReferenceRecord> from = getDslContext()
                 .selectFrom(F_GROUP_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_GROUP_REFERENCE.GROUP_ID : F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class);
-        SelectConditionStep<FGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                from.where(DSL.trueCondition()) : from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())
-                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue())
-                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue()))));
-        SelectSeekStep2<FGroupReferenceRecord, String, Long> fGroupReferenceRecords = addSortCondition(
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_GROUP_REFERENCE.GROUP_ID :
+                F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class);
+        SelectConditionStep<FGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
+                ? from.where(DSL.trueCondition())
+                : from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())
+                        .or(F_GROUP_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue())
+                                .or(F_GROUP_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue()))));
+        SelectSeekStep2<FGroupReferenceRecord, String, Long> filterGroupReferenceRecords = addSortCondition(
                 F_GROUP_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
                 addSeekIfNeed(
@@ -83,7 +86,7 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
                         ),
                         filterRequest.getSortFieldValue(),
                         filterRequest.getSize(),
-                        fGroupReferenceRecords),
+                        filterGroupReferenceRecords),
                 listRecordRowMapper);
     }
 
@@ -92,11 +95,11 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(F_GROUP_REFERENCE)
-                .where(!StringUtils.isEmpty(filterValue) ?
-                        F_GROUP_REFERENCE.GROUP_ID.like(filterValue)
+                .where(!StringUtils.isEmpty(filterValue)
+                        ? F_GROUP_REFERENCE.GROUP_ID.like(filterValue)
                                 .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
-                                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue))) :
-                        DSL.noCondition());
+                                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue)))
+                        : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }
 

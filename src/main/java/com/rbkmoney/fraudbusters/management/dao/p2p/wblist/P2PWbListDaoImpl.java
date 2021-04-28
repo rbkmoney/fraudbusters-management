@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -80,23 +81,25 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
 
     @Override
     public List<P2pWbListRecords> getFilteredListRecords(String identityId, ListType listType, String listName) {
-        log.info("WbListDaoImpl getFilteredListRecords identityId: {} listType: {} listName: {}", identityId, listType, listName);
+        log.info("WbListDaoImpl getFilteredListRecords identityId: {} listType: {} listName: {}", identityId, listType,
+                listName);
         Condition condition = DSL.trueCondition();
-        SelectLimitPercentStep<Record7<String, String, ListType, String, String, LocalDateTime, String>> query = getDslContext()
-                .select(P2P_WB_LIST_RECORDS.ID,
-                        P2P_WB_LIST_RECORDS.IDENTITY_ID,
-                        P2P_WB_LIST_RECORDS.LIST_TYPE,
-                        P2P_WB_LIST_RECORDS.LIST_NAME,
-                        P2P_WB_LIST_RECORDS.VALUE,
-                        P2P_WB_LIST_RECORDS.INSERT_TIME,
-                        P2P_WB_LIST_RECORDS.ROW_INFO)
-                .from(P2P_WB_LIST_RECORDS)
-                .where(appendConditions(condition, Operator.AND,
-                        new ConditionParameterSource()
-                                .addValue(P2P_WB_LIST_RECORDS.IDENTITY_ID, identityId, EQUALS)
-                                .addValue(P2P_WB_LIST_RECORDS.LIST_TYPE, listType, EQUALS)
-                                .addValue(P2P_WB_LIST_RECORDS.LIST_NAME, listName, EQUALS)))
-                .limit(LIMIT_TOTAL);
+        SelectLimitPercentStep<Record7<String, String, ListType, String, String, LocalDateTime, String>> query =
+                getDslContext()
+                        .select(P2P_WB_LIST_RECORDS.ID,
+                                P2P_WB_LIST_RECORDS.IDENTITY_ID,
+                                P2P_WB_LIST_RECORDS.LIST_TYPE,
+                                P2P_WB_LIST_RECORDS.LIST_NAME,
+                                P2P_WB_LIST_RECORDS.VALUE,
+                                P2P_WB_LIST_RECORDS.INSERT_TIME,
+                                P2P_WB_LIST_RECORDS.ROW_INFO)
+                        .from(P2P_WB_LIST_RECORDS)
+                        .where(appendConditions(condition, Operator.AND,
+                                new ConditionParameterSource()
+                                        .addValue(P2P_WB_LIST_RECORDS.IDENTITY_ID, identityId, EQUALS)
+                                        .addValue(P2P_WB_LIST_RECORDS.LIST_TYPE, listType, EQUALS)
+                                        .addValue(P2P_WB_LIST_RECORDS.LIST_NAME, listName, EQUALS)))
+                        .limit(LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
@@ -105,15 +108,18 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
                                                     FilterRequest filterRequest) {
         SelectWhereStep<P2pWbListRecordsRecord> from = getDslContext()
                 .selectFrom(P2P_WB_LIST_RECORDS);
-        Condition condition = P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<P2pWbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                from.where(condition) :
-                from.where(condition.and(
+        Condition condition =
+                P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
+        SelectConditionStep<P2pWbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
+                ? from.where(condition)
+                : from.where(condition.and(
                         P2P_WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
                                 .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterRequest.getSearchValue()))));
-        Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_WB_LIST_RECORDS.INSERT_TIME : P2P_WB_LIST_RECORDS.field(filterRequest.getSortBy());
-        SelectSeekStep2<P2pWbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(P2P_WB_LIST_RECORDS.ID,
-                field, filterRequest.getSortOrder(), whereQuery);
+        Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_WB_LIST_RECORDS.INSERT_TIME :
+                P2P_WB_LIST_RECORDS.field(filterRequest.getSortBy());
+        SelectSeekStep2<P2pWbListRecordsRecord, Object, String> wbListRecordsRecords =
+                addSortCondition(P2P_WB_LIST_RECORDS.ID,
+                        field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
                 addSeekIfNeed(
                         filterRequest.getLastId(),
@@ -130,10 +136,11 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
         SelectJoinStep<Record1<Integer>> from = getDslContext()
                 .selectCount()
                 .from(P2P_WB_LIST_RECORDS);
-        Condition condition = P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue) ?
-                from.where(condition) :
-                from.where(condition.and(
+        Condition condition =
+                P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
+        SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue)
+                ? from.where(condition)
+                : from.where(condition.and(
                         P2P_WB_LIST_RECORDS.VALUE.like(filterValue)
                                 .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterValue))));
         return fetchOne(where, Integer.class);
