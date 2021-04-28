@@ -48,7 +48,7 @@ public class ReferenceQueryResource {
                 userInfoService.getUserName(principal), filterRequest);
         FilterRequestUtils.prepareFilterRequest(filterRequest);
         List<DefaultPaymentReferenceModel> paymentReferenceModels = defaultPaymentReferenceDao.filterReferences(filterRequest);
-        Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue());
+        Integer count = defaultPaymentReferenceDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(
                 FilterResponse.<DefaultPaymentReferenceModel>builder()
                         .count(count)
