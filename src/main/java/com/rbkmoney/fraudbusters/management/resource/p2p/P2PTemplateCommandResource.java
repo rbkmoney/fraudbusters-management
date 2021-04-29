@@ -110,7 +110,7 @@ public class P2PTemplateCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
-    @PostMapping(value = "/template/{id}/default")
+    @PostMapping(value = "/template/default-references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertDefaultReference(
             Principal principal, @Validated @RequestBody DefaultP2pReferenceModel referenceModel) {
@@ -123,7 +123,7 @@ public class P2PTemplateCommandResource {
         return ResponseEntity.ok().body(uid);
     }
 
-    @DeleteMapping(value = "/template/{id}/default")
+    @DeleteMapping(value = "/template/default-references/{id}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeDefaultReference(Principal principal, @PathVariable(value = "id") String id) {
         log.info("removeDefaultReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
