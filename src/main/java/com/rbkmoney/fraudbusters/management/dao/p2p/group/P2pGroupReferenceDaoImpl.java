@@ -73,8 +73,9 @@ public class P2pGroupReferenceDaoImpl extends AbstractDao implements P2pGroupRef
     @Override
     public List<P2pGroupReferenceModel> filterReference(FilterRequest filterRequest) {
         SelectWhereStep<P2pFGroupReferenceRecord> from = getDslContext().selectFrom(P2P_F_GROUP_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_F_GROUP_REFERENCE.GROUP_ID :
-                P2P_F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class);
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy())
+                ? P2P_F_GROUP_REFERENCE.GROUP_ID
+                : P2P_F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class);
         SelectConditionStep<P2pFGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(DSL.trueCondition())
                 : from.where(P2P_F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())
@@ -84,9 +85,7 @@ public class P2pGroupReferenceDaoImpl extends AbstractDao implements P2pGroupRef
                         field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
                 addSeekIfNeed(
-                        parseIfExists(
-                                filterRequest.getLastId()
-                        ),
+                        parseIfExists(filterRequest.getLastId()),
                         filterRequest.getSortFieldValue(),
                         filterRequest.getSize(),
                         filterGroupReferenceRecords),

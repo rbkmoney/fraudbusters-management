@@ -61,8 +61,9 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao
     public List<DefaultPaymentReferenceModel> filterReferences(FilterRequest filterRequest) {
         SelectWhereStep<FDefaultRefRecord> from = getDslContext()
                 .selectFrom(F_DEFAULT_REF);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? F_DEFAULT_REF.TEMPLATE_ID :
-                F_DEFAULT_REF.field(filterRequest.getSortBy(), String.class);
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy())
+                ? F_DEFAULT_REF.TEMPLATE_ID
+                : F_DEFAULT_REF.field(filterRequest.getSortBy(), String.class);
         SelectConditionStep<FDefaultRefRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(DSL.trueCondition())
                 : from.where(F_DEFAULT_REF.TEMPLATE_ID.like(filterRequest.getSearchValue())

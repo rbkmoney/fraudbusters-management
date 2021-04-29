@@ -43,8 +43,8 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<CreateTemplateResponse> insertTemplate(Principal principal,
-                                                                 @Validated @RequestBody TemplateModel templateModel) {
+    public ResponseEntity<CreateTemplateResponse> insertTemplate(
+            Principal principal, @Validated @RequestBody TemplateModel templateModel) {
         log.info("P2pReferenceCommandResource insertTemplate userName: {} templateModel: {}",
                 userInfoService.getUserName(principal), templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
@@ -70,9 +70,8 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template/validate")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(Principal principal,
-                                                                      @Validated @RequestBody
-                                                                              TemplateModel templateModel) {
+    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(
+            Principal principal, @Validated @RequestBody TemplateModel templateModel) {
         log.info("P2PTemplateCommandResource validateTemplate userName: {} templateModel: {}",
                 userInfoService.getUserName(principal), templateModel);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(new Template()
@@ -92,10 +91,10 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template/{id}/references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertReferences(Principal principal,
-                                                         @PathVariable(value = "id") String id,
-                                                         @Validated @RequestBody
-                                                                 List<P2pReferenceModel> referenceModels) {
+    public ResponseEntity<List<String>> insertReferences(
+            Principal principal,
+            @PathVariable(value = "id") String id,
+            @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("P2pReferenceCommandResource insertReference userName: {} referenceModels: {}",
                 userInfoService.getUserName(principal), referenceModels);
         List<String> ids = referenceModels.stream()
@@ -113,9 +112,8 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template/{id}/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> insertDefaultReference(Principal principal,
-                                                         @Validated @RequestBody
-                                                                 DefaultP2pReferenceModel referenceModel) {
+    public ResponseEntity<String> insertDefaultReference(
+            Principal principal, @Validated @RequestBody DefaultP2pReferenceModel referenceModel) {
         log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
                 referenceModel);
         String uid = UUID.randomUUID().toString();

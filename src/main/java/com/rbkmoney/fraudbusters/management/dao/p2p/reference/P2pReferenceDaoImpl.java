@@ -94,8 +94,9 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
     public List<P2pReferenceModel> filterReferences(FilterRequest filterRequest, boolean isGlobal) {
         SelectWhereStep<P2pFReferenceRecord> from = getDslContext()
                 .selectFrom(P2P_F_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_F_REFERENCE.TEMPLATE_ID :
-                P2P_F_REFERENCE.field(filterRequest.getSortBy(), String.class);
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy())
+                ? P2P_F_REFERENCE.TEMPLATE_ID
+                : P2P_F_REFERENCE.field(filterRequest.getSortBy(), String.class);
         SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(DSL.trueCondition())
                 : from.where(P2P_F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
