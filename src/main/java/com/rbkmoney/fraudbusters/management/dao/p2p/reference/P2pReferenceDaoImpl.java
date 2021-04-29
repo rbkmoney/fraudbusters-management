@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFReference.P2P_F_REFERENCE;
@@ -93,14 +94,18 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
     public List<P2pReferenceModel> filterReferences(FilterRequest filterRequest, boolean isGlobal) {
         SelectWhereStep<P2pFReferenceRecord> from = getDslContext()
                 .selectFrom(P2P_F_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_F_REFERENCE.TEMPLATE_ID : P2P_F_REFERENCE.field(filterRequest.getSortBy(), String.class);
-        SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                from.where(DSL.trueCondition()) : from.where(
-                P2P_F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy())
+                ? P2P_F_REFERENCE.TEMPLATE_ID
+                : P2P_F_REFERENCE.field(filterRequest.getSortBy(), String.class);
+        SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
+                ? from.where(DSL.trueCondition())
+                : from.where(P2P_F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
                         .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterRequest.getSearchValue())));
-        SelectSeekStep2<P2pFReferenceRecord, String, String> fReferenceRecords = addSortCondition(
+        SelectSeekStep2<P2pFReferenceRecord, String, String> filterReferenceRecords = addSortCondition(
                 P2P_F_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
-        return fetch(addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSortFieldValue(), filterRequest.getSize(), fReferenceRecords), listRecordRowMapper);
+        return fetch(
+                addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSortFieldValue(), filterRequest.getSize(),
+                        filterReferenceRecords), listRecordRowMapper);
     }
 
     @Override
@@ -113,7 +118,8 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
     }
 
     private Condition referenceFullFieldSearchCondition(String searchValue, Boolean isGlobal) {
-        return appendConditions(StringUtils.isEmpty(searchValue) ? DSL.trueCondition() : DSL.falseCondition(), Operator.OR,
+        return appendConditions(StringUtils.isEmpty(searchValue) ? DSL.trueCondition() : DSL.falseCondition(),
+                Operator.OR,
                 new ConditionParameterSource()
                         .addValue(P2P_F_REFERENCE.ID, searchValue, LIKE)
                         .addValue(P2P_F_REFERENCE.TEMPLATE_ID, searchValue, LIKE)

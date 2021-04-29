@@ -44,7 +44,8 @@ public class PaymentEmulateResource {
     public ResponseEntity<List<TemplateModel>> getRulesByPartyAndShop(Principal principal,
                                                                       @Validated @RequestParam String partyId,
                                                                       @Validated @RequestParam String shopId) {
-        log.info("EmulateResource getRulesByPartyAndShop initiator: {} partyId: {} shopId: {}", userInfoService.getUserName(principal), partyId, shopId);
+        log.info("EmulateResource getRulesByPartyAndShop initiator: {} partyId: {} shopId: {}",
+                userInfoService.getUserName(principal), partyId, shopId);
         List<TemplateModel> resultModels = new ArrayList<>();
         ReferenceModel globalReference = referenceDao.getGlobalReference();
 
@@ -53,7 +54,8 @@ public class PaymentEmulateResource {
             resultModels.add(globalTemplate);
         }
 
-        List<PaymentGroupReferenceModel> groupReferenceModels = groupReferenceDao.getByPartyIdAndShopId(partyId, shopId);
+        List<PaymentGroupReferenceModel> groupReferenceModels =
+                groupReferenceDao.getByPartyIdAndShopId(partyId, shopId);
         if (!CollectionUtils.isEmpty(groupReferenceModels)) {
             for (PaymentGroupReferenceModel groupReferenceModel : groupReferenceModels) {
                 GroupModel groupModel = groupDao.getById(groupReferenceModel.getGroupId());

@@ -47,32 +47,27 @@ import static org.mockito.Mockito.*;
 @Slf4j
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@SpringBootTest(classes = FraudbustersManagementApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+        classes = FraudbustersManagementApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
+    public static final String IDENTITY_ID = "identityId";
     private static final String VALUE = "value";
     private static final String LIST_NAME = "listName";
-    public static final String IDENTITY_ID = "identityId";
-
     @MockBean
     public AuditService auditService;
-
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
     @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
     @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
-
     @MockBean
     public P2PWbListDao wbListDao;
-
+    @Autowired
+    ObjectMapper objectMapper;
     @Autowired
     TestRestTemplate restTemplate;
+    @LocalServerPort
+    private int port;
 
     @Test
     public void listenCreated() throws ExecutionException, InterruptedException {
@@ -209,8 +204,9 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
         p2pListRowsInsertRequest.setRecords(collect);
         HttpEntity<P2pListRowsInsertRequest> entity = new HttpEntity<>(p2pListRowsInsertRequest,
                 new org.springframework.http.HttpHeaders());
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/p2p/lists",
-                HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> response =
+                restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/p2p/lists",
+                        HttpMethod.POST, entity, String.class);
         System.out.println(response);
     }
 

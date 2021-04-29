@@ -14,6 +14,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -38,8 +39,10 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
         List<Query> inserts = groupModel.getPriorityTemplates().stream()
                 .map(pair -> getDslContext()
                         .insertInto(P2P_F_GROUP)
-                        .columns(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.PRIORITY, P2P_F_GROUP.TEMPLATE_ID, P2P_F_GROUP.MODIFIED_BY_USER)
-                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId(), groupModel.getModifiedByUser())
+                        .columns(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.PRIORITY, P2P_F_GROUP.TEMPLATE_ID,
+                                P2P_F_GROUP.MODIFIED_BY_USER)
+                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId(),
+                                groupModel.getModifiedByUser())
                         .onConflict(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.TEMPLATE_ID)
                         .doNothing()
                 ).collect(Collectors.toList());
@@ -91,7 +94,8 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
     @Override
     public List<GroupModel> filterGroup(String filterValue) {
         SelectJoinStep<Record4<String, String, Long, String>> from = getDslContext()
-                .select(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.TEMPLATE_ID, P2P_F_GROUP.PRIORITY, P2P_F_GROUP.MODIFIED_BY_USER)
+                .select(P2P_F_GROUP.GROUP_ID, P2P_F_GROUP.TEMPLATE_ID, P2P_F_GROUP.PRIORITY,
+                        P2P_F_GROUP.MODIFIED_BY_USER)
                 .from(P2P_F_GROUP);
         SelectConditionStep<Record1<String>> selectGroupsId = null;
         if (!StringUtils.isEmpty(filterValue)) {
@@ -101,9 +105,10 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
                     .where(P2P_F_GROUP.GROUP_ID.like(filterValue)
                             .or(P2P_F_GROUP.TEMPLATE_ID.like(filterValue)));
         }
-        List<GroupPriorityRow> list = fetch(StringUtils.isEmpty(filterValue) ? from : from.where(P2P_F_GROUP.GROUP_ID.in(selectGroupsId)),
-                (rs, rowNum) -> createGroupPriorityRow(rs)
-        );
+        List<GroupPriorityRow> list =
+                fetch(StringUtils.isEmpty(filterValue) ? from : from.where(P2P_F_GROUP.GROUP_ID.in(selectGroupsId)),
+                        (rs, rowNum) -> createGroupPriorityRow(rs)
+                );
         return groupRowToModelMapper.groupByGroupId(list);
     }
 

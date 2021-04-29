@@ -32,9 +32,11 @@ public class P2pReferenceQueryResource {
     @GetMapping(value = "/reference/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<FilterResponse<P2pReferenceModel>> filterReferences(Principal principal,
-                                                           FilterRequest filterRequest,
-                                                           @RequestParam(value = "isGlobal") Boolean isGlobal) {
-        log.info("filterReferences initiator: {}  filterRequest: {} isGlobal: {}", userInfoService.getUserName(principal), filterRequest, isGlobal);
+                                                                              FilterRequest filterRequest,
+                                                                              @RequestParam(value = "isGlobal")
+                                                                                      Boolean isGlobal) {
+        log.info("filterReferences initiator: {}  filterRequest: {} isGlobal: {}",
+                userInfoService.getUserName(principal), filterRequest, isGlobal);
         List<P2pReferenceModel> paymentReferenceModels = referenceDao.filterReferences(filterRequest, isGlobal);
         Integer count = referenceDao.countFilterModel(filterRequest.getSearchValue(), isGlobal);
         return ResponseEntity.ok().body(FilterResponse.<P2pReferenceModel>builder()
@@ -45,9 +47,10 @@ public class P2pReferenceQueryResource {
 
     @GetMapping(value = "/reference/default/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterResponse<DefaultP2pReferenceModel>> filterDefaultReferences(Principal principal,
-                                                                                     FilterRequest filterRequest) {
-        log.info("filterReferences initiator: {}  filterRequest: {}", userInfoService.getUserName(principal), filterRequest);
+    public ResponseEntity<FilterResponse<DefaultP2pReferenceModel>> filterDefaultReferences(
+            Principal principal, FilterRequest filterRequest) {
+        log.info("filterReferences initiator: {}  filterRequest: {}", userInfoService.getUserName(principal),
+                filterRequest);
         List<DefaultP2pReferenceModel> paymentReferenceModels = defaultP2pReferenceDao.filterReferences(filterRequest);
         Integer count = defaultP2pReferenceDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(FilterResponse.<DefaultP2pReferenceModel>builder()

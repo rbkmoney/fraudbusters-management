@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,15 +41,16 @@ public class CommandAuditDaoImpl extends AbstractDao implements CommandAuditDao 
                                         FilterRequest filterRequest) {
         SelectWhereStep<CommandAuditRecord> select = getDslContext()
                 .selectFrom(COMMAND_AUDIT);
-        Condition condition = COMMAND_AUDIT.COMMAND_TYPE.in(commandTypes).and(COMMAND_AUDIT.OBJECT_TYPE.in(objectTypes));
-        SelectConditionStep<CommandAuditRecord> where = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                select.where(condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to))) :
-                select.where(condition.and(
+        Condition condition =
+                COMMAND_AUDIT.COMMAND_TYPE.in(commandTypes).and(COMMAND_AUDIT.OBJECT_TYPE.in(objectTypes));
+        SelectConditionStep<CommandAuditRecord> where = StringUtils.isEmpty(filterRequest.getSearchValue())
+                ? select.where(condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to)))
+                : select.where(condition.and(
                         COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
                         .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
-        Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ?
-                COMMAND_AUDIT.INSERT_TIME :
-                COMMAND_AUDIT.field(filterRequest.getSortBy());
+        Field field = StringUtils.isEmpty(filterRequest.getSortBy())
+                ? COMMAND_AUDIT.INSERT_TIME
+                : COMMAND_AUDIT.field(filterRequest.getSortBy());
         SelectSeekStep2<CommandAuditRecord, Object, String> auditRecords = addSortCondition(COMMAND_AUDIT.ID,
                 field, filterRequest.getSortOrder(), where);
         return fetch(
@@ -67,14 +69,14 @@ public class CommandAuditDaoImpl extends AbstractDao implements CommandAuditDao 
                                       List<String> commandTypes,
                                       List<String> objectTypes,
                                       FilterRequest filterRequest) {
-        Condition condition = COMMAND_AUDIT.COMMAND_TYPE.in(commandTypes).and(COMMAND_AUDIT.OBJECT_TYPE.in(objectTypes));
+        Condition condition =
+                COMMAND_AUDIT.COMMAND_TYPE.in(commandTypes).and(COMMAND_AUDIT.OBJECT_TYPE.in(objectTypes));
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(COMMAND_AUDIT)
-                .where( StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                        condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to)) :
-                        condition.and(
-                                COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
+                .where(StringUtils.isEmpty(filterRequest.getSearchValue())
+                        ? condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to))
+                        : condition.and(COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
                                 .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
         return fetchOne(where, Integer.class);
     }

@@ -16,7 +16,8 @@ public class UnknownReferenceException extends RuntimeException {
         super(cause);
     }
 
-    public UnknownReferenceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public UnknownReferenceException(String message, Throwable cause, boolean enableSuppression,
+                                     boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

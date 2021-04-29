@@ -20,7 +20,8 @@ public class CountInfoUtils {
     public CountInfo initRowCountInfo(String rowInfo) {
         CountInfo countInfoValue = new CountInfo();
         try {
-            com.rbkmoney.damsel.wb_list.CountInfo countInfo = objectMapper.readValue(rowInfo, com.rbkmoney.damsel.wb_list.CountInfo.class);
+            com.rbkmoney.damsel.wb_list.CountInfo countInfo =
+                    objectMapper.readValue(rowInfo, com.rbkmoney.damsel.wb_list.CountInfo.class);
             countInfoValue.setCount(countInfo.getCount());
             countInfoValue.setEndCountTime(countInfo.getTimeToLive());
             countInfoValue.setStartCountTime(countInfo.getStartCountTime());
@@ -31,8 +32,9 @@ public class CountInfoUtils {
     }
 
     public void initRowCountInfo(CountInfo countInfo, Row row) {
-        String startCountTime = StringUtil.isNullOrEmpty(countInfo.getStartCountTime()) ?
-                Instant.now().toString() : countInfo.getStartCountTime();
+        String startCountTime = StringUtil.isNullOrEmpty(countInfo.getStartCountTime())
+                ? Instant.now().toString()
+                : countInfo.getStartCountTime();
         row.setRowInfo(RowInfo.count_info(new com.rbkmoney.damsel.wb_list.CountInfo()
                 .setCount(countInfo.getCount())
                 .setStartCountTime(startCountTime)

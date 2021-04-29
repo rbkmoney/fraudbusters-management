@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 @Service
 public class WbListUtils {
 
-    public <T> ResponseEntity<List<String>> insertInList(BiFunction<T, String, String> func, List<T> records, String initiator) {
+    public <T> ResponseEntity<List<String>> insertInList(BiFunction<T, String, String> func, List<T> records,
+                                                         String initiator) {
         try {
             List<String> recordIds = records.stream()
                     .map(t -> func.apply(t, initiator))

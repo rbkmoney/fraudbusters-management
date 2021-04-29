@@ -29,13 +29,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 class AuditResourceTest {
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(AuditResource.YYYY_MM_DD_HH_MM_SS);
     @MockBean
     private CommandAuditDao commandAuditDao;
-
     @Autowired
     private MockMvc mockMvc;
-
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(AuditResource.YYYY_MM_DD_HH_MM_SS);
 
     @Test
     void filter() throws Exception {

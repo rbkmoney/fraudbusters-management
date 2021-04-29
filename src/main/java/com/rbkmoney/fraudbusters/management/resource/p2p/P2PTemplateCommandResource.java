@@ -43,9 +43,10 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<CreateTemplateResponse> insertTemplate(Principal principal,
-                                                                 @Validated @RequestBody TemplateModel templateModel) {
-        log.info("P2pReferenceCommandResource insertTemplate userName: {} templateModel: {}", userInfoService.getUserName(principal), templateModel);
+    public ResponseEntity<CreateTemplateResponse> insertTemplate(
+            Principal principal, @Validated @RequestBody TemplateModel templateModel) {
+        log.info("P2pReferenceCommandResource insertTemplate userName: {} templateModel: {}",
+                userInfoService.getUserName(principal), templateModel);
         Command command = templateModelToCommandConverter.convert(templateModel);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(
                 command.getCommandBody().getTemplate()
@@ -69,9 +70,10 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template/validate")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(Principal principal,
-                                                                      @Validated @RequestBody TemplateModel templateModel) {
-        log.info("P2PTemplateCommandResource validateTemplate userName: {} templateModel: {}", userInfoService.getUserName(principal), templateModel);
+    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(
+            Principal principal, @Validated @RequestBody TemplateModel templateModel) {
+        log.info("P2PTemplateCommandResource validateTemplate userName: {} templateModel: {}",
+                userInfoService.getUserName(principal), templateModel);
         List<TemplateValidateError> templateValidateErrors = p2PValidationService.validateTemplate(new Template()
                 .setId(templateModel.getId())
                 .setTemplate(templateModel.getTemplate().getBytes()));
@@ -89,10 +91,12 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template/{id}/references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertReferences(Principal principal,
-                                                         @PathVariable(value = "id") String id,
-                                                         @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
-        log.info("P2pReferenceCommandResource insertReference userName: {} referenceModels: {}", userInfoService.getUserName(principal), referenceModels);
+    public ResponseEntity<List<String>> insertReferences(
+            Principal principal,
+            @PathVariable(value = "id") String id,
+            @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
+        log.info("P2pReferenceCommandResource insertReference userName: {} referenceModels: {}",
+                userInfoService.getUserName(principal), referenceModels);
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> {
@@ -108,9 +112,10 @@ public class P2PTemplateCommandResource {
 
     @PostMapping(value = "/template/{id}/default")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> insertDefaultReference(Principal principal,
-                                                         @Validated @RequestBody DefaultP2pReferenceModel referenceModel) {
-        log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal), referenceModel);
+    public ResponseEntity<String> insertDefaultReference(
+            Principal principal, @Validated @RequestBody DefaultP2pReferenceModel referenceModel) {
+        log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
+                referenceModel);
         String uid = UUID.randomUUID().toString();
         referenceModel.setId(uid);
         referenceModel.setModifiedByUser(userInfoService.getUserName(principal));
@@ -129,7 +134,8 @@ public class P2PTemplateCommandResource {
     @DeleteMapping(value = "/template/{id}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeTemplate(Principal principal, @PathVariable(value = "id") String id) {
-        log.info("TemplateManagementResource removeTemplate initiator: {} id: {}", userInfoService.getUserName(principal), id);
+        log.info("TemplateManagementResource removeTemplate initiator: {} id: {}",
+                userInfoService.getUserName(principal), id);
         Command command = p2pTemplateCommandService.createTemplateCommandById(id);
         command.setCommandType(CommandType.DELETE);
         command.setUserInfo(new UserInfo()

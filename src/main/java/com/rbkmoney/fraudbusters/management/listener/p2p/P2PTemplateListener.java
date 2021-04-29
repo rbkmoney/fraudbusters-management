@@ -19,7 +19,8 @@ public class P2PTemplateListener extends CommandListener {
     private final CommandToTemplateModelConverter converter;
     private final AuditService auditService;
 
-    @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.template}", containerFactory = "kafkaP2PTemplateListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.template}",
+            containerFactory = "kafkaP2PTemplateListenerContainerFactory")
     public void listen(Command command) {
         log.info("P2PTemplateDao event: {}", command);
         handle(command, converter, p2pTemplateDao::insert, p2pTemplateDao::remove);

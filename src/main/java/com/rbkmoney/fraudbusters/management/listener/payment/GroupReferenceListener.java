@@ -19,7 +19,8 @@ public class GroupReferenceListener extends CommandListener {
     private final CommandToPaymentGroupReferenceModelConverter groupReferenceModelConverter;
     private final AuditService auditService;
 
-    @KafkaListener(topics = "${kafka.topic.fraudbusters.payment.group.reference}", containerFactory = "kafkaGroupReferenceListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.fraudbusters.payment.group.reference}",
+            containerFactory = "kafkaGroupReferenceListenerContainerFactory")
     public void listen(Command command) {
         log.info("GroupReferenceListener command: {}", command);
         if (command.getCommandBody().isSetGroupReference()) {

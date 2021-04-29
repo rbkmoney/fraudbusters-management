@@ -38,8 +38,10 @@ public class P2PTemplateQueryResource {
 
     @GetMapping(value = "/template/filter")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<FilterResponse<TemplateModel>> filterTemplates(Principal principal, FilterRequest filterRequest) {
-        log.info("filterTemplates initiator: {} filterRequest: {}", userInfoService.getUserName(principal), filterRequest);
+    public ResponseEntity<FilterResponse<TemplateModel>> filterTemplates(Principal principal,
+                                                                         FilterRequest filterRequest) {
+        log.info("filterTemplates initiator: {} filterRequest: {}", userInfoService.getUserName(principal),
+                filterRequest);
         List<TemplateModel> templateModels = p2pTemplateDao.filterModel(filterRequest);
         Integer count = p2pTemplateDao.countFilterModel(filterRequest.getSearchValue());
         return ResponseEntity.ok().body(

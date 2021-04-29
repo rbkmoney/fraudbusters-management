@@ -40,7 +40,8 @@ public class WbListEventListener {
             auditService.logEvent(event);
         } else {
             log.error("Unknown event when wbListEventListener listen event: {}", event);
-            throw new UnknownEventException(String.format("Unknown event when wbListEventListener listen event: %s", event));
+            throw new UnknownEventException(
+                    String.format("Unknown event when wbListEventListener listen event: %s", event));
         }
     }
 

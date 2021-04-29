@@ -1,18 +1,14 @@
 package com.rbkmoney.fraudbusters.management.converter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.fraudbusters.management.domain.enums.CommandType;
 import com.rbkmoney.fraudbusters.management.domain.enums.ObjectType;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.util.Arrays;
 
 @Slf4j
 @Component
@@ -27,8 +23,9 @@ public class EventToAuditLogConverter implements Converter<Event, CommandAudit> 
         model.setCommandType(parseEventType(event));
         model.setObjectType(ObjectType.valueOf(event.getRow().getListType().name()));
         model.setObject(event.getRow().toString());
-        model.setInitiator(event.getUserInfo() != null && !StringUtils.isEmpty(event.getUserInfo().getUserId()) ?
-                event.getUserInfo().getUserId() : UNKNOWN);
+        model.setInitiator(event.getUserInfo() != null && !StringUtils.isEmpty(event.getUserInfo().getUserId())
+                ? event.getUserInfo().getUserId()
+                : UNKNOWN);
         return model;
     }
 

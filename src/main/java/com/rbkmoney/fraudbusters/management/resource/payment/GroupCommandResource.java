@@ -47,10 +47,12 @@ public class GroupCommandResource {
 
     @PostMapping(value = "/group/{id}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertGroupReference(Principal principal,
-                                                             @PathVariable(value = "id") String id,
-                                                             @Validated @RequestBody List<PaymentGroupReferenceModel> groupReferenceModels) {
-        log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal), groupReferenceModels);
+    public ResponseEntity<List<String>> insertGroupReference(
+            Principal principal,
+            @PathVariable(value = "id") String id,
+            @Validated @RequestBody List<PaymentGroupReferenceModel> groupReferenceModels) {
+        log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
+                groupReferenceModels);
         List<String> ids = groupReferenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> {
@@ -89,7 +91,8 @@ public class GroupCommandResource {
                                                        @PathVariable(value = "id") String groupId,
                                                        @RequestParam(value = "partyId") String partyId,
                                                        @RequestParam(value = "shopId") String shopId) {
-        log.info("removeGroupReference initiator: {} groupId: {} partyId: {} shopId: {}", userInfoService.getUserName(principal), groupId, partyId, shopId);
+        log.info("removeGroupReference initiator: {} groupId: {} partyId: {} shopId: {}",
+                userInfoService.getUserName(principal), groupId, partyId, shopId);
         PaymentGroupReferenceModel groupReferenceModel = new PaymentGroupReferenceModel();
         groupReferenceModel.setPartyId(partyId);
         groupReferenceModel.setShopId(shopId);

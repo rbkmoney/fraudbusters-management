@@ -28,8 +28,9 @@ public class CommandToAuditLogConverter implements Converter<Command, CommandAud
         model.setCommandType(CommandType.valueOf(command.getCommandType().name()));
         model.setObjectType(TBaseUtil.unionFieldToEnum(command.getCommandBody(), ObjectType.class));
         model.setObject(command.getCommandBody().getFieldValue().toString());
-        model.setInitiator(command.getUserInfo() != null && !StringUtils.isEmpty(command.getUserInfo().getUserId()) ?
-                command.getUserInfo().getUserId() : UNKNOWN);
+        model.setInitiator(command.getUserInfo() != null && !StringUtils.isEmpty(command.getUserInfo().getUserId())
+                ? command.getUserInfo().getUserId()
+                : UNKNOWN);
         return model;
     }
 }

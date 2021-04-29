@@ -36,7 +36,8 @@ public class P2pGroupCommandResource {
     @PostMapping(value = "/group")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertGroup(Principal principal, @RequestBody GroupModel groupModel) {
-        log.info("GroupCommandResource insertTemplate initiator: {} groupModel: {}", userInfoService.getUserName(principal), groupModel);
+        log.info("GroupCommandResource insertTemplate initiator: {} groupModel: {}",
+                userInfoService.getUserName(principal), groupModel);
         Command command = groupModelToCommandConverter.convert(groupModel);
         command.setCommandType(CommandType.CREATE);
         command.setUserInfo(new UserInfo()
@@ -47,10 +48,12 @@ public class P2pGroupCommandResource {
 
     @PostMapping(value = "/group/{id}/reference")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertGroupReference(Principal principal,
-                                                             @PathVariable(value = "id") String id,
-                                                             @Validated @RequestBody List<P2pGroupReferenceModel> groupReferenceModels) {
-        log.info("P2pGroupReferenceCommandResource insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
+    public ResponseEntity<List<String>> insertGroupReference(
+            Principal principal,
+            @PathVariable(value = "id") String id,
+            @Validated @RequestBody List<P2pGroupReferenceModel> groupReferenceModels) {
+        log.info("P2pGroupReferenceCommandResource insertReference initiator: {} referenceModels: {}",
+                userInfoService.getUserName(principal),
                 groupReferenceModels);
         List<String> ids = groupReferenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
@@ -89,7 +92,8 @@ public class P2pGroupCommandResource {
     public ResponseEntity<String> removeGroupReference(Principal principal,
                                                        @PathVariable(value = "groupId") String groupId,
                                                        @PathVariable(value = "identityId") String identityId) {
-        log.info("removeGroupReference initiator: {} groupId: {} identityId: {}", userInfoService.getUserName(principal), groupId, identityId);
+        log.info("removeGroupReference initiator: {} groupId: {} identityId: {}",
+                userInfoService.getUserName(principal), groupId, identityId);
         P2pGroupReferenceModel groupReferenceModel = new P2pGroupReferenceModel();
         groupReferenceModel.setIdentityId(identityId);
         groupReferenceModel.setGroupId(groupId);

@@ -22,7 +22,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @ContextConfiguration(classes = {P2PWbListDaoImpl.class, P2pWbListRecordsToListRecordWithRowConverter.class,
-        P2pListRecordToRowConverter.class, P2pCountInfoListRequestToRowConverter.class, ListRecordToRowConverterImpl.class,
+        P2pListRecordToRowConverter.class, P2pCountInfoListRequestToRowConverter.class,
+        ListRecordToRowConverterImpl.class,
         P2pCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
 public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
     public static final String LIST_NAME = "ip";
@@ -78,15 +79,16 @@ public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
         String firstId = "1";
         P2pWbListRecords listRecord = createListRecord(firstId);
         String secondId = "2";
-        P2pWbListRecords listRecord_2 = createListRecord(secondId);
-        listRecord_2.setIdentityId("identity_2");
-        P2pWbListRecords listRecord_3 = createListRecord("3");
+        P2pWbListRecords listRecord2 = createListRecord(secondId);
+        listRecord2.setIdentityId("identity_2");
+        P2pWbListRecords listRecord3 = createListRecord("3");
 
         p2PWbListDao.saveListRecord(listRecord);
-        p2PWbListDao.saveListRecord(listRecord_2);
-        p2PWbListDao.saveListRecord(listRecord_3);
+        p2PWbListDao.saveListRecord(listRecord2);
+        p2PWbListDao.saveListRecord(listRecord3);
 
-        List<P2pWbListRecords> filteredListRecords = p2PWbListDao.getFilteredListRecords(IDENTITY_ID, ListType.black, LIST_NAME);
+        List<P2pWbListRecords> filteredListRecords =
+                p2PWbListDao.getFilteredListRecords(IDENTITY_ID, ListType.black, LIST_NAME);
 
         Assert.assertEquals(1, filteredListRecords.size());
 
@@ -94,14 +96,14 @@ public class P2pWbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         Assert.assertEquals(2, filteredListRecords.size());
 
-        P2pWbListRecords listRecord_4 = createListRecord("4");
-        listRecord_4.setRowInfo("{ \n" +
+        P2pWbListRecords listRecord4 = createListRecord("4");
+        listRecord4.setRowInfo("{ \n" +
                 "  \"count\":5, \n" +
                 "  \"time_to_live\":\"2019-08-22T13:14:17.443332Z\",\n" +
                 "  \"start_count_time\": \"2019-08-22T11:14:17.443332Z\"\n" +
                 "}");
-        listRecord_4.setListType(ListType.grey);
-        p2PWbListDao.saveListRecord(listRecord_4);
+        listRecord4.setListType(ListType.grey);
+        p2PWbListDao.saveListRecord(listRecord4);
 
         filteredListRecords = p2PWbListDao.getFilteredListRecords(null, ListType.grey, null);
         Assert.assertEquals(1, filteredListRecords.size());

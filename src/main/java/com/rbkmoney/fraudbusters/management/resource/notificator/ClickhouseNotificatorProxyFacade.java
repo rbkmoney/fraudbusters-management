@@ -22,9 +22,17 @@ public class ClickhouseNotificatorProxyFacade {
 
     @PostMapping(value = "/notification")
     public Notification createOrUpdate(@Validated @RequestBody Notification notification) {
-        ResponseEntity<Notification> notificationResponseEntity = restTemplate.postForEntity(baseUrl + "/notification", notification, Notification.class);
+        ResponseEntity<Notification> notificationResponseEntity =
+                restTemplate.postForEntity(baseUrl + "/notification", notification, Notification.class);
         log.info("ClickhouseNotificatorFacade created notification: {}", notification);
         return notificationResponseEntity.getBody();
+    }
+
+    @PostMapping(value = "/channel")
+    public Channel createOrUpdate(@Validated @RequestBody Channel channel) {
+        ResponseEntity<Channel> responseEntity =
+                restTemplate.postForEntity(baseUrl + "/channel", channel, Channel.class);
+        return responseEntity.getBody();
     }
 
     @DeleteMapping(value = "/notification/{name}")
@@ -35,14 +43,9 @@ public class ClickhouseNotificatorProxyFacade {
 
     @PostMapping(value = "/notification/validate")
     public ValidationResponse validate(@Validated @RequestBody Notification notification) {
-        ResponseEntity<ValidationResponse> responseEntity = restTemplate.postForEntity(baseUrl + "/notification/validate",
-                notification, ValidationResponse.class);
-        return responseEntity.getBody();
-    }
-
-    @PostMapping(value = "/channel")
-    public Channel createOrUpdate(@Validated @RequestBody Channel channel) {
-        ResponseEntity<Channel> responseEntity = restTemplate.postForEntity(baseUrl + "/channel", channel, Channel.class);
+        ResponseEntity<ValidationResponse> responseEntity =
+                restTemplate.postForEntity(baseUrl + "/notification/validate",
+                        notification, ValidationResponse.class);
         return responseEntity.getBody();
     }
 

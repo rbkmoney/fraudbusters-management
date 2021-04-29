@@ -19,11 +19,13 @@ public class P2PGroupReferenceListener extends CommandListener {
     private final CommandToP2pGroupReferenceModelConverter commandToP2pGroupReferenceModelConverter;
     private final AuditService auditService;
 
-    @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.group.reference}", containerFactory = "kafkaP2PGroupReferenceListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.fraudbusters.p2p.group.reference}",
+            containerFactory = "kafkaP2PGroupReferenceListenerContainerFactory")
     public void listen(Command command) {
         log.info("P2PGroupReferenceListener command: {}", command);
         if (command.getCommandBody().isSetP2pGroupReference()) {
-            handle(command, commandToP2pGroupReferenceModelConverter, p2pGroupReferenceDao::insert, p2pGroupReferenceDao::remove);
+            handle(command, commandToP2pGroupReferenceModelConverter, p2pGroupReferenceDao::insert,
+                    p2pGroupReferenceDao::remove);
             auditService.logCommand(command);
         } else {
             log.warn("Unknown reference in command in P2PGroupReferenceListener! command: {}", command);

@@ -14,7 +14,7 @@ import java.util.List;
 public class ConditionParameterSource {
 
     @Getter
-    private List<ConditionField> conditionFields;
+    private final List<ConditionField> conditionFields;
 
     public ConditionParameterSource() {
         this.conditionFields = new ArrayList<>();

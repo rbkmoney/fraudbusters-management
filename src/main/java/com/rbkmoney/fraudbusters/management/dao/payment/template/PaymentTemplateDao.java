@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FTemplate.F_TEMPLATE;
@@ -76,13 +77,17 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
 
     @Override
     public List<TemplateModel> filterModel(FilterRequest filterRequest) {
-        FTemplateRecord fTemplateRecord = new FTemplateRecord();
-        fTemplateRecord.setId(filterRequest.getLastId());
+        FTemplateRecord filterTemplateRecord = new FTemplateRecord();
+        filterTemplateRecord.setId(filterRequest.getLastId());
         SelectConditionStep<FTemplateRecord> where = getDslContext()
                 .selectFrom(F_TEMPLATE)
-                .where(!StringUtils.isEmpty(filterRequest.getSearchValue()) ? F_TEMPLATE.ID.like(filterRequest.getSearchValue()) : DSL.noCondition());
-        SelectSeekStep1<FTemplateRecord, String> selectSeekStep = addSortCondition(F_TEMPLATE.ID, filterRequest.getSortOrder(), where);
-        return fetch(addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSize(), selectSeekStep), listRecordRowMapper);
+                .where(!StringUtils.isEmpty(filterRequest.getSearchValue())
+                        ? F_TEMPLATE.ID.like(filterRequest.getSearchValue())
+                        : DSL.noCondition());
+        SelectSeekStep1<FTemplateRecord, String> selectSeekStep =
+                addSortCondition(F_TEMPLATE.ID, filterRequest.getSortOrder(), where);
+        return fetch(addSeekIfNeed(filterRequest.getLastId(), filterRequest.getSize(), selectSeekStep),
+                listRecordRowMapper);
     }
 
     @Override

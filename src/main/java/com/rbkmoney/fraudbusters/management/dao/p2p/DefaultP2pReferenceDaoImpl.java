@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.Tables.F_DEFAULT_REF;
@@ -60,18 +61,20 @@ public class DefaultP2pReferenceDaoImpl extends AbstractDao implements DefaultRe
     public List<DefaultP2pReferenceModel> filterReferences(FilterRequest filterRequest) {
         SelectWhereStep<P2pFDefaultRefRecord> from = getDslContext()
                 .selectFrom(P2P_F_DEFAULT_REF);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy()) ? P2P_F_DEFAULT_REF.TEMPLATE_ID : P2P_F_DEFAULT_REF.field(filterRequest.getSortBy(), String.class);
-        SelectConditionStep<P2pFDefaultRefRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                from.where(DSL.trueCondition()) :
-                from.where(P2P_F_DEFAULT_REF.TEMPLATE_ID.like(filterRequest.getSearchValue())
-                        .or(P2P_F_DEFAULT_REF.IDENTITY_ID.like(filterRequest.getSearchValue())));
-        SelectSeekStep2<P2pFDefaultRefRecord, String, String> fReferenceRecords = addSortCondition(
+        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy())
+                ? P2P_F_DEFAULT_REF.TEMPLATE_ID
+                : P2P_F_DEFAULT_REF.field(filterRequest.getSortBy(), String.class);
+        SelectConditionStep<P2pFDefaultRefRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
+                ? from.where(DSL.trueCondition())
+                : from.where(P2P_F_DEFAULT_REF.TEMPLATE_ID.like(filterRequest.getSearchValue())
+                .or(P2P_F_DEFAULT_REF.IDENTITY_ID.like(filterRequest.getSearchValue())));
+        SelectSeekStep2<P2pFDefaultRefRecord, String, String> filterReferenceRecords = addSortCondition(
                 P2P_F_DEFAULT_REF.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(addSeekIfNeed(
                 filterRequest.getLastId(),
                 filterRequest.getSortFieldValue(),
                 filterRequest.getSize(),
-                fReferenceRecords),
+                filterReferenceRecords),
                 listRecordRowMapper);
     }
 
@@ -80,18 +83,19 @@ public class DefaultP2pReferenceDaoImpl extends AbstractDao implements DefaultRe
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(P2P_F_DEFAULT_REF)
-                .where(!StringUtils.isEmpty(filterValue) ?
-                        P2P_F_DEFAULT_REF.TEMPLATE_ID.like(filterValue)
-                                .or(P2P_F_DEFAULT_REF.IDENTITY_ID.like(filterValue)) :
-                        DSL.noCondition());
+                .where(!StringUtils.isEmpty(filterValue)
+                        ? P2P_F_DEFAULT_REF.TEMPLATE_ID.like(filterValue)
+                            .or(P2P_F_DEFAULT_REF.IDENTITY_ID.like(filterValue))
+                        : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }
 
     public DefaultP2pReferenceModel getByIdentityId(String identityId) {
         Query query = getDslContext()
                 .selectFrom(F_DEFAULT_REF)
-                .where(identityId == null ? P2P_F_DEFAULT_REF.IDENTITY_ID.isNull() :
-                        P2P_F_DEFAULT_REF.IDENTITY_ID.eq(identityId));
+                .where(identityId == null
+                        ? P2P_F_DEFAULT_REF.IDENTITY_ID.isNull()
+                        : P2P_F_DEFAULT_REF.IDENTITY_ID.eq(identityId));
         return fetchOne(query, listRecordRowMapper);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -41,7 +42,8 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                 .map(pair -> getDslContext()
                         .insertInto(F_GROUP)
                         .columns(F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID, F_GROUP.MODIFIED_BY_USER)
-                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId(), groupModel.getModifiedByUser())
+                        .values(groupModel.getGroupId(), pair.getPriority(), pair.getId(),
+                                groupModel.getModifiedByUser())
                         .onConflict(F_GROUP.GROUP_ID, F_GROUP.TEMPLATE_ID)
                         .doNothing()
                 ).collect(Collectors.toList());
@@ -104,9 +106,10 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                     .where(F_GROUP.GROUP_ID.like(filterValue)
                             .or(F_GROUP.TEMPLATE_ID.like(filterValue)));
         }
-        List<GroupPriorityRow> list = fetch(StringUtils.isEmpty(filterValue) ? from : from.where(F_GROUP.GROUP_ID.in(selectGroupsId)),
-                (rs, rowNum) -> createGroupPriorityRow(rs)
-        );
+        List<GroupPriorityRow> list =
+                fetch(StringUtils.isEmpty(filterValue) ? from : from.where(F_GROUP.GROUP_ID.in(selectGroupsId)),
+                        (rs, rowNum) -> createGroupPriorityRow(rs)
+                );
         return groupRowToModelMapper.groupByGroupId(list);
     }
 

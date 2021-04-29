@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -81,26 +82,29 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
     }
 
     @Override
-    public List<WbListRecords> getFilteredListRecords(String partyId, String shopId, ListType listType, String listName) {
-        log.info("WbListDaoImpl getFilteredListRecords partyId: {} shopId: {} listType: {} listName: {}", partyId, shopId, listType, listName);
+    public List<WbListRecords> getFilteredListRecords(String partyId, String shopId, ListType listType,
+                                                      String listName) {
+        log.info("WbListDaoImpl getFilteredListRecords partyId: {} shopId: {} listType: {} listName: {}", partyId,
+                shopId, listType, listName);
         Condition condition = DSL.trueCondition();
-        SelectLimitPercentStep<Record8<String, String, String, ListType, String, String, LocalDateTime, String>> query = getDslContext()
-                .select(WB_LIST_RECORDS.ID,
-                        WB_LIST_RECORDS.PARTY_ID,
-                        WB_LIST_RECORDS.SHOP_ID,
-                        WB_LIST_RECORDS.LIST_TYPE,
-                        WB_LIST_RECORDS.LIST_NAME,
-                        WB_LIST_RECORDS.VALUE,
-                        WB_LIST_RECORDS.INSERT_TIME,
-                        WB_LIST_RECORDS.ROW_INFO)
-                .from(WB_LIST_RECORDS)
-                .where(appendConditions(condition, Operator.AND,
-                        new ConditionParameterSource()
-                                .addValue(WB_LIST_RECORDS.PARTY_ID, partyId, EQUALS)
-                                .addValue(WB_LIST_RECORDS.SHOP_ID, shopId, EQUALS)
-                                .addValue(WB_LIST_RECORDS.LIST_TYPE, listType, EQUALS)
-                                .addValue(WB_LIST_RECORDS.LIST_NAME, listName, EQUALS)))
-                .limit(LIMIT_TOTAL);
+        SelectLimitPercentStep<Record8<String, String, String, ListType, String, String, LocalDateTime, String>> query =
+                getDslContext()
+                        .select(WB_LIST_RECORDS.ID,
+                                WB_LIST_RECORDS.PARTY_ID,
+                                WB_LIST_RECORDS.SHOP_ID,
+                                WB_LIST_RECORDS.LIST_TYPE,
+                                WB_LIST_RECORDS.LIST_NAME,
+                                WB_LIST_RECORDS.VALUE,
+                                WB_LIST_RECORDS.INSERT_TIME,
+                                WB_LIST_RECORDS.ROW_INFO)
+                        .from(WB_LIST_RECORDS)
+                        .where(appendConditions(condition, Operator.AND,
+                                new ConditionParameterSource()
+                                        .addValue(WB_LIST_RECORDS.PARTY_ID, partyId, EQUALS)
+                                        .addValue(WB_LIST_RECORDS.SHOP_ID, shopId, EQUALS)
+                                        .addValue(WB_LIST_RECORDS.LIST_TYPE, listType, EQUALS)
+                                        .addValue(WB_LIST_RECORDS.LIST_NAME, listName, EQUALS)))
+                        .limit(LIMIT_TOTAL);
         return fetch(query, listRecordRowMapper);
     }
 
@@ -111,13 +115,14 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
         SelectWhereStep<WbListRecordsRecord> from = getDslContext()
                 .selectFrom(WB_LIST_RECORDS);
         Condition condition = WB_LIST_RECORDS.LIST_NAME.in(listNames).and(WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<WbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue()) ?
-                from.where(condition) :
-                from.where(condition.and(
+        SelectConditionStep<WbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
+                ? from.where(condition)
+                : from.where(condition.and(
                         WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
                                 .or(WB_LIST_RECORDS.PARTY_ID.like(filterRequest.getSearchValue())
                                         .or(WB_LIST_RECORDS.SHOP_ID.like(filterRequest.getSearchValue())))));
-        Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ? WB_LIST_RECORDS.INSERT_TIME : WB_LIST_RECORDS.field(filterRequest.getSortBy());
+        Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ? WB_LIST_RECORDS.INSERT_TIME :
+                WB_LIST_RECORDS.field(filterRequest.getSortBy());
         SelectSeekStep2<WbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(WB_LIST_RECORDS.ID,
                 field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -136,9 +141,9 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
                 .selectCount()
                 .from(WB_LIST_RECORDS);
         Condition condition = WB_LIST_RECORDS.LIST_NAME.in(listNames).and(WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue) ?
-                from.where(condition) :
-                from.where(condition.and(
+        SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue)
+                ? from.where(condition)
+                : from.where(condition.and(
                         WB_LIST_RECORDS.VALUE.like(filterValue)
                                 .or(WB_LIST_RECORDS.PARTY_ID.like(filterValue)
                                         .or(WB_LIST_RECORDS.SHOP_ID.like(filterValue)))));

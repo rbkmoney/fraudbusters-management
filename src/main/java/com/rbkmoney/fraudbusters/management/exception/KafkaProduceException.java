@@ -16,7 +16,8 @@ public class KafkaProduceException extends RuntimeException {
         super(cause);
     }
 
-    public KafkaProduceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public KafkaProduceException(String message, Throwable cause, boolean enableSuppression,
+                                 boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

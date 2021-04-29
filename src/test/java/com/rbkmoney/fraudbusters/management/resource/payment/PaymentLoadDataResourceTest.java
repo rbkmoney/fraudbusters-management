@@ -1,8 +1,8 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
-import com.rbkmoney.fraudbusters.management.utils.parser.CSVFraudPaymentParser;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
+import com.rbkmoney.fraudbusters.management.utils.parser.CsvFraudPaymentParser;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
@@ -23,7 +23,7 @@ import java.io.IOException;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {PaymentLoadDataResource.class, CSVFraudPaymentParser.class, UserInfoService.class})
+@ContextConfiguration(classes = {PaymentLoadDataResource.class, CsvFraudPaymentParser.class, UserInfoService.class})
 public class PaymentLoadDataResourceTest {
 
     @Autowired
@@ -35,7 +35,8 @@ public class PaymentLoadDataResourceTest {
     public void loadFraudOperation() throws IOException, TException {
         File file = new File("src/test/resources/csv/test.csv");
         FileInputStream input = new FileInputStream(file);
-        MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
+        MultipartFile multipartFile =
+                new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
 
         paymentLoadDataResource.loadFraudOperation(new BasicUserPrincipal("test"), multipartFile);
 

@@ -19,20 +19,27 @@ public interface CsvParser<T> {
 
     T mapFraudPayment(CSVRecord csvRecord);
 
-    default boolean hasCSVFormat(MultipartFile file) {
+    default boolean hasCsvFormat(MultipartFile file) {
         return TYPE.equals(file.getContentType());
     }
 
     default List<T> parse(InputStream is) {
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-             CSVParser csvParser = new CSVParser(fileReader,
-                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
+        try (BufferedReader fileReader = createBufferReader(is); CSVParser csvParser = createCsvParser(fileReader)) {
             return csvParser.getRecords().stream()
                     .map(this::mapFraudPayment)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
+    }
+
+    private BufferedReader createBufferReader(InputStream is) {
+        return new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+    }
+
+    private CSVParser createCsvParser(BufferedReader fileReader) throws IOException {
+        return new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader()
+                .withIgnoreHeaderCase().withTrim());
     }
 
 }

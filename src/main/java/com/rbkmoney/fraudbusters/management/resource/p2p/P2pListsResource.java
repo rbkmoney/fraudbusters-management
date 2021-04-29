@@ -39,7 +39,8 @@ public class P2pListsResource {
 
     @PostMapping(value = "/lists")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
-    public ResponseEntity<List<String>> insertRowsToList(Principal principal, @Validated @RequestBody P2pListRowsInsertRequest request) {
+    public ResponseEntity<List<String>> insertRowsToList(Principal principal,
+                                                         @Validated @RequestBody P2pListRowsInsertRequest request) {
         log.info("insertRowsToList initiator: {} request {}", userInfoService.getUserName(principal), request);
         return wbListCommandService.sendListRecords(
                 request.getRecords(),
@@ -69,9 +70,9 @@ public class P2pListsResource {
     @GetMapping(value = "/lists/filter")
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<FilterResponse<P2pWbListRecords>> filterList(Principal principal,
-                                                     @Validated @RequestParam ListType listType,
-                                                     @Validated @RequestParam List<String> listNames,
-                                                     FilterRequest filterRequest) {
+                                                                       @Validated @RequestParam ListType listType,
+                                                                       @Validated @RequestParam List<String> listNames,
+                                                                       FilterRequest filterRequest) {
         log.info("filterList initiator: {} listType: {} listNames: {} filterRequest: {}",
                 userInfoService.getUserName(principal), listType, listNames, filterRequest);
         List<P2pWbListRecords> wbListRecords = wbListDao.filterListRecords(listType, listNames, filterRequest);
