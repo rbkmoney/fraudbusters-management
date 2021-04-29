@@ -93,9 +93,9 @@ public class PaymentTemplateCommandResource {
 
     @PostMapping(value = "/template/references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertReferences(Principal principal,
-                                                         @Validated @RequestBody
-                                                                 List<PaymentReferenceModel> referenceModels) {
+    public ResponseEntity<List<String>> insertReferences(
+            Principal principal,
+            @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
                 referenceModels);
         List<String> ids = referenceModels.stream()
@@ -111,11 +111,11 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(ids);
     }
 
-    @PostMapping(value = "/template/{id}/default")
+    @PostMapping(value = "/template/default-references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> insertDefaultReference(Principal principal,
-                                                         @Validated @RequestBody
-                                                                 DefaultPaymentReferenceModel referenceModel) {
+    public ResponseEntity<String> insertDefaultReference(
+            Principal principal,
+            @Validated @RequestBody DefaultPaymentReferenceModel referenceModel) {
         log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
                 referenceModel);
         String uid = UUID.randomUUID().toString();
@@ -125,7 +125,7 @@ public class PaymentTemplateCommandResource {
         return ResponseEntity.ok().body(uid);
     }
 
-    @DeleteMapping(value = "/template/{id}/default")
+    @DeleteMapping(value = "/template/default-references/{id}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeDefaultReference(Principal principal, @PathVariable(value = "id") String id) {
         log.info("removeDefaultReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
