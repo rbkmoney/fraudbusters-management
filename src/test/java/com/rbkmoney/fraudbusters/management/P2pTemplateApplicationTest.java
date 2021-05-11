@@ -10,6 +10,7 @@ import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.filter.UnknownP2pTemplateInReferenceFilter;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2PTemplateCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2pGroupCommandResource;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
@@ -58,6 +59,8 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public P2PServiceSrv.Iface iface;
     @MockBean
     public AuditService auditService;
+    @MockBean
+    public UnknownP2pTemplateInReferenceFilter unknownP2pTemplateInReferenceFilter;
 
     @Autowired
     P2PTemplateCommandResource p2pTemplateCommandResource;
@@ -87,6 +90,8 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void referenceTest() {
+        when(unknownP2pTemplateInReferenceFilter.test(any())).thenReturn(true);
+
         P2pReferenceModel referenceModel = new P2pReferenceModel();
         referenceModel.setId(ID);
         referenceModel.setTemplateId(TEMPLATE_ID);

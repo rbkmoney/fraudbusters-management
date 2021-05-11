@@ -10,6 +10,7 @@ import com.rbkmoney.fraudbusters.management.domain.p2p.DefaultP2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
+import com.rbkmoney.fraudbusters.management.filter.UnknownP2pTemplateInReferenceFilter;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.p2p.P2PTemplateReferenceService;
@@ -40,6 +41,7 @@ public class P2PTemplateCommandResource {
     private final ValidationTemplateService p2PValidationService;
     private final UserInfoService userInfoService;
     private final DefaultP2pReferenceDaoImpl defaultReferenceDao;
+    private final UnknownP2pTemplateInReferenceFilter templateInReferenceFilter;
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -98,6 +100,7 @@ public class P2PTemplateCommandResource {
         log.info("P2pReferenceCommandResource insertReference userName: {} referenceModels: {}",
                 userInfoService.getUserName(principal), referenceModels);
         List<String> ids = referenceModels.stream()
+                .filter(templateInReferenceFilter::test)
                 .map(reference -> convertReferenceModel(reference, id))
                 .map(command -> {
                     command.setCommandType(CommandType.CREATE);
