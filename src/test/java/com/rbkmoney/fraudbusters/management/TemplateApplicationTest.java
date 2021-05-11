@@ -16,6 +16,7 @@ import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
+import com.rbkmoney.fraudbusters.management.filter.UnknownPaymentTemplateInReferenceFilter;
 import com.rbkmoney.fraudbusters.management.resource.payment.GroupCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentTemplateCommandResource;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
@@ -27,6 +28,7 @@ import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -56,6 +58,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public static final String SHOP_ID = "shop_id";
     public static final String TEST = "test";
     public static final String ID = "id";
+    public static final String TEMPLATE_ID = "template_id";
 
     @MockBean
     public PaymentTemplateDao paymentTemplateDao;
@@ -73,6 +76,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public PaymentServiceSrv.Iface iface;
     @MockBean
     public AuditService auditService;
+    @MockBean
+    public UnknownPaymentTemplateInReferenceFilter unknownPaymentTemplateInReferenceFilter;
 
     @Autowired
     PaymentTemplateCommandResource paymentTemplateCommandResource;
@@ -82,21 +87,25 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void templateTest() throws TException {
-        when(iface.validateCompilationTemplate(anyList())).thenReturn(new ValidateTemplateResponse()
-                .setErrors(List.of()));
-
-        TemplateModel templateModel = new TemplateModel();
-        String id = ID;
-        templateModel.setId(id);
-        templateModel.setTemplate(
-                "rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
-        paymentTemplateCommandResource.insertTemplate(new BasicUserPrincipal(TEST), templateModel);
-        paymentTemplateCommandResource.removeTemplate(new BasicUserPrincipal(TEST), id);
+        TemplateModel templateModel = createTemplate(ID);
+        paymentTemplateCommandResource.removeTemplate(new BasicUserPrincipal(TEST), ID);
 
         await().untilAsserted(() -> {
             verify(paymentTemplateDao, times(1)).insert(templateModel);
             verify(paymentTemplateDao, times(1)).remove(any(TemplateModel.class));
         });
+    }
+
+    public TemplateModel createTemplate(String id) throws TException {
+        when(iface.validateCompilationTemplate(anyList())).thenReturn(new ValidateTemplateResponse()
+                .setErrors(List.of()));
+
+        TemplateModel templateModel = new TemplateModel();
+        templateModel.setId(id);
+        templateModel.setTemplate(
+                "rule:blackList_1:inBlackList(\"email\",\"fingerprint\",\"card_token\",\"bin\",\"ip\")->decline;");
+        paymentTemplateCommandResource.insertTemplate(new BasicUserPrincipal(TEST), templateModel);
+        return templateModel;
     }
 
     @Test
@@ -125,12 +134,8 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void referenceTest() {
-        PaymentReferenceModel referenceModel = new PaymentReferenceModel();
-        referenceModel.setId(ID);
-        referenceModel.setTemplateId("template_id");
-        referenceModel.setIsGlobal(false);
-        referenceModel.setPartyId(PARTY_ID);
-        referenceModel.setShopId(SHOP_ID);
+        when(unknownPaymentTemplateInReferenceFilter.test(any())).thenReturn(true);
+        PaymentReferenceModel referenceModel = createPaymentReferenceModel(TEMPLATE_ID);
 
         final ResponseEntity<List<String>> references =
                 paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST),
@@ -142,17 +147,30 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
             verify(referenceDao, times(1)).insert(any());
             verify(referenceDao, times(1)).remove((PaymentReferenceModel) any());
         });
+
+        when(unknownPaymentTemplateInReferenceFilter.test(any())).thenReturn(false);
+        Mockito.clearInvocations(referenceDao);
+        referenceModel = createPaymentReferenceModel(TEMPLATE_ID);
+        paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST),
+                Collections.singletonList(referenceModel));
+
+        verify(referenceDao, times(0)).insert(any());
+    }
+
+    public PaymentReferenceModel createPaymentReferenceModel(String templateId) {
+        PaymentReferenceModel referenceModel = new PaymentReferenceModel();
+        referenceModel.setId(ID);
+        referenceModel.setTemplateId(templateId);
+        referenceModel.setIsGlobal(false);
+        referenceModel.setPartyId(PARTY_ID);
+        referenceModel.setShopId(SHOP_ID);
+        return referenceModel;
     }
 
     @Test
     public void defaultReferenceTest() {
         when(defaultReferenceDao.getByPartyAndShop(any(), any())).thenReturn(Optional.of(buildDefaultReference()));
 
-        PaymentReferenceModel referenceModel = new PaymentReferenceModel();
-        referenceModel.setId(ID);
-        referenceModel.setIsGlobal(false);
-        referenceModel.setPartyId(PARTY_ID);
-        referenceModel.setShopId(SHOP_ID);
         try (Producer<String, ReferenceInfo> producer = createProducer()) {
             ProducerRecord<String, ReferenceInfo> producerRecord = new ProducerRecord<>(UNKNOWN_INITIATING_ENTITY, TEST,
                     ReferenceInfo.merchant_info(new MerchantInfo()

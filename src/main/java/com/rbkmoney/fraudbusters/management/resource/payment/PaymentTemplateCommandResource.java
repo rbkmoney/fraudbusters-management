@@ -11,6 +11,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferen
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
 import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
+import com.rbkmoney.fraudbusters.management.filter.UnknownPaymentTemplateInReferenceFilter;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
@@ -41,6 +42,7 @@ public class PaymentTemplateCommandResource {
     private final DefaultPaymentReferenceDaoImpl defaultReferenceDao;
     private final ValidationTemplateService paymentValidationService;
     private final UserInfoService userInfoService;
+    private final UnknownPaymentTemplateInReferenceFilter templateInReferenceFilter;
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -99,6 +101,7 @@ public class PaymentTemplateCommandResource {
         log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
                 referenceModels);
         List<String> ids = referenceModels.stream()
+                .filter(templateInReferenceFilter::test)
                 .map(referenceToCommandConverter::convert)
                 .map(command -> {
                     command.setCommandType(CommandType.CREATE);

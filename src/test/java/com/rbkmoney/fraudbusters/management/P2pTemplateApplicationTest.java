@@ -10,6 +10,7 @@ import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
+import com.rbkmoney.fraudbusters.management.filter.UnknownP2pTemplateInReferenceFilter;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2PTemplateCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2pGroupCommandResource;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
@@ -18,6 +19,7 @@ import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -58,6 +60,8 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public P2PServiceSrv.Iface iface;
     @MockBean
     public AuditService auditService;
+    @MockBean
+    public UnknownP2pTemplateInReferenceFilter unknownP2pTemplateInReferenceFilter;
 
     @Autowired
     P2PTemplateCommandResource p2pTemplateCommandResource;
@@ -87,11 +91,9 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     public void referenceTest() {
-        P2pReferenceModel referenceModel = new P2pReferenceModel();
-        referenceModel.setId(ID);
-        referenceModel.setTemplateId(TEMPLATE_ID);
-        referenceModel.setIsGlobal(false);
-        referenceModel.setIdentityId(IDENTITY_ID);
+        when(unknownP2pTemplateInReferenceFilter.test(any())).thenReturn(true);
+
+        P2pReferenceModel referenceModel = createReference(ID, TEMPLATE_ID);
         p2pTemplateCommandResource
                 .insertReferences(new BasicUserPrincipal(TEST), ID, Collections.singletonList(referenceModel));
         p2pTemplateCommandResource.deleteReference(new BasicUserPrincipal(TEST), referenceModel.getTemplateId(),
@@ -101,6 +103,22 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
             verify(referenceDao, times(1)).insert(any());
             verify(referenceDao, times(1)).remove((P2pReferenceModel) any());
         });
+
+        Mockito.clearInvocations(referenceDao);
+        when(unknownP2pTemplateInReferenceFilter.test(any())).thenReturn(false);
+        referenceModel = createReference(ID, TEMPLATE_ID);
+        p2pTemplateCommandResource
+                .insertReferences(new BasicUserPrincipal(TEST), ID, Collections.singletonList(referenceModel));
+        verify(referenceDao, times(0)).insert(any());
+    }
+
+    public P2pReferenceModel createReference(String id, String templateId) {
+        P2pReferenceModel referenceModel = new P2pReferenceModel();
+        referenceModel.setId(id);
+        referenceModel.setTemplateId(templateId);
+        referenceModel.setIsGlobal(false);
+        referenceModel.setIdentityId(IDENTITY_ID);
+        return referenceModel;
     }
 
     @Test

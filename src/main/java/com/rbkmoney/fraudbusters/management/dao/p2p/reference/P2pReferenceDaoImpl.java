@@ -14,6 +14,8 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFReference.P2P_F_REFERENCE;
