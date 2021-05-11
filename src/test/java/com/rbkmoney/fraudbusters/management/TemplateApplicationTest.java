@@ -28,6 +28,7 @@ import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -134,7 +135,6 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @Test
     public void referenceTest() {
         when(unknownPaymentTemplateInReferenceFilter.test(any())).thenReturn(true);
-
         PaymentReferenceModel referenceModel = createPaymentReferenceModel(TEMPLATE_ID);
 
         final ResponseEntity<List<String>> references =
@@ -147,6 +147,14 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
             verify(referenceDao, times(1)).insert(any());
             verify(referenceDao, times(1)).remove((PaymentReferenceModel) any());
         });
+
+        when(unknownPaymentTemplateInReferenceFilter.test(any())).thenReturn(false);
+        Mockito.clearInvocations(referenceDao);
+        referenceModel = createPaymentReferenceModel(TEMPLATE_ID);
+        paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST),
+                Collections.singletonList(referenceModel));
+
+        verify(referenceDao, times(0)).insert(any());
     }
 
     public PaymentReferenceModel createPaymentReferenceModel(String templateId) {
