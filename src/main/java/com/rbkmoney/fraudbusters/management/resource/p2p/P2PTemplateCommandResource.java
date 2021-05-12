@@ -14,9 +14,12 @@ import com.rbkmoney.fraudbusters.management.filter.UnknownP2pTemplateInReference
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.p2p.P2PTemplateReferenceService;
+import com.rbkmoney.fraudbusters.management.utils.CommandMapper;
+import com.rbkmoney.fraudbusters.management.utils.UnknownTemplateFinder;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
@@ -42,6 +45,8 @@ public class P2PTemplateCommandResource {
     private final UserInfoService userInfoService;
     private final DefaultP2pReferenceDaoImpl defaultReferenceDao;
     private final UnknownP2pTemplateInReferenceFilter templateInReferenceFilter;
+    private final UnknownTemplateFinder unknownTemplateFinder;
+    private final CommandMapper commandMapper;
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -99,15 +104,14 @@ public class P2PTemplateCommandResource {
             @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
         log.info("P2pReferenceCommandResource insertReference userName: {} referenceModels: {}",
                 userInfoService.getUserName(principal), referenceModels);
+        List<String> unknownTemplates =
+                unknownTemplateFinder.findUnknownTemplate(referenceModels, templateInReferenceFilter);
+        if (!CollectionUtils.isEmpty(unknownTemplates)) {
+            return new ResponseEntity<>(unknownTemplates, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         List<String> ids = referenceModels.stream()
-                .filter(templateInReferenceFilter::test)
                 .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> {
-                    command.setCommandType(CommandType.CREATE);
-                    command.setUserInfo(new UserInfo()
-                            .setUserId(userInfoService.getUserName(principal)));
-                    return command;
-                })
+                .map(command -> commandMapper.mapToConcreteCommand(principal, command, CommandType.CREATE))
                 .map(p2PTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
@@ -140,10 +144,8 @@ public class P2PTemplateCommandResource {
         log.info("TemplateManagementResource removeTemplate initiator: {} id: {}",
                 userInfoService.getUserName(principal), id);
         Command command = p2pTemplateCommandService.createTemplateCommandById(id);
-        command.setCommandType(CommandType.DELETE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName(principal)));
-        String idMessage = p2pTemplateCommandService.sendCommandSync(command);
+        String idMessage = p2pTemplateCommandService
+                .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -161,10 +163,8 @@ public class P2PTemplateCommandResource {
         log.info("TemplateManagementResource deleteReference initiator: {}  templateId: {}, identityId: {}",
                 userInfoService.getUserName(principal), templateId, identityId);
         Command command = p2PTemplateReferenceService.createReferenceCommandByIds(templateId, identityId);
-        command.setCommandType(CommandType.DELETE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName(principal)));
-        String id = p2PTemplateReferenceService.sendCommandSync(command);
+        String id = p2PTemplateReferenceService
+                .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
         return ResponseEntity.ok().body(id);
     }
 

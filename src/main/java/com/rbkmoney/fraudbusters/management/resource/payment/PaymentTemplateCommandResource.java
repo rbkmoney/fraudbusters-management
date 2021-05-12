@@ -15,9 +15,12 @@ import com.rbkmoney.fraudbusters.management.filter.UnknownPaymentTemplateInRefer
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
+import com.rbkmoney.fraudbusters.management.utils.CommandMapper;
+import com.rbkmoney.fraudbusters.management.utils.UnknownTemplateFinder;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
@@ -43,6 +46,8 @@ public class PaymentTemplateCommandResource {
     private final ValidationTemplateService paymentValidationService;
     private final UserInfoService userInfoService;
     private final UnknownPaymentTemplateInReferenceFilter templateInReferenceFilter;
+    private final CommandMapper commandMapper;
+    private final UnknownTemplateFinder unknownTemplateFinder;
 
     @PostMapping(value = "/template")
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -100,19 +105,19 @@ public class PaymentTemplateCommandResource {
             @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
         log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
                 referenceModels);
+        List<String> unknownTemplates =
+                unknownTemplateFinder.findUnknownTemplate(referenceModels, templateInReferenceFilter);
+        if (!CollectionUtils.isEmpty(unknownTemplates)) {
+            return new ResponseEntity<>(unknownTemplates, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         List<String> ids = referenceModels.stream()
-                .filter(templateInReferenceFilter::test)
                 .map(referenceToCommandConverter::convert)
-                .map(command -> {
-                    command.setCommandType(CommandType.CREATE);
-                    command.setUserInfo(new UserInfo()
-                            .setUserId(userInfoService.getUserName(principal)));
-                    return command;
-                })
+                .map(command -> commandMapper.mapToConcreteCommand(principal, command, CommandType.CREATE))
                 .map(paymentTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
     }
+
 
     @PostMapping(value = "/template/default-references")
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -141,10 +146,8 @@ public class PaymentTemplateCommandResource {
     public ResponseEntity<String> removeTemplate(Principal principal, @PathVariable(value = "id") String id) {
         log.info("removeTemplate initiator: {} id: {}", userInfoService.getUserName(principal), id);
         Command command = paymentTemplateCommandService.createTemplateCommandById(id);
-        command.setCommandType(CommandType.DELETE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName(principal)));
-        String idMessage = paymentTemplateCommandService.sendCommandSync(command);
+        String idMessage = paymentTemplateCommandService
+                .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -154,10 +157,8 @@ public class PaymentTemplateCommandResource {
         log.info("removeReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
         PaymentReferenceModel reference = referenceDao.getById(id);
         final Command command = referenceToCommandConverter.convert(reference);
-        command.setCommandType(CommandType.DELETE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName(principal)));
-        String commandSendDeletedId = paymentTemplateReferenceService.sendCommandSync(command);
+        String commandSendDeletedId = paymentTemplateReferenceService
+                .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
         return ResponseEntity.ok().body(commandSendDeletedId);
     }
 

@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -151,9 +153,12 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         when(unknownPaymentTemplateInReferenceFilter.test(any())).thenReturn(false);
         Mockito.clearInvocations(referenceDao);
         referenceModel = createPaymentReferenceModel(TEMPLATE_ID);
-        paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST),
-                Collections.singletonList(referenceModel));
+        ResponseEntity<List<String>> listResponseEntity =
+                paymentTemplateCommandResource.insertReferences(new BasicUserPrincipal(TEST),
+                        Collections.singletonList(referenceModel));
 
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, listResponseEntity.getStatusCode());
+        assertEquals(TEMPLATE_ID, listResponseEntity.getBody().get(0));
         verify(referenceDao, times(0)).insert(any());
     }
 

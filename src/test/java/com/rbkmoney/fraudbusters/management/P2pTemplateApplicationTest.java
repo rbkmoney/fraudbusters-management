@@ -26,12 +26,15 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -107,8 +110,11 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
         Mockito.clearInvocations(referenceDao);
         when(unknownP2pTemplateInReferenceFilter.test(any())).thenReturn(false);
         referenceModel = createReference(ID, TEMPLATE_ID);
-        p2pTemplateCommandResource
+        ResponseEntity<List<String>> listResponseEntity = p2pTemplateCommandResource
                 .insertReferences(new BasicUserPrincipal(TEST), ID, Collections.singletonList(referenceModel));
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, listResponseEntity.getStatusCode());
+        assertEquals(TEMPLATE_ID, listResponseEntity.getBody().get(0));
         verify(referenceDao, times(0)).insert(any());
     }
 
