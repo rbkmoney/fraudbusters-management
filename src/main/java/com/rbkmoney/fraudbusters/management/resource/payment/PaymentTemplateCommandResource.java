@@ -146,9 +146,9 @@ public class PaymentTemplateCommandResource {
     public ResponseEntity<String> removeTemplate(Principal principal, @PathVariable(value = "id") String id) {
         log.info("removeTemplate initiator: {} id: {}", userInfoService.getUserName(principal), id);
         Command command = paymentTemplateCommandService.createTemplateCommandById(id);
-        String idMessage = paymentTemplateCommandService
+        String messageId = paymentTemplateCommandService
                 .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
-        return ResponseEntity.ok().body(idMessage);
+        return ResponseEntity.ok().body(messageId);
     }
 
     @DeleteMapping(value = "/template/{templateId}/reference/{id}")

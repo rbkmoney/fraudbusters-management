@@ -15,12 +15,12 @@ public class CommandMapper {
     private final UserInfoService userInfoService;
 
     public Command mapToConcreteCommand(final Principal principal, final Command command, CommandType commandType) {
-        Command commandNew = new Command(command);
-        commandNew.setCommandType(commandType)
+        Command newCommand = new Command(command);
+        newCommand.setCommandType(commandType)
                 .setUserInfo(new UserInfo()
                         .setUserId(userInfoService.getUserName(principal))
                 );
-        return commandNew;
+        return newCommand;
     }
 
 }
