@@ -19,6 +19,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -159,5 +161,44 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         List<String> currentListNames = wbListDao.getCurrentListNames(ListType.black);
         assertEquals(LIST_NAME, currentListNames.get(0));
+    }
+
+
+    @Test
+    public void shouldRemoveRottenRecords() {
+        WbListRecords listRecord1 = createListRecord(randomString());
+        listRecord1.setTimeToLive(LocalDateTime.now().minusDays(3));
+        listRecord1.setValue(randomString());
+        wbListDao.saveListRecord(listRecord1);
+        WbListRecords listRecord2 = createListRecord(randomString());
+        listRecord2.setTimeToLive(LocalDateTime.now().minusDays(2));
+        listRecord2.setValue(randomString());
+        wbListDao.saveListRecord(listRecord2);
+        WbListRecords listRecord3 = createListRecord(randomString());
+        listRecord3.setTimeToLive(LocalDateTime.now().plusDays(1));
+        listRecord3.setValue(randomString());
+        wbListDao.saveListRecord(listRecord3);
+        WbListRecords listRecord4 = createListRecord(randomString());
+        listRecord4.setTimeToLive(LocalDateTime.now().plusDays(2));
+        listRecord4.setValue(randomString());
+        wbListDao.saveListRecord(listRecord4);
+        List<WbListRecords> savedRecords = wbListDao
+                .getFilteredListRecords(listRecord1.getPartyId(), listRecord1.getShopId(), listRecord1.getListType(),
+                        listRecord1.getListName());
+        assertEquals(4, savedRecords.size());
+
+        wbListDao.removeRottenRecords(LocalDateTime.now());
+
+        List<WbListRecords> freshRecords = wbListDao
+                .getFilteredListRecords(listRecord1.getPartyId(), listRecord1.getShopId(), listRecord1.getListType(),
+                        listRecord1.getListName());
+        assertEquals(2, freshRecords.size());
+        List<String> ids = freshRecords.stream().map(WbListRecords::getId).collect(Collectors.toList());
+        assertTrue(ids.containsAll(List.of(listRecord3.getId(), listRecord4.getId())));
+    }
+
+
+    private String randomString() {
+        return UUID.randomUUID().toString();
     }
 }

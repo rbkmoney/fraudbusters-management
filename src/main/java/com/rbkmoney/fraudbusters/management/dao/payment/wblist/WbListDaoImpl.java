@@ -67,7 +67,8 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
     @Override
     public WbListRecords getById(String id) {
         log.info("WbListDaoImpl getById id: {}", id);
-        SelectConditionStep<Record7<String, String, String, ListType, String, String, LocalDateTime>> query =
+        SelectConditionStep<Record8<String, String, String, ListType, String, String, LocalDateTime, LocalDateTime>>
+                query =
                 getDslContext()
                         .select(WB_LIST_RECORDS.ID,
                                 WB_LIST_RECORDS.PARTY_ID,
@@ -75,7 +76,8 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
                                 WB_LIST_RECORDS.LIST_TYPE,
                                 WB_LIST_RECORDS.LIST_NAME,
                                 WB_LIST_RECORDS.VALUE,
-                                WB_LIST_RECORDS.INSERT_TIME)
+                                WB_LIST_RECORDS.INSERT_TIME,
+                                WB_LIST_RECORDS.TIME_TO_LIVE)
                         .from(WB_LIST_RECORDS)
                         .where(WB_LIST_RECORDS.ID.eq(id));
         return fetchOne(query, listRecordRowMapper);
@@ -87,7 +89,8 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
         log.info("WbListDaoImpl getFilteredListRecords partyId: {} shopId: {} listType: {} listName: {}", partyId,
                 shopId, listType, listName);
         Condition condition = DSL.trueCondition();
-        SelectLimitPercentStep<Record8<String, String, String, ListType, String, String, LocalDateTime, String>> query =
+        SelectLimitPercentStep<Record9<String, String, String, ListType, String, String, LocalDateTime, LocalDateTime, String>>
+                query =
                 getDslContext()
                         .select(WB_LIST_RECORDS.ID,
                                 WB_LIST_RECORDS.PARTY_ID,
@@ -96,6 +99,7 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
                                 WB_LIST_RECORDS.LIST_NAME,
                                 WB_LIST_RECORDS.VALUE,
                                 WB_LIST_RECORDS.INSERT_TIME,
+                                WB_LIST_RECORDS.TIME_TO_LIVE,
                                 WB_LIST_RECORDS.ROW_INFO)
                         .from(WB_LIST_RECORDS)
                         .where(appendConditions(condition, Operator.AND,
@@ -159,5 +163,14 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
         return fetch(where, (rs, rowNum) ->
                 rs.getString(WB_LIST_RECORDS.LIST_NAME.getName())
         );
+    }
+
+    @Override
+    public void removeRottenRecords(LocalDateTime thresholdDate) {
+        log.info("WbListDaoImpl remove records older then {}", thresholdDate);
+        DeleteConditionStep<WbListRecordsRecord> statement = getDslContext()
+                .delete(WB_LIST_RECORDS)
+                .where(WB_LIST_RECORDS.TIME_TO_LIVE.lessOrEqual(thresholdDate));
+        execute(statement);
     }
 }
