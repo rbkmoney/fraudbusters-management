@@ -89,7 +89,8 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
         log.info("WbListDaoImpl getFilteredListRecords partyId: {} shopId: {} listType: {} listName: {}", partyId,
                 shopId, listType, listName);
         Condition condition = DSL.trueCondition();
-        SelectLimitPercentStep<Record9<String, String, String, ListType, String, String, LocalDateTime, LocalDateTime, String>>
+        SelectLimitPercentStep
+                <Record9<String, String, String, ListType, String, String, LocalDateTime, LocalDateTime, String>>
                 query =
                 getDslContext()
                         .select(WB_LIST_RECORDS.ID,
@@ -122,9 +123,9 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
         SelectConditionStep<WbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(condition)
                 : from.where(condition.and(
-                        WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
-                                .or(WB_LIST_RECORDS.PARTY_ID.like(filterRequest.getSearchValue())
-                                        .or(WB_LIST_RECORDS.SHOP_ID.like(filterRequest.getSearchValue())))));
+                WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
+                        .or(WB_LIST_RECORDS.PARTY_ID.like(filterRequest.getSearchValue())
+                                .or(WB_LIST_RECORDS.SHOP_ID.like(filterRequest.getSearchValue())))));
         Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ? WB_LIST_RECORDS.INSERT_TIME :
                 WB_LIST_RECORDS.field(filterRequest.getSortBy());
         SelectSeekStep2<WbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(WB_LIST_RECORDS.ID,
@@ -148,9 +149,9 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
         SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue)
                 ? from.where(condition)
                 : from.where(condition.and(
-                        WB_LIST_RECORDS.VALUE.like(filterValue)
-                                .or(WB_LIST_RECORDS.PARTY_ID.like(filterValue)
-                                        .or(WB_LIST_RECORDS.SHOP_ID.like(filterValue)))));
+                WB_LIST_RECORDS.VALUE.like(filterValue)
+                        .or(WB_LIST_RECORDS.PARTY_ID.like(filterValue)
+                                .or(WB_LIST_RECORDS.SHOP_ID.like(filterValue)))));
         return fetchOne(where, Integer.class);
     }
 
