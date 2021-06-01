@@ -9,8 +9,9 @@ import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 @Service
@@ -50,7 +51,8 @@ public class RowUtilsService {
                 .map(Row::getRowInfo)
                 .map(RowInfo::getCountInfo)
                 .map(CountInfo::getTimeToLive)
-                .map(s -> LocalDateTime.parse(s, DateTimeFormatter.ISO_INSTANT))
+                .map(Instant::parse)
+                .map(instant -> LocalDateTime.ofInstant(instant, ZoneOffset.UTC))
                 .orElseGet(() -> null);
     }
 
