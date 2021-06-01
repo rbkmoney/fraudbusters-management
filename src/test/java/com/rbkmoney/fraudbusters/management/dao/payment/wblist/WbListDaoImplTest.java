@@ -163,6 +163,31 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         assertEquals(LIST_NAME, currentListNames.get(0));
     }
 
+    @Test
+    public void shouldRemoveNothing() {
+        WbListRecords listRecord1 = createListRecord(randomString());
+        listRecord1.setTimeToLive(LocalDateTime.now().plusDays(1));
+        listRecord1.setValue(randomString());
+        wbListDao.saveListRecord(listRecord1);
+        WbListRecords listRecord2 = createListRecord(randomString());
+        listRecord2.setTimeToLive(LocalDateTime.now().plusDays(2));
+        listRecord2.setValue(randomString());
+        wbListDao.saveListRecord(listRecord2);
+        List<WbListRecords> savedRecords = wbListDao
+                .getFilteredListRecords(listRecord1.getPartyId(), listRecord1.getShopId(), listRecord1.getListType(),
+                        listRecord1.getListName());
+        assertEquals(2, savedRecords.size());
+
+        wbListDao.removeRottenRecords(LocalDateTime.now());
+
+        List<WbListRecords> freshRecords = wbListDao
+                .getFilteredListRecords(listRecord1.getPartyId(), listRecord1.getShopId(), listRecord1.getListType(),
+                        listRecord1.getListName());
+        assertEquals(2, freshRecords.size());
+        List<String> ids = freshRecords.stream().map(WbListRecords::getId).collect(Collectors.toList());
+        assertTrue(ids.containsAll(List.of(listRecord1.getId(), listRecord2.getId())));
+    }
+
 
     @Test
     public void shouldRemoveRottenRecords() {

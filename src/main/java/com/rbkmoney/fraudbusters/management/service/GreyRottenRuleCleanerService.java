@@ -19,7 +19,7 @@ public class GreyRottenRuleCleanerService {
 
     @Scheduled(cron = "${service.cleaner.cron}")
     void clean() {
-        LocalDateTime thresholdDate = LocalDateTime.now().minusDays(freshPeriod);
-        wbListDao.removeRottenRecords(thresholdDate);
+        LocalDateTime thresholdRotDate = LocalDateTime.now().minusDays(freshPeriod);
+        wbListDao.removeRottenRecords(thresholdRotDate);
     }
 }
