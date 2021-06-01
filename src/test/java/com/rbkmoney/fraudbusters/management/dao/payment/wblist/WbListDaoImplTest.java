@@ -9,9 +9,13 @@ import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
+import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsRecord;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
+import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.SortOrder;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -22,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.rbkmoney.fraudbusters.management.domain.tables.WbListRecords.WB_LIST_RECORDS;
 import static org.junit.Assert.*;
 
 @ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class,
@@ -37,7 +42,15 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     WbListDao wbListDao;
 
     @Autowired
+    DSLContext dslContext;
+
+    @Autowired
     WbListRecordsToCountInfoListRequestConverter wbListRecordsToListRecordWithRowConverter;
+
+    @Before
+    public void setUp() {
+        dslContext.delete(WB_LIST_RECORDS);
+    }
 
     @Test
     public void saveListRecord() {
@@ -165,61 +178,70 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
     @Test
     public void shouldRemoveNothing() {
-        WbListRecords listRecord1 = createListRecord(randomString());
+        WbListRecordsRecord listRecord1 = createWbListRecordsRecord(randomString());
         listRecord1.setTimeToLive(LocalDateTime.now().plusDays(1));
         listRecord1.setValue(randomString());
-        wbListDao.saveListRecord(listRecord1);
-        WbListRecords listRecord2 = createListRecord(randomString());
+        dslContext.insertInto(WB_LIST_RECORDS).set(listRecord1).execute();
+        WbListRecordsRecord listRecord2 = createWbListRecordsRecord(randomString());
         listRecord2.setTimeToLive(LocalDateTime.now().plusDays(2));
         listRecord2.setValue(randomString());
-        wbListDao.saveListRecord(listRecord2);
-        List<WbListRecords> savedRecords = wbListDao
-                .getFilteredListRecords(listRecord1.getPartyId(), listRecord1.getShopId(), listRecord1.getListType(),
-                        listRecord1.getListName());
-        assertEquals(2, savedRecords.size());
+        dslContext.insertInto(WB_LIST_RECORDS).set(listRecord2).execute();
+
+        int savedRecordsCount = dslContext.fetchCount(WB_LIST_RECORDS);
+        assertEquals(2, savedRecordsCount);
 
         wbListDao.removeRottenRecords(LocalDateTime.now());
 
-        List<WbListRecords> freshRecords = wbListDao
-                .getFilteredListRecords(listRecord1.getPartyId(), listRecord1.getShopId(), listRecord1.getListType(),
-                        listRecord1.getListName());
+        Result<WbListRecordsRecord> freshRecords = dslContext.selectFrom(WB_LIST_RECORDS).fetch();
         assertEquals(2, freshRecords.size());
-        List<String> ids = freshRecords.stream().map(WbListRecords::getId).collect(Collectors.toList());
+        List<String> ids = freshRecords.stream().map(WbListRecordsRecord::getId).collect(Collectors.toList());
         assertTrue(ids.containsAll(List.of(listRecord1.getId(), listRecord2.getId())));
     }
 
 
     @Test
     public void shouldRemoveRottenRecords() {
-        WbListRecords listRecord1 = createListRecord(randomString());
-        listRecord1.setTimeToLive(LocalDateTime.now().minusDays(3));
+        WbListRecordsRecord listRecord1 = createWbListRecordsRecord(randomString());
+        listRecord1.setTimeToLive(LocalDateTime.now().minusDays(1));
         listRecord1.setValue(randomString());
-        wbListDao.saveListRecord(listRecord1);
-        WbListRecords listRecord2 = createListRecord(randomString());
+        WbListRecordsRecord listRecord2 = createWbListRecordsRecord(randomString());
         listRecord2.setTimeToLive(LocalDateTime.now().minusDays(2));
         listRecord2.setValue(randomString());
-        wbListDao.saveListRecord(listRecord2);
-        WbListRecords listRecord3 = createListRecord(randomString());
+        WbListRecordsRecord listRecord3 = createWbListRecordsRecord(randomString());
         listRecord3.setTimeToLive(LocalDateTime.now().plusDays(1));
         listRecord3.setValue(randomString());
-        wbListDao.saveListRecord(listRecord3);
-        WbListRecords listRecord4 = createListRecord(randomString());
+        WbListRecordsRecord listRecord4 = createWbListRecordsRecord(randomString());
         listRecord4.setTimeToLive(LocalDateTime.now().plusDays(2));
         listRecord4.setValue(randomString());
-        wbListDao.saveListRecord(listRecord4);
-        List<WbListRecords> savedRecords = wbListDao
-                .getFilteredListRecords(listRecord1.getPartyId(), listRecord1.getShopId(), listRecord1.getListType(),
-                        listRecord1.getListName());
-        assertEquals(4, savedRecords.size());
+        dslContext.insertInto(WB_LIST_RECORDS)
+                .set(listRecord1)
+                .newRecord()
+                .set(listRecord2)
+                .newRecord()
+                .set(listRecord3)
+                .newRecord()
+                .set(listRecord4)
+                .execute();
+        assertEquals(4, dslContext.fetchCount(WB_LIST_RECORDS));
 
         wbListDao.removeRottenRecords(LocalDateTime.now());
 
-        List<WbListRecords> freshRecords = wbListDao
-                .getFilteredListRecords(listRecord1.getPartyId(), listRecord1.getShopId(), listRecord1.getListType(),
-                        listRecord1.getListName());
+        Result<WbListRecordsRecord> freshRecords = dslContext.selectFrom(WB_LIST_RECORDS).fetch();
         assertEquals(2, freshRecords.size());
-        List<String> ids = freshRecords.stream().map(WbListRecords::getId).collect(Collectors.toList());
+        List<String> ids = freshRecords.stream().map(WbListRecordsRecord::getId).collect(Collectors.toList());
         assertTrue(ids.containsAll(List.of(listRecord3.getId(), listRecord4.getId())));
+    }
+
+    private WbListRecordsRecord createWbListRecordsRecord(String id) {
+        WbListRecordsRecord listRecord = new WbListRecordsRecord();
+        listRecord.setId(id);
+        listRecord.setListName(LIST_NAME);
+        listRecord.setListType(ListType.black);
+        listRecord.setInsertTime(LocalDateTime.now());
+        listRecord.setPartyId(PARTY);
+        listRecord.setShopId(SHOP);
+        listRecord.setValue("192.168.1.1");
+        return listRecord;
     }
 
 

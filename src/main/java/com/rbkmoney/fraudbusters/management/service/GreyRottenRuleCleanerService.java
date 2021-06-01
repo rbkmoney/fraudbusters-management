@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class GreyRottenRuleCleanerService {
 
-    @Value("service.cleaner.fresh-period")
+    @Value("${service.cleaner.fresh-period}")
     private Integer freshPeriod;
 
     private final WbListDao wbListDao;

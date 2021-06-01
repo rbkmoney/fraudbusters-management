@@ -64,7 +64,7 @@ public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
         filterRequest.setSortOrder(SortOrder.ASC);
         commandAudits = commandAuditDao.filterLog(now.minusHours(10), now, commandTypes,
                 objectTypes, filterRequest);
-        assertEquals(INITIATOR, commandAudits.get(0).getInitiator());
+        assertEquals(STRUGA, commandAudits.get(0).getInitiator());
 
         filterRequest.setSortOrder(SortOrder.DESC);
         commandAudits = commandAuditDao.filterLog(now.minusHours(10), now, commandTypes,
