@@ -174,4 +174,23 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
                 .where(WB_LIST_RECORDS.TIME_TO_LIVE.lessOrEqual(thresholdRotDate));
         execute(statement);
     }
+
+    @Override
+    public List<WbListRecords> getRottenRecords(LocalDateTime thresholdRotDate) {
+        log.info("WbListDaoImpl getRottenRecords older then {}: ", thresholdRotDate);
+        SelectConditionStep<Record8<String, String, String, ListType, String, String, LocalDateTime, LocalDateTime>>
+                query =
+                getDslContext()
+                        .select(WB_LIST_RECORDS.ID,
+                                WB_LIST_RECORDS.PARTY_ID,
+                                WB_LIST_RECORDS.SHOP_ID,
+                                WB_LIST_RECORDS.LIST_TYPE,
+                                WB_LIST_RECORDS.LIST_NAME,
+                                WB_LIST_RECORDS.VALUE,
+                                WB_LIST_RECORDS.INSERT_TIME,
+                                WB_LIST_RECORDS.TIME_TO_LIVE)
+                        .from(WB_LIST_RECORDS)
+                        .where(WB_LIST_RECORDS.TIME_TO_LIVE.lessOrEqual(thresholdRotDate));
+        return fetch(query, listRecordRowMapper);
+    }
 }

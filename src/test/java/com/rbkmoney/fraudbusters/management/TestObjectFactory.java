@@ -1,8 +1,10 @@
 package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.wb_list.*;
+import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsRecord;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public abstract class TestObjectFactory {
@@ -28,5 +30,17 @@ public abstract class TestObjectFactory {
 
     public static String randomString() {
         return UUID.randomUUID().toString();
+    }
+
+    public static WbListRecordsRecord createWbListRecordsRecord(String id) {
+        WbListRecordsRecord listRecord = new WbListRecordsRecord();
+        listRecord.setId(id);
+        listRecord.setListName(randomString());
+        listRecord.setListType(com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);
+        listRecord.setInsertTime(LocalDateTime.now());
+        listRecord.setPartyId(randomString());
+        listRecord.setShopId(randomString());
+        listRecord.setValue("192.168.1.1");
+        return listRecord;
     }
 }

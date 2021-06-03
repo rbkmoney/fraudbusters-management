@@ -23,9 +23,10 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.rbkmoney.fraudbusters.management.TestObjectFactory.createWbListRecordsRecord;
+import static com.rbkmoney.fraudbusters.management.TestObjectFactory.randomString;
 import static com.rbkmoney.fraudbusters.management.domain.tables.WbListRecords.WB_LIST_RECORDS;
 import static org.junit.Assert.*;
 
@@ -232,20 +233,58 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         assertTrue(ids.containsAll(List.of(listRecord3.getId(), listRecord4.getId())));
     }
 
-    private WbListRecordsRecord createWbListRecordsRecord(String id) {
-        WbListRecordsRecord listRecord = new WbListRecordsRecord();
-        listRecord.setId(id);
-        listRecord.setListName(LIST_NAME);
-        listRecord.setListType(ListType.black);
-        listRecord.setInsertTime(LocalDateTime.now());
-        listRecord.setPartyId(PARTY);
-        listRecord.setShopId(SHOP);
-        listRecord.setValue("192.168.1.1");
-        return listRecord;
+    @Test
+    public void shouldGetNothingWithNotExistRecords() {
+        List<WbListRecords> rottenRecords = wbListDao.getRottenRecords(LocalDateTime.now());
+        assertTrue(rottenRecords.isEmpty());
     }
 
+    @Test
+    public void shouldGetNothingRottenRecords() {
+        WbListRecordsRecord freshRecord1 = createWbListRecordsRecord(randomString());
+        freshRecord1.setTimeToLive(LocalDateTime.now().plusDays(1));
+        freshRecord1.setValue(randomString());
+        WbListRecordsRecord freshRecord2 = createWbListRecordsRecord(randomString());
+        freshRecord2.setTimeToLive(LocalDateTime.now().plusDays(2));
+        freshRecord2.setValue(randomString());
+        dslContext.insertInto(WB_LIST_RECORDS)
+                .set(freshRecord1)
+                .newRecord()
+                .set(freshRecord2)
+                .execute();
+        assertEquals(2, dslContext.fetchCount(WB_LIST_RECORDS));
+        List<WbListRecords> rottenRecords = wbListDao.getRottenRecords(LocalDateTime.now());
+        assertTrue(rottenRecords.isEmpty());
+    }
 
-    private String randomString() {
-        return UUID.randomUUID().toString();
+    @Test
+    public void shouldGetRottenRecords() {
+        WbListRecordsRecord rotRecord1 = createWbListRecordsRecord(randomString());
+        rotRecord1.setTimeToLive(LocalDateTime.now().minusDays(1));
+        rotRecord1.setValue(randomString());
+        WbListRecordsRecord rotRecord2 = createWbListRecordsRecord(randomString());
+        rotRecord2.setTimeToLive(LocalDateTime.now().minusDays(2));
+        rotRecord2.setValue(randomString());
+        WbListRecordsRecord freshRecord1 = createWbListRecordsRecord(randomString());
+        freshRecord1.setTimeToLive(LocalDateTime.now().plusDays(1));
+        freshRecord1.setValue(randomString());
+        WbListRecordsRecord freshRecord2 = createWbListRecordsRecord(randomString());
+        freshRecord2.setTimeToLive(LocalDateTime.now().plusDays(2));
+        freshRecord2.setValue(randomString());
+        dslContext.insertInto(WB_LIST_RECORDS)
+                .set(rotRecord1)
+                .newRecord()
+                .set(rotRecord2)
+                .newRecord()
+                .set(freshRecord1)
+                .newRecord()
+                .set(freshRecord2)
+                .execute();
+        assertEquals(4, dslContext.fetchCount(WB_LIST_RECORDS));
+
+        List<WbListRecords> rottenRecords = wbListDao.getRottenRecords(LocalDateTime.now());
+
+        List<String> ids = rottenRecords.stream().map(WbListRecords::getId).collect(Collectors.toList());
+        assertTrue(ids.containsAll(List.of(rotRecord1.getId(), rotRecord2.getId())));
     }
 }
