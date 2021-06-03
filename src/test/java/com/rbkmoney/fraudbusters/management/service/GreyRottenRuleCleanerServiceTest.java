@@ -45,7 +45,8 @@ public class GreyRottenRuleCleanerServiceTest {
 
     @Test
     void notExistRottenRecords() {
-        when(wbListDao.getRottenRecords(any(LocalDateTime.class))).thenReturn(Collections.emptyList());
+        when(wbListDao.getRottenRecords(any(LocalDateTime.class)))
+                .thenReturn(Collections.emptyList());
 
         greyRottenRuleCleanerService.clean();
 
@@ -55,7 +56,8 @@ public class GreyRottenRuleCleanerServiceTest {
 
     @Test
     void cleanRottenRecords() {
-        when(wbListDao.getRottenRecords(any(LocalDateTime.class))).thenReturn(List.of(createWbListRecords(randomString())));
+        when(wbListDao.getRottenRecords(any(LocalDateTime.class)))
+                .thenReturn(List.of(createWbListRecords(randomString())));
 
         greyRottenRuleCleanerService.clean();
 
