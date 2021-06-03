@@ -20,6 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GreyRottenRuleCleanerService {
 
+    private static final String CLEAN_INITIATOR = "fraudbusters";
+
     @Value("${service.cleaner.fresh-period}")
     private Integer freshPeriod;
 
@@ -41,9 +43,8 @@ public class GreyRottenRuleCleanerService {
                     row,
                     com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
                     Command.DELETE,
-                    ""); // TODO инициатор нужен?
+                    CLEAN_INITIATOR); // TODO инициатор нужен?
         }
         );
-        wbListDao.removeRottenRecords(thresholdRotDate); // TODO а нужно ли оно?
     }
 }

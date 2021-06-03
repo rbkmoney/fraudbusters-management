@@ -167,15 +167,6 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
     }
 
     @Override
-    public void removeRottenRecords(LocalDateTime thresholdRotDate) {
-        log.info("WbListDaoImpl remove records older than {}", thresholdRotDate);
-        DeleteConditionStep<WbListRecordsRecord> statement = getDslContext()
-                .delete(WB_LIST_RECORDS)
-                .where(WB_LIST_RECORDS.TIME_TO_LIVE.lessOrEqual(thresholdRotDate));
-        execute(statement);
-    }
-
-    @Override
     public List<WbListRecords> getRottenRecords(LocalDateTime thresholdRotDate) {
         log.info("WbListDaoImpl getRottenRecords older than {}: ", thresholdRotDate);
         SelectConditionStep<Record8<String, String, String, ListType, String, String, LocalDateTime, LocalDateTime>>

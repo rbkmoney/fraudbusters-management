@@ -25,7 +25,5 @@ public interface WbListDao extends CdDao<WbListRecords> {
 
     List<String> getCurrentListNames(ListType listType);
 
-    void removeRottenRecords(LocalDateTime thresholdRotDate);
-
     List<WbListRecords> getRottenRecords(LocalDateTime thresholdRotDate);
 }

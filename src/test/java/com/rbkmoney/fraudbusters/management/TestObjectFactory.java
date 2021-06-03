@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management;
 
 import com.rbkmoney.damsel.wb_list.*;
+import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsRecord;
 
 import java.time.Instant;
@@ -34,6 +35,18 @@ public abstract class TestObjectFactory {
 
     public static WbListRecordsRecord createWbListRecordsRecord(String id) {
         WbListRecordsRecord listRecord = new WbListRecordsRecord();
+        listRecord.setId(id);
+        listRecord.setListName(randomString());
+        listRecord.setListType(com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);
+        listRecord.setInsertTime(LocalDateTime.now());
+        listRecord.setPartyId(randomString());
+        listRecord.setShopId(randomString());
+        listRecord.setValue("192.168.1.1");
+        return listRecord;
+    }
+
+    public static WbListRecords createWbListRecords(String id) {
+        WbListRecords listRecord = new WbListRecords();
         listRecord.setId(id);
         listRecord.setListName(randomString());
         listRecord.setListType(com.rbkmoney.fraudbusters.management.domain.enums.ListType.black);

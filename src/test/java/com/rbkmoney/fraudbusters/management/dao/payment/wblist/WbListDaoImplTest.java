@@ -13,7 +13,6 @@ import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsR
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import org.jooq.DSLContext;
-import org.jooq.Result;
 import org.jooq.SortOrder;
 import org.junit.Before;
 import org.junit.Test;
@@ -175,62 +174,6 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         List<String> currentListNames = wbListDao.getCurrentListNames(ListType.black);
         assertEquals(LIST_NAME, currentListNames.get(0));
-    }
-
-    @Test
-    public void shouldRemoveNothing() {
-        WbListRecordsRecord listRecord1 = createWbListRecordsRecord(randomString());
-        listRecord1.setTimeToLive(LocalDateTime.now().plusDays(1));
-        listRecord1.setValue(randomString());
-        dslContext.insertInto(WB_LIST_RECORDS).set(listRecord1).execute();
-        WbListRecordsRecord listRecord2 = createWbListRecordsRecord(randomString());
-        listRecord2.setTimeToLive(LocalDateTime.now().plusDays(2));
-        listRecord2.setValue(randomString());
-        dslContext.insertInto(WB_LIST_RECORDS).set(listRecord2).execute();
-
-        int savedRecordsCount = dslContext.fetchCount(WB_LIST_RECORDS);
-        assertEquals(2, savedRecordsCount);
-
-        wbListDao.removeRottenRecords(LocalDateTime.now());
-
-        Result<WbListRecordsRecord> freshRecords = dslContext.selectFrom(WB_LIST_RECORDS).fetch();
-        assertEquals(2, freshRecords.size());
-        List<String> ids = freshRecords.stream().map(WbListRecordsRecord::getId).collect(Collectors.toList());
-        assertTrue(ids.containsAll(List.of(listRecord1.getId(), listRecord2.getId())));
-    }
-
-
-    @Test
-    public void shouldRemoveRottenRecords() {
-        WbListRecordsRecord listRecord1 = createWbListRecordsRecord(randomString());
-        listRecord1.setTimeToLive(LocalDateTime.now().minusDays(1));
-        listRecord1.setValue(randomString());
-        WbListRecordsRecord listRecord2 = createWbListRecordsRecord(randomString());
-        listRecord2.setTimeToLive(LocalDateTime.now().minusDays(2));
-        listRecord2.setValue(randomString());
-        WbListRecordsRecord listRecord3 = createWbListRecordsRecord(randomString());
-        listRecord3.setTimeToLive(LocalDateTime.now().plusDays(1));
-        listRecord3.setValue(randomString());
-        WbListRecordsRecord listRecord4 = createWbListRecordsRecord(randomString());
-        listRecord4.setTimeToLive(LocalDateTime.now().plusDays(2));
-        listRecord4.setValue(randomString());
-        dslContext.insertInto(WB_LIST_RECORDS)
-                .set(listRecord1)
-                .newRecord()
-                .set(listRecord2)
-                .newRecord()
-                .set(listRecord3)
-                .newRecord()
-                .set(listRecord4)
-                .execute();
-        assertEquals(4, dslContext.fetchCount(WB_LIST_RECORDS));
-
-        wbListDao.removeRottenRecords(LocalDateTime.now());
-
-        Result<WbListRecordsRecord> freshRecords = dslContext.selectFrom(WB_LIST_RECORDS).fetch();
-        assertEquals(2, freshRecords.size());
-        List<String> ids = freshRecords.stream().map(WbListRecordsRecord::getId).collect(Collectors.toList());
-        assertTrue(ids.containsAll(List.of(listRecord3.getId(), listRecord4.getId())));
     }
 
     @Test
