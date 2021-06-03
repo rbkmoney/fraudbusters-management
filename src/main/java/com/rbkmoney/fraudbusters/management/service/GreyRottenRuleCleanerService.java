@@ -32,7 +32,7 @@ public class GreyRottenRuleCleanerService {
         LocalDateTime thresholdRotDate = LocalDateTime.now().minusDays(freshPeriod);
         List<WbListRecords> rotRecords = wbListDao.getRottenRecords(thresholdRotDate);
         if (CollectionUtils.isEmpty(rotRecords)) {
-            log.info("Records older then {} not found", thresholdRotDate);
+            log.info("Records older than {} not found", thresholdRotDate);
             return;
         }
         rotRecords.forEach(record -> {
