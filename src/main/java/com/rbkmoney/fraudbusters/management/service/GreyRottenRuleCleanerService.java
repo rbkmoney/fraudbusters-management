@@ -43,7 +43,7 @@ public class GreyRottenRuleCleanerService {
                     row,
                     com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
                     Command.DELETE,
-                    CLEAN_INITIATOR); // TODO инициатор нужен?
+                    CLEAN_INITIATOR);
         }
         );
     }
