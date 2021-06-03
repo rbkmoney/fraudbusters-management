@@ -173,7 +173,7 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
                 com.rbkmoney.fraudbusters.management.domain.enums.ListType.white,
                 "test",
                 "test",
-                LocalDateTime.now(), LocalDateTime.now(), null, null));
+                LocalDateTime.now(), null, null, LocalDateTime.now()));
 
         deleteFromWhiteList(test);
         try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {

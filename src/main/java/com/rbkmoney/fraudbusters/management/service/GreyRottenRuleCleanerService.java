@@ -36,11 +36,13 @@ public class GreyRottenRuleCleanerService {
             return;
         }
         rotRecords.forEach(record -> {
-                    Row row = wbListRecordToRowConverter.convert(record);
-                    wbListCommandService
-                            .sendCommandSync(row, com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
-                                    Command.DELETE, ""); // TODO инициатор нужен?
-                }
+            Row row = wbListRecordToRowConverter.convert(record);
+            wbListCommandService.sendCommandSync(
+                    row,
+                    com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
+                    Command.DELETE,
+                    ""); // TODO инициатор нужен?
+        }
         );
         wbListDao.removeRottenRecords(thresholdRotDate); // TODO а нужно ли оно?
     }

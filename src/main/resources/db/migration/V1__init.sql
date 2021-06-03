@@ -11,7 +11,6 @@ CREATE TABLE af.wb_list_records(
  list_name    CHARACTER VARYING NOT NULL,
  value        CHARACTER VARYING NOT NULL,
  insert_time  TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() at time zone 'utc'),
- time_to_live TIMESTAMP WITHOUT TIME ZONE,
     CONSTRAINT wb_list_records_pkey PRIMARY KEY (id)
 );
 
