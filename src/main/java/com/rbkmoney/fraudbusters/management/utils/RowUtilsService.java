@@ -2,10 +2,17 @@ package com.rbkmoney.fraudbusters.management.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rbkmoney.damsel.wb_list.CountInfo;
 import com.rbkmoney.damsel.wb_list.Row;
+import com.rbkmoney.damsel.wb_list.RowInfo;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +44,16 @@ public class RowUtilsService {
             }
         }
         return null;
+    }
+
+    public LocalDateTime getTimeToLive(Row destination) {
+        return Optional.ofNullable(destination)
+                .map(Row::getRowInfo)
+                .map(RowInfo::getCountInfo)
+                .map(CountInfo::getTimeToLive)
+                .map(Instant::parse)
+                .map(instant -> LocalDateTime.ofInstant(instant, ZoneOffset.UTC))
+                .orElseGet(() -> null);
     }
 
 }

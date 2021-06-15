@@ -31,6 +31,7 @@ public class RowToWbListRecordsConverter implements Converter<Row, WbListRecords
         wbListRecords.setListName(destination.getListName());
         wbListRecords.setListType(rowUtilsService.initListType(destination));
         wbListRecords.setValue(destination.getValue());
+        wbListRecords.setTimeToLive(rowUtilsService.getTimeToLive(destination));
         wbListRecords.setRowInfo(rowUtilsService.initRowInfo(destination));
         return wbListRecords;
     }

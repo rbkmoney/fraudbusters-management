@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import org.springframework.lang.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface WbListDao extends CdDao<WbListRecords> {
@@ -23,4 +24,6 @@ public interface WbListDao extends CdDao<WbListRecords> {
     Integer countFilterRecords(@NonNull ListType listType, @NonNull List<String> listNames, String filterValue);
 
     List<String> getCurrentListNames(ListType listType);
+
+    List<WbListRecords> getRottenRecords(LocalDateTime thresholdRotDate);
 }
