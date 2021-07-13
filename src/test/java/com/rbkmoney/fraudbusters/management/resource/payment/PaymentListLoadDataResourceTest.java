@@ -28,7 +28,7 @@ import java.io.IOException;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {ListsResource.class, CsvPaymentCountInfoParser.class})
+@ContextConfiguration(classes = {PaymentsListsResource.class, CsvPaymentCountInfoParser.class})
 public class PaymentListLoadDataResourceTest {
 
     @MockBean
@@ -45,7 +45,7 @@ public class PaymentListLoadDataResourceTest {
     ParametersService parametersService;
 
     @Autowired
-    ListsResource listsResource;
+    PaymentsListsResource paymentsListsResource;
 
     @Test
     public void loadFraudOperation() throws IOException, TException {
@@ -54,7 +54,7 @@ public class PaymentListLoadDataResourceTest {
         MultipartFile multipartFile =
                 new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
 
-        listsResource.insertFromCsv(new BasicUserPrincipal("test"), multipartFile, ListType.black);
+        paymentsListsResource.insertFromCsv(new BasicUserPrincipal("test"), multipartFile, ListType.black);
 
         Mockito.verify(wbListCommandService, Mockito.times(1)).sendListRecords(any(), any(), any(), any());
     }

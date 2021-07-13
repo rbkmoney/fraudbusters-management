@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.config;
 
+import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.fraudbusters.management.converter.GroupModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
@@ -24,6 +25,15 @@ public class PaymentFraudoConfig {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)
                 .withAddress(resource.getURI()).build(PaymentServiceSrv.Iface.class);
+    }
+
+    @Bean
+    public HistoricalDataServiceSrv.Iface historicalDataServiceSrv(@Value("${service.payment.url}") Resource resource,
+                                                            @Value("${service.payment.networkTimeout}") int networkTimeout)
+            throws IOException {
+        return new THSpawnClientBuilder()
+                .withNetworkTimeout(networkTimeout)
+                .withAddress(resource.getURI()).build(HistoricalDataServiceSrv.Iface.class);
     }
 
     @Bean

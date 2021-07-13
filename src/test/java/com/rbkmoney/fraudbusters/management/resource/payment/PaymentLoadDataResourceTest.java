@@ -4,7 +4,6 @@ import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvFraudPaymentParser;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +37,7 @@ public class PaymentLoadDataResourceTest {
         MultipartFile multipartFile =
                 new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
 
-        paymentLoadDataResource.loadFraudOperation(new BasicUserPrincipal("test"), multipartFile);
+        paymentLoadDataResource.loadFraudTransactions(null, null, multipartFile);
 
         Mockito.verify(paymentServiceSrv, Mockito.times(1)).insertFraudPayments(any());
     }

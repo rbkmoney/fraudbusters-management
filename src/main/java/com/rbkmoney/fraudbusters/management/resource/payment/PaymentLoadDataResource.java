@@ -4,44 +4,48 @@ import com.rbkmoney.damsel.fraudbusters.FraudPayment;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvFraudPaymentParser;
+import com.rbkmoney.swag.fraudbusters.management.api.PaymentsLoadDataApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class PaymentLoadDataResource {
+public class PaymentLoadDataResource implements PaymentsLoadDataApi {
 
     private final PaymentServiceSrv.Iface paymentServiceSrv;
     private final CsvFraudPaymentParser csvFraudPaymentParser;
     private final UserInfoService userInfoService;
 
-    @PostMapping(value = "/fraud/load")
+    @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public void loadFraudOperation(Principal principal, @RequestParam("file") MultipartFile file) throws TException {
-        if (csvFraudPaymentParser.hasCsvFormat(file)) {
+    public ResponseEntity<String> loadFraudTransactions(@Valid Integer orderId, @Valid Integer userId,
+                                                        @Valid MultipartFile fileName) {
+        if (csvFraudPaymentParser.hasCsvFormat(fileName)) {
             try {
-                List<FraudPayment> fraudPayments = csvFraudPaymentParser.parse(file.getInputStream());
+                List<FraudPayment> fraudPayments = csvFraudPaymentParser.parse(fileName.getInputStream());
                 log.info("PaymentLoadDataResource loadFraudOperation initiator: {} fraudPaymentRecords: {}",
-                        userInfoService.getUserName(principal),
-                        fraudPayments);
+                        userInfoService.getUserName(), fraudPayments);
                 paymentServiceSrv.insertFraudPayments(fraudPayments);
 
                 log.info("PaymentLoadDataResource loaded fraudPayments: {}", fraudPayments);
-            } catch (IOException e) {
+
+            } catch (IOException | TException e) {
                 log.error("PaymentLoadDataResource error when loadFraudOperation e: ", e);
                 throw new RuntimeException(e);
             }
         }
+        return ResponseEntity.ok().body("OK"); // TODO check result
     }
+
 }

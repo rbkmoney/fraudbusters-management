@@ -11,7 +11,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInser
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
-import com.rbkmoney.fraudbusters.management.resource.payment.ListsResource;
+import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsListsResource;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
@@ -52,7 +52,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, ListsResource.class,
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, PaymentsListsResource.class,
         UserInfoService.class,
         WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class, CountInfoUtils.class,
         CsvPaymentCountInfoParser.class})

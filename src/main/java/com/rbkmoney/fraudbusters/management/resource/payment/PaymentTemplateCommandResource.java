@@ -55,7 +55,7 @@ public class PaymentTemplateCommandResource {
                                                                  @Validated @RequestBody TemplateModel templateModel) {
         log.info("insertTemplate initiator: {} templateModel: {}", userInfoService.getUserName(principal),
                 templateModel);
-        Command command = templateModelToCommandConverter.convert(templateModel);
+        var command = templateModelToCommandConverter.convert(templateModel);
         List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(
                 command.getCommandBody().getTemplate()
         );
@@ -126,7 +126,7 @@ public class PaymentTemplateCommandResource {
             @Validated @RequestBody DefaultPaymentReferenceModel referenceModel) {
         log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
                 referenceModel);
-        String uid = UUID.randomUUID().toString();
+        var uid = UUID.randomUUID().toString();
         referenceModel.setId(uid);
         referenceModel.setModifiedByUser(userInfoService.getUserName(principal));
         defaultReferenceDao.insert(referenceModel);
@@ -145,7 +145,7 @@ public class PaymentTemplateCommandResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeTemplate(Principal principal, @PathVariable(value = "id") String id) {
         log.info("removeTemplate initiator: {} id: {}", userInfoService.getUserName(principal), id);
-        Command command = paymentTemplateCommandService.createTemplateCommandById(id);
+        var command = paymentTemplateCommandService.createTemplateCommandById(id);
         String messageId = paymentTemplateCommandService
                 .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
         return ResponseEntity.ok().body(messageId);
@@ -156,7 +156,7 @@ public class PaymentTemplateCommandResource {
     public ResponseEntity<String> removeReference(Principal principal, @PathVariable(value = "id") String id) {
         log.info("removeReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
         PaymentReferenceModel reference = referenceDao.getById(id);
-        final Command command = referenceToCommandConverter.convert(reference);
+        var command = referenceToCommandConverter.convert(reference);
         String commandSendDeletedId = paymentTemplateReferenceService
                 .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
         return ResponseEntity.ok().body(commandSendDeletedId);

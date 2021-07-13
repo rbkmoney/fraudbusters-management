@@ -3,10 +3,9 @@ package com.rbkmoney.fraudbusters.management.utils;
 import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.domain.CountInfo;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.exception.UnknownEventException;
+import com.rbkmoney.swag.fraudbusters.management.model.PaymentCountInfo;
+import com.rbkmoney.swag.fraudbusters.management.model.PaymentListRecord;
 import io.micrometer.shaded.io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,8 @@ public class PaymentCountInfoGenerator {
         PaymentCountInfo paymentCountInfo = new PaymentCountInfo();
         paymentCountInfo.setListRecord(listRecord);
         if (!StringUtil.isNullOrEmpty(rowInfo)) {
-            CountInfo countInfoValue = countInfoGenerator.initRowCountInfo(rowInfo);
+            com.rbkmoney.swag.fraudbusters.management.model.CountInfo countInfoValue =
+                    countInfoGenerator.initExternalRowCountInfo(rowInfo);
             paymentCountInfo.setCountInfo(countInfoValue);
         }
         return paymentCountInfo;
