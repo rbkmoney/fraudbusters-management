@@ -37,7 +37,7 @@ public class PaymentLoadDataResourceTest {
         MultipartFile multipartFile =
                 new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
 
-        paymentLoadDataResource.loadFraudTransactions(null, null, multipartFile);
+        paymentLoadDataResource.loadFraudPayments(multipartFile);
 
         Mockito.verify(paymentServiceSrv, Mockito.times(1)).insertFraudPayments(any());
     }

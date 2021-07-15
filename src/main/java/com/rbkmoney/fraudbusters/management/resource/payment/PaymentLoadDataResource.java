@@ -29,11 +29,10 @@ public class PaymentLoadDataResource implements PaymentsLoadDataApi {
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> loadFraudTransactions(@Valid Integer orderId, @Valid Integer userId,
-                                                        @Valid MultipartFile fileName) {
-        if (csvFraudPaymentParser.hasCsvFormat(fileName)) {
+    public ResponseEntity<Void> loadFraudPayments(@Valid MultipartFile file) {
+        if (csvFraudPaymentParser.hasCsvFormat(file)) {
             try {
-                List<FraudPayment> fraudPayments = csvFraudPaymentParser.parse(fileName.getInputStream());
+                List<FraudPayment> fraudPayments = csvFraudPaymentParser.parse(file.getInputStream());
                 log.info("PaymentLoadDataResource loadFraudOperation initiator: {} fraudPaymentRecords: {}",
                         userInfoService.getUserName(), fraudPayments);
                 paymentServiceSrv.insertFraudPayments(fraudPayments);
@@ -45,7 +44,7 @@ public class PaymentLoadDataResource implements PaymentsLoadDataApi {
                 throw new RuntimeException(e);
             }
         }
-        return ResponseEntity.ok().body("OK"); // TODO check result
+        return ResponseEntity.ok().build();
     }
 
 }

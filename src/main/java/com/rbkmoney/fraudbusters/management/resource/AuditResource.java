@@ -6,6 +6,7 @@ import com.rbkmoney.fraudbusters.management.dao.audit.CommandAuditDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ObjectType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
+import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.AuditApi;
@@ -24,8 +25,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.rbkmoney.fraudbusters.management.utils.DateTimeUtils.toDate;
 
 @Slf4j
 @RestController
@@ -48,11 +47,11 @@ public class AuditResource implements AuditApi {
                 PagingDataUtils.getSortOrder(sortOrder));
         log.info("filter initiator: {} from: {} to: {} commandTypes: {} objectTypes: {} filterRequest: {}",
                 userInfoService.getUserName(), from, to, commandTypes, objectTypes, filterRequest);
-
-        LocalDateTime fromDate = toDate(from);
-        List<CommandAudit> commandAudits = commandAuditDao.filterLog(fromDate, toDate(to), commandTypes,
+        var fromDate = LocalDateTime.parse(from, DateTimeUtils.DATE_TIME_FORMATTER);
+        var toDate = LocalDateTime.parse(to, DateTimeUtils.DATE_TIME_FORMATTER);
+        List<CommandAudit> commandAudits = commandAuditDao.filterLog(fromDate, toDate, commandTypes,
                 objectTypes, filterRequest);
-        Integer count = commandAuditDao.countFilterRecords(fromDate, toDate(to), commandTypes,
+        Integer count = commandAuditDao.countFilterRecords(fromDate, toDate, commandTypes,
                 objectTypes, filterRequest);
 
         return ResponseEntity.ok()

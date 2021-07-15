@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.service;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
-import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -9,7 +9,6 @@ import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +53,7 @@ public class PaymentListLoadDataResourceTest {
         MultipartFile multipartFile =
                 new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
 
-        paymentsListsResource.insertFromCsv(new BasicUserPrincipal("test"), multipartFile, ListType.black);
+        paymentsListsResource.insertFromCsv(ListType.black.name(), multipartFile);
 
         Mockito.verify(wbListCommandService, Mockito.times(1)).sendListRecords(any(), any(), any(), any());
     }

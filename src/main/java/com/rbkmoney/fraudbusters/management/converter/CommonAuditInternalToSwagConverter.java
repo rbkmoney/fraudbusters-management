@@ -4,7 +4,6 @@ import com.rbkmoney.swag.fraudbusters.management.model.CommandAudit;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,9 +17,9 @@ public class CommonAuditInternalToSwagConverter implements
         return commandAudits.stream()
                 .map(commandAudit -> new com.rbkmoney.swag.fraudbusters.management.model.CommandAudit()
                         .commandType(CommandAudit.CommandTypeEnum.valueOf(commandAudit.getCommandType().getName()))
-                        .id(commandAudit.getId().intValue()) // TODO fix type in swag
+                        .id(commandAudit.getId())
                         .initiator(commandAudit.getInitiator())
-                        .insertTime(commandAudit.getInsertTime().atOffset(ZoneOffset.UTC))
+                        .insertTime(commandAudit.getInsertTime())
                         .objectType(CommandAudit.ObjectTypeEnum.valueOf(commandAudit.getObjectType().getName())))
                 .collect(Collectors.toList());
     }

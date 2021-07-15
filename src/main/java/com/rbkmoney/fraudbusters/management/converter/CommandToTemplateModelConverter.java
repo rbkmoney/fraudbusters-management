@@ -14,8 +14,8 @@ public class CommandToTemplateModelConverter implements Converter<Command, Templ
 
     @Override
     public TemplateModel convert(Command command) {
-        TemplateModel model = new TemplateModel();
-        Template template = command.getCommandBody().getTemplate();
+        var model = new TemplateModel();
+        var template = command.getCommandBody().getTemplate();
         model.setId(template.getId());
         model.setTemplate(new String(template.getTemplate()));
         return model;

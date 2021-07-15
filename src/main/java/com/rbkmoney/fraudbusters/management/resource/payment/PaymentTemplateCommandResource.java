@@ -1,165 +1,130 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.damsel.fraudbusters.*;
-import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
-import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
-import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
-import com.rbkmoney.fraudbusters.management.domain.ErrorTemplateModel;
+import com.rbkmoney.damsel.fraudbusters.CommandType;
+import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
+import com.rbkmoney.damsel.fraudbusters.UserInfo;
+import com.rbkmoney.fraudbusters.management.converter.payment.TemplateToCommandConverter;
+import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
-import com.rbkmoney.fraudbusters.management.domain.response.CreateTemplateResponse;
-import com.rbkmoney.fraudbusters.management.domain.response.ValidateTemplatesResponse;
-import com.rbkmoney.fraudbusters.management.filter.UnknownPaymentTemplateInReferenceFilter;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
-import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
 import com.rbkmoney.fraudbusters.management.utils.CommandMapper;
-import com.rbkmoney.fraudbusters.management.utils.UnknownTemplateFinder;
+import com.rbkmoney.fraudbusters.management.utils.FilterRequestUtils;
+import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
+import com.rbkmoney.swag.fraudbusters.management.api.PaymentsTemplatesApi;
+import com.rbkmoney.swag.fraudbusters.management.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
+import javax.validation.Valid;
+
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class PaymentTemplateCommandResource {
+public class PaymentTemplateCommandResource implements PaymentsTemplatesApi {
 
     private final TemplateCommandService paymentTemplateCommandService;
-    private final PaymentTemplateReferenceService paymentTemplateReferenceService;
-    private final TemplateModelToCommandConverter templateModelToCommandConverter;
-    private final ReferenceToCommandConverter referenceToCommandConverter;
-    private final PaymentReferenceDao referenceDao;
-    private final DefaultPaymentReferenceDaoImpl defaultReferenceDao;
+    private final TemplateToCommandConverter templateModelToCommandConverter;
     private final ValidationTemplateService paymentValidationService;
+    private final TemplateDao paymentTemplateDao;
     private final UserInfoService userInfoService;
-    private final UnknownPaymentTemplateInReferenceFilter templateInReferenceFilter;
     private final CommandMapper commandMapper;
-    private final UnknownTemplateFinder unknownTemplateFinder;
 
-    @PostMapping(value = "/template")
+    @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<CreateTemplateResponse> insertTemplate(Principal principal,
-                                                                 @Validated @RequestBody TemplateModel templateModel) {
-        log.info("insertTemplate initiator: {} templateModel: {}", userInfoService.getUserName(principal),
-                templateModel);
-        var command = templateModelToCommandConverter.convert(templateModel);
+    public ResponseEntity<TemplatesResponse> filterTemplates(@Valid String lastId, @Valid String sortOrder,
+                                                             @Valid String searchValue, @Valid String sortBy,
+                                                             @Valid String sortFieldValue, @Valid Integer size) {
+        var filterRequest = new FilterRequest(searchValue, lastId, sortFieldValue, size, sortBy,
+                PagingDataUtils.getSortOrder(sortOrder));
+        String userName = userInfoService.getUserName();
+        log.info("filterTemplates initiator: {} filterRequest: {}", userName, filterRequest);
+        FilterRequestUtils.prepareFilterRequest(filterRequest);
+        List<TemplateModel> templateModels = paymentTemplateDao.filterModel(filterRequest);
+        Integer count = paymentTemplateDao.countFilterModel(filterRequest.getSearchValue());
+        return ResponseEntity.ok().body(new TemplatesResponse()
+                .count(count)
+                .result(templateModels.stream()
+                        .map(templateModel -> new com.rbkmoney.swag.fraudbusters.management.model.Template()
+                                .id(templateModel.getId())
+                                .template(templateModel.getTemplate())
+                                .modifiedByUser(templateModel.getModifiedByUser())
+                                .lastUpdateDate(templateModel.getLastUpdateDate()))
+                        .collect(Collectors.toList())
+                ));
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<ListResponse> getTemplateNames(@Valid String regexpName) {
+        log.info("getTemplatesName initiator: {} regexpName: {}", userInfoService.getUserName(), regexpName);
+        List<String> list = paymentTemplateDao.getListNames(regexpName);
+        return ResponseEntity.ok().body(new ListResponse()
+                .result(list));
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<CreateTemplateResponse> insertTemplate(
+            com.rbkmoney.swag.fraudbusters.management.model.@Valid Template template) {
+        String userName = userInfoService.getUserName();
+        log.info("insertTemplate initiator: {} templateModel: {}", userName,
+                template);
+        var command = templateModelToCommandConverter.convert(template);
         List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(
                 command.getCommandBody().getTemplate()
         );
         if (!CollectionUtils.isEmpty(templateValidateErrors)) {
-            return ResponseEntity.badRequest().body(CreateTemplateResponse.builder()
-                    .template(templateModel.getTemplate())
-                    .errors(templateValidateErrors.get(0).getReason())
-                    .build());
+            return ResponseEntity.badRequest().body(new CreateTemplateResponse()
+                    .template(template.getTemplate())
+                    .errors(templateValidateErrors.get(0).getReason()));
         }
         command.setCommandType(CommandType.CREATE);
         command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName(principal)));
+                .setUserId(userName));
         String idMessage = paymentTemplateCommandService.sendCommandSync(command);
-        return ResponseEntity.ok().body(CreateTemplateResponse.builder()
+        return ResponseEntity.ok().body(new CreateTemplateResponse()
                 .id(idMessage)
-                .template(templateModel.getTemplate())
-                .build()
+                .template(template.getTemplate())
         );
     }
 
-    @PostMapping(value = "/template/validate")
+    @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(Principal principal,
-                                                                      @Validated @RequestBody
-                                                                              TemplateModel templateModel) {
-        log.info("validateTemplate initiator: {} templateModel: {}", userInfoService.getUserName(principal),
-                templateModel);
-        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(new Template()
-                .setId(templateModel.getId())
-                .setTemplate(templateModel.getTemplate().getBytes()));
-        log.info("validateTemplate result: {}", templateValidateErrors);
-        return ResponseEntity.ok().body(
-                ValidateTemplatesResponse.builder()
-                        .validateResults(templateValidateErrors.stream()
-                                .map(templateValidateError -> ErrorTemplateModel.builder()
-                                        .errors(templateValidateError.getReason())
-                                        .id(templateValidateError.id).build())
-                                .collect(Collectors.toList()))
-                        .build()
-        );
-    }
-
-    @PostMapping(value = "/template/references")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<List<String>> insertReferences(
-            Principal principal,
-            @Validated @RequestBody List<PaymentReferenceModel> referenceModels) {
-        log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
-                referenceModels);
-        List<String> unknownTemplates =
-                unknownTemplateFinder.findUnknownTemplate(referenceModels, templateInReferenceFilter);
-        if (!CollectionUtils.isEmpty(unknownTemplates)) {
-            return new ResponseEntity<>(unknownTemplates, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        List<String> ids = referenceModels.stream()
-                .map(referenceToCommandConverter::convert)
-                .map(command -> commandMapper.mapToConcreteCommand(principal, command, CommandType.CREATE))
-                .map(paymentTemplateReferenceService::sendCommandSync)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(ids);
-    }
-
-
-    @PostMapping(value = "/template/default-references")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> insertDefaultReference(
-            Principal principal,
-            @Validated @RequestBody DefaultPaymentReferenceModel referenceModel) {
-        log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(principal),
-                referenceModel);
-        var uid = UUID.randomUUID().toString();
-        referenceModel.setId(uid);
-        referenceModel.setModifiedByUser(userInfoService.getUserName(principal));
-        defaultReferenceDao.insert(referenceModel);
-        return ResponseEntity.ok().body(uid);
-    }
-
-    @DeleteMapping(value = "/template/default-references/{id}")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> removeDefaultReference(Principal principal, @PathVariable(value = "id") String id) {
-        log.info("removeDefaultReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
-        defaultReferenceDao.remove(id);
-        return ResponseEntity.ok().body(id);
-    }
-
-    @DeleteMapping(value = "/template/{id}")
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> removeTemplate(Principal principal, @PathVariable(value = "id") String id) {
-        log.info("removeTemplate initiator: {} id: {}", userInfoService.getUserName(principal), id);
+    public ResponseEntity<String> removeTemplate(String id) {
+        String userName = userInfoService.getUserName();
+        log.info("removeTemplate initiator: {} id: {}", userName, id);
         var command = paymentTemplateCommandService.createTemplateCommandById(id);
         String messageId = paymentTemplateCommandService
-                .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
+                .sendCommandSync(commandMapper.mapToConcreteCommand(userName, command, CommandType.DELETE));
         return ResponseEntity.ok().body(messageId);
     }
 
-    @DeleteMapping(value = "/template/{templateId}/reference/{id}")
+    @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> removeReference(Principal principal, @PathVariable(value = "id") String id) {
-        log.info("removeReference initiator: {} id: {}", userInfoService.getUserName(principal), id);
-        PaymentReferenceModel reference = referenceDao.getById(id);
-        var command = referenceToCommandConverter.convert(reference);
-        String commandSendDeletedId = paymentTemplateReferenceService
-                .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
-        return ResponseEntity.ok().body(commandSendDeletedId);
+    public ResponseEntity<ValidateTemplatesResponse> validateTemplate(@Valid Template template) {
+        log.info("validateTemplate initiator: {} templateModel: {}", userInfoService.getUserName(),
+                template);
+        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(
+                new com.rbkmoney.damsel.fraudbusters.Template()
+                        .setId(template.getId())
+                        .setTemplate(template.getTemplate().getBytes()));
+        log.info("validateTemplate result: {}", templateValidateErrors);
+        return ResponseEntity.ok().body(new ValidateTemplatesResponse()
+                .validateResults(templateValidateErrors.stream()
+                        .map(templateValidateError -> new ErrorTemplate()
+                                .errors(templateValidateError.getReason())
+                                .id(templateValidateError.id))
+                        .collect(Collectors.toList()))
+        );
     }
-
 }

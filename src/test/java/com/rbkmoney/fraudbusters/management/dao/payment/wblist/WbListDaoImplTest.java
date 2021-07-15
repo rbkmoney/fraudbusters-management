@@ -6,12 +6,12 @@ import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordT
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsRecord;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
+import com.rbkmoney.swag.fraudbusters.management.model.PaymentCountInfo;
 import org.jooq.DSLContext;
 import org.jooq.SortOrder;
 import org.junit.Before;
@@ -129,10 +129,10 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         assertEquals(1, filteredListRecords.size());
         assertFalse(filteredListRecords.get(0).getRowInfo().isEmpty());
 
-        PaymentCountInfo countInfoListRecord =
-                wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
 
-        assertEquals(5L, countInfoListRecord.getCountInfo().getCount().longValue());
+        PaymentCountInfo paymentCountInfo = wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
+
+        assertEquals(5L, paymentCountInfo.getCountInfo().getCount().longValue());
 
         //check sorting
         List<WbListRecords> wbListRecordsFirst = wbListDao.filterListRecords(ListType.black, List.of(LIST_NAME),

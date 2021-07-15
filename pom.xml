@@ -38,6 +38,7 @@
         <fraudo.version>0.0.17</fraudo.version>
         <geck.version>0.6.11</geck.version>
         <db.common.lib.version>0.0.3</db.common.lib.version>
+        <swag-fraudbusters-management.version>1.34-3851baa-server</swag-fraudbusters-management.version>
     </properties>
 
     <dependencies>
@@ -45,7 +46,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>swag-fraudbusters-management</artifactId>
-            <version>1.18-0a17592-server</version>
+            <version>${swag-fraudbusters-management.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>

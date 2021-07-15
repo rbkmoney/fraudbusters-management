@@ -2,8 +2,9 @@ package com.rbkmoney.fraudbusters.management.config;
 
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
-import com.rbkmoney.fraudbusters.management.converter.GroupModelToCommandConverter;
-import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.GroupModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.TemplateModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.GroupToCommandConverter;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
 import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
@@ -48,8 +49,8 @@ public class PaymentFraudoConfig {
     public GroupCommandService paymentGroupCommandService(CommandSender commandSender,
                                                           @Value("${kafka.topic.fraudbusters.payment.group.list}")
                                                                   String topic,
-                                                          GroupModelToCommandConverter groupModelToCommandConverter) {
-        return new GroupCommandService(commandSender, topic, groupModelToCommandConverter);
+                                                          GroupToCommandConverter groupToCommandConverter) {
+        return new GroupCommandService(commandSender, topic, groupToCommandConverter);
     }
 
 }

@@ -37,8 +37,8 @@ public class CountInfoUtils {
             com.rbkmoney.damsel.wb_list.CountInfo countInfo =
                     objectMapper.readValue(rowInfo, com.rbkmoney.damsel.wb_list.CountInfo.class);
             countInfoValue.setCount(countInfo.getCount());
-            countInfoValue.setEndCountTime(DateTimeUtils.toOffsetDateTime(countInfo.getTimeToLive()));
-            countInfoValue.setStartCountTime(DateTimeUtils.toOffsetDateTime(countInfo.getStartCountTime()));
+            countInfoValue.setEndCountTime(DateTimeUtils.toDate(countInfo.getTimeToLive()));
+            countInfoValue.setStartCountTime(DateTimeUtils.toDate(countInfo.getStartCountTime()));
         } catch (IOException e) {
             throw new RuntimeException("Error when read countInfo for rowInfo: " + rowInfo, e);
         }

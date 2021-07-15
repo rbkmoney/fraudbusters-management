@@ -3,7 +3,7 @@ package com.rbkmoney.fraudbusters.management.resource.p2p;
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.damsel.fraudbusters.UserInfo;
-import com.rbkmoney.fraudbusters.management.converter.GroupModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.GroupModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pGroupReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;

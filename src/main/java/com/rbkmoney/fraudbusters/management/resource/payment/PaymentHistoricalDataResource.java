@@ -68,7 +68,7 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
                         .error(new Error()
                                 .errorCode(paymentInfo.getError().getErrorCode())
                                 .errorReason(paymentInfo.getError().getErrorReason()))
-                        .eventTime(DateTimeUtils.toOffsetDateTime(paymentInfo.getEventTime()))
+                        .eventTime(DateTimeUtils.toDate(paymentInfo.getEventTime()))
                         .id(paymentInfo.getId())
                         .merchantInfo(new MerchantInfo()
                                 .partyId(paymentInfo.getMerchantInfo().getPartyId())
