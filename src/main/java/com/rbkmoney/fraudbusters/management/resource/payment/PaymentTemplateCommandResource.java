@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
 import com.rbkmoney.damsel.fraudbusters.UserInfo;
+import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.TemplateToCommandConverter;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
@@ -38,6 +39,7 @@ public class PaymentTemplateCommandResource implements PaymentsTemplatesApi {
     private final TemplateDao paymentTemplateDao;
     private final UserInfoService userInfoService;
     private final CommandMapper commandMapper;
+    private final TemplateModelToTemplateConverter templateModelToTemplateConverter;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -54,11 +56,7 @@ public class PaymentTemplateCommandResource implements PaymentsTemplatesApi {
         return ResponseEntity.ok().body(new TemplatesResponse()
                 .count(count)
                 .result(templateModels.stream()
-                        .map(templateModel -> new com.rbkmoney.swag.fraudbusters.management.model.Template()
-                                .id(templateModel.getId())
-                                .template(templateModel.getTemplate())
-                                .modifiedByUser(templateModel.getModifiedByUser())
-                                .lastUpdateDate(templateModel.getLastUpdateDate()))
+                        .map(templateModelToTemplateConverter::destinationToSource)
                         .collect(Collectors.toList())
                 ));
     }

@@ -1,10 +1,10 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
+import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
-import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
@@ -13,7 +13,6 @@ import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsEmulationsApi;
 import com.rbkmoney.swag.fraudbusters.management.model.EmulateResponse;
-import com.rbkmoney.swag.fraudbusters.management.model.Template;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.misc.Pair;
@@ -41,6 +40,7 @@ public class PaymentEmulateResource implements PaymentsEmulationsApi {
     private final PaymentGroupReferenceDao groupReferenceDao;
     private final PaymentReferenceDao referenceDao;
     private final UserInfoService userInfoService;
+    private final TemplateModelToTemplateConverter templateModelToTemplateConverterImpl;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-support', 'fraud-monitoring', 'fraud-officer')")
@@ -86,12 +86,9 @@ public class PaymentEmulateResource implements PaymentsEmulationsApi {
         return ResponseEntity.ok().body(new EmulateResponse()
                 .result(resultModels.stream()
                         .filter(Objects::nonNull)
-                        .map(templateModel -> new Template()
-                                .id(templateModel.getId())
-                                .template(templateModel.getTemplate())
-                                .lastUpdateDate(templateModel.getLastUpdateDate())
-                                .modifiedByUser(templateModel.getModifiedByUser()))
+                        .map(templateModelToTemplateConverterImpl::destinationToSource)
                         .collect(Collectors.toList()))
         );
     }
+
 }

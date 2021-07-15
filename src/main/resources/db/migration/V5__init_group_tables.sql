@@ -12,7 +12,7 @@ CREATE TABLE af.f_group
 -- af.group_reference --
 CREATE TABLE af.f_group_reference
 (
-    id       BIGSERIAL NOT NULL,
+    id       BIGSERIAL         NOT NULL,
     party_id CHARACTER VARYING,
     shop_id  CHARACTER VARYING,
     group_id CHARACTER VARYING NOT NULL,
@@ -20,4 +20,5 @@ CREATE TABLE af.f_group_reference
     CONSTRAINT f_group_reference_uniq_party_shop UNIQUE (party_id, shop_id)
 );
 
-CREATE UNIQUE INDEX f_group_reference_key on af.f_group_reference (party_id, shop_id);
+CREATE
+UNIQUE INDEX f_group_reference_key on af.f_group_reference (party_id, shop_id);

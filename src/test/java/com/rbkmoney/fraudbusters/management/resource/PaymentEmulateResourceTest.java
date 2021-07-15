@@ -1,5 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
+import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverterImpl;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
@@ -29,7 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ContextConfiguration(classes = {PaymentEmulateResource.class, PaymentGroupDao.class, PaymentTemplateDao.class,
-        GroupReferenceDaoImpl.class, PaymentReferenceDaoImpl.class, GroupRowToModelMapper.class, UserInfoService.class})
+        GroupReferenceDaoImpl.class, PaymentReferenceDaoImpl.class, GroupRowToModelMapper.class, UserInfoService.class,
+        TemplateModelToTemplateConverterImpl.class, })
 public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest {
 
     private static final String PARTY_ID = "partyId";

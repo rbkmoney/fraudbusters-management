@@ -36,9 +36,7 @@ public class PaymentLoadDataResource implements PaymentsLoadDataApi {
                 log.info("PaymentLoadDataResource loadFraudOperation initiator: {} fraudPaymentRecords: {}",
                         userInfoService.getUserName(), fraudPayments);
                 paymentServiceSrv.insertFraudPayments(fraudPayments);
-
                 log.info("PaymentLoadDataResource loaded fraudPayments: {}", fraudPayments);
-
             } catch (IOException | TException e) {
                 log.error("PaymentLoadDataResource error when loadFraudOperation e: ", e);
                 throw new RuntimeException(e);

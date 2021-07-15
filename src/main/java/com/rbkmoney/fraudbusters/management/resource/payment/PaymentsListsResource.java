@@ -1,8 +1,8 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.wb_list.Command;
-import com.rbkmoney.damsel.wb_list.Row;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsModelToWbListRecordConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
@@ -15,7 +15,10 @@ import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsListsApi;
-import com.rbkmoney.swag.fraudbusters.management.model.*;
+import com.rbkmoney.swag.fraudbusters.management.model.ListResponse;
+import com.rbkmoney.swag.fraudbusters.management.model.PaymentCountInfo;
+import com.rbkmoney.swag.fraudbusters.management.model.RowListRequest;
+import com.rbkmoney.swag.fraudbusters.management.model.WbListRecordsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +45,7 @@ public class PaymentsListsResource implements PaymentsListsApi {
     private final UserInfoService userInfoService;
     private final ParametersService parametersService;
     private final CsvPaymentCountInfoParser csvPaymentCountInfoParser;
+    private final WbListRecordsModelToWbListRecordConverter wbListRecordsModelToWbListRecordConverter;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
@@ -60,15 +64,9 @@ public class PaymentsListsResource implements PaymentsListsApi {
                 wbListDao.countFilterRecords(ListType.valueOf(listType), listNames, filterRequest.getSearchValue());
         return ResponseEntity.ok(new WbListRecordsResponse()
                 .count(count)
-                .result(wbListRecords.stream().map(wbListRecord -> new WbListRecord()
-                        .createdByUser(wbListRecord.getCreatedByUser())
-                        .insertTime(wbListRecord.getInsertTime())
-                        .listName(wbListRecord.getListName())
-                        .listType(WbListRecord.ListTypeEnum.valueOf(wbListRecord.getListType().name()))
-                        .partyId(wbListRecord.getPartyId())
-                        .shopId(wbListRecord.getShopId())
-                        .rowInfo(wbListRecord.getRowInfo())
-                        .value(wbListRecord.getValue())).collect(Collectors.toList()))
+                .result(wbListRecords.stream()
+                        .map(wbListRecordsModelToWbListRecordConverter::convert)
+                        .collect(Collectors.toList()))
         );
     }
 
@@ -124,15 +122,15 @@ public class PaymentsListsResource implements PaymentsListsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<String> removeRow(String id) {
-        WbListRecords record = wbListDao.getById(id);
-        if (record == null) {
+        var wbListRecord = wbListDao.getById(id);
+        if (wbListRecord == null) {
             log.error("List remove record not fount: {}", id);
             throw new NotFoundException(String.format("List record not found with id: %s", id));
         }
-        log.info("removeRowFromList initiator: {} record {}", userInfoService.getUserName(), record);
-        Row row = wbListRecordToRowConverter.convert(record);
+        log.info("removeRowFromList initiator: {} record {}", userInfoService.getUserName(), wbListRecord);
+        var row = wbListRecordToRowConverter.convert(wbListRecord);
         String idMessage = wbListCommandService.sendCommandSync(row,
-                com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
+                com.rbkmoney.damsel.wb_list.ListType.valueOf(wbListRecord.getListType().name()),
                 Command.DELETE,
                 userInfoService.getUserName());
         return ResponseEntity.ok().body(idMessage);

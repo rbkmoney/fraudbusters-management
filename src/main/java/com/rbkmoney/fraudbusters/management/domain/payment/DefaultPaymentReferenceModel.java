@@ -1,7 +1,10 @@
 package com.rbkmoney.fraudbusters.management.domain.payment;
 
 import com.rbkmoney.fraudbusters.management.domain.DefaultReferenceModel;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Data

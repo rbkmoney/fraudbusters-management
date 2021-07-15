@@ -1,7 +1,9 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.CommandType;
+import com.rbkmoney.fraudbusters.management.converter.payment.DefaultPaymentReferenceModelToPaymentReferenceConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentReferenceModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentReferenceModelToPaymentReferenceConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
@@ -43,6 +45,8 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
     private final PaymentTemplateReferenceService paymentTemplateReferenceService;
     private final DefaultPaymentReferenceDaoImpl defaultReferenceDao;
     private final PaymentReferenceModelToCommandConverter paymentReferenceModelToCommandConverter;
+    private final PaymentReferenceModelToPaymentReferenceConverter modelToPaymentReferenceConverter;
+    private final DefaultPaymentReferenceModelToPaymentReferenceConverter defaultModelToPaymentReferenceConverter;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -52,8 +56,7 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
                                                                       @Valid Integer size) {
         var filterRequest = new FilterRequest(searchValue, lastId, sortFieldValue, size, sortBy,
                 PagingDataUtils.getSortOrder(sortOrder));
-        log.info("filterReferences initiator: {} filterRequest: {}",
-                userInfoService.getUserName(), filterRequest);
+        log.info("filterReferences initiator: {} filterRequest: {}", userInfoService.getUserName(), filterRequest);
         FilterRequestUtils.prepareFilterRequest(filterRequest);
         List<DefaultPaymentReferenceModel> paymentReferenceModels =
                 defaultPaymentReferenceDao.filterReferences(filterRequest);
@@ -61,15 +64,8 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
         return ResponseEntity.ok().body(new ReferencesResponse()
                 .count(count)
                 .result(paymentReferenceModels.stream()
-                        .map(defaultPaymentReferenceModel -> new PaymentReference()
-                                .id(defaultPaymentReferenceModel.getId())
-                                .lastUpdateDate(DateTimeUtils.toDate(defaultPaymentReferenceModel.getLastUpdateDate()))
-                                .shopId(defaultPaymentReferenceModel.getShopId())
-                                .partyId(defaultPaymentReferenceModel.getPartyId())
-                                .modifiedByUser(defaultPaymentReferenceModel.getModifiedByUser())
-                                .templateId(defaultPaymentReferenceModel.getTemplateId()))
-                        .collect(Collectors.toList()))
-        );
+                        .map(defaultModelToPaymentReferenceConverter::convert)
+                        .collect(Collectors.toList())));
     }
 
     @Override
@@ -85,13 +81,7 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
         return ResponseEntity.ok().body(new ReferencesResponse()
                 .count(count)
                 .result(paymentReferenceModels.stream()
-                        .map(paymentReferenceModel -> new PaymentReference()
-                                .templateId(paymentReferenceModel.getTemplateId())
-                                .id(paymentReferenceModel.getId())
-                                .partyId(paymentReferenceModel.getPartyId())
-                                .shopId(paymentReferenceModel.getShopId())
-                                .lastUpdateDate(DateTimeUtils.toDate(paymentReferenceModel.getLastUpdateDate()))
-                                .modifiedByUser(paymentReferenceModel.getModifiedByUser()))
+                        .map(modelToPaymentReferenceConverter::convert)
                         .collect(Collectors.toList())));
     }
 
@@ -117,8 +107,7 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<List<String>> insertReferences(@Valid List<PaymentReference> paymentReference) {
         String userName = userInfoService.getUserName();
-        log.info("insertReference initiator: {} referenceModels: {}", userName,
-                paymentReference);
+        log.info("insertReference initiator: {} referenceModels: {}", userName, paymentReference);
         List<String> unknownTemplates =
                 unknownTemplateFinder.findUnknownTemplate(paymentReference, templateInReferenceFilter);
         if (!CollectionUtils.isEmpty(unknownTemplates)) {

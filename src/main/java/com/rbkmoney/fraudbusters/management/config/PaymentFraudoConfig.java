@@ -2,7 +2,6 @@ package com.rbkmoney.fraudbusters.management.config;
 
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
-import com.rbkmoney.fraudbusters.management.converter.p2p.GroupModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.GroupToCommandConverter;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
@@ -30,7 +29,8 @@ public class PaymentFraudoConfig {
 
     @Bean
     public HistoricalDataServiceSrv.Iface historicalDataServiceSrv(@Value("${service.payment.url}") Resource resource,
-                                                            @Value("${service.payment.networkTimeout}") int networkTimeout)
+                                                                   @Value("${service.payment.networkTimeout}")
+                                                                           int networkTimeout)
             throws IOException {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)

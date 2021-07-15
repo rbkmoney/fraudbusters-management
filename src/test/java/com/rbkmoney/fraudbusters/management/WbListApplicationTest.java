@@ -53,12 +53,11 @@ import static org.mockito.Mockito.when;
         classes = FraudbustersManagementApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
+    public static final String BASE_URL = "http://localhost:";
     private static final String VALUE = "value";
     private static final String SHOP_ID = "shopId";
     private static final String PARTY_ID = "partyId";
     private static final String LIST_NAME = "listName";
-    public static final String BASE_URL = "http://localhost:";
-
     @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
     @Value("${kafka.topic.wblist.command}")
@@ -68,10 +67,9 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
     @MockBean
     public WbListDao wbListDao;
     TestRestTemplate restTemplate = new TestRestTemplate();
+    String paymentListPath;
     @LocalServerPort
     private int port;
-
-    String paymentListPath;
 
     @Before
     public void init() {

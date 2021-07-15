@@ -20,7 +20,7 @@ import javax.validation.Valid;
 public class ClickhouseNotificatorProxyFacade implements NotificationsApi {
 
     private final RestTemplate restTemplate;
-    
+
     @Value("${ch.notificator.url}")
     private String baseUrl;
 

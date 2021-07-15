@@ -130,7 +130,8 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
         assertFalse(filteredListRecords.get(0).getRowInfo().isEmpty());
 
 
-        PaymentCountInfo paymentCountInfo = wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
+        PaymentCountInfo paymentCountInfo =
+                wbListRecordsToListRecordWithRowConverter.convert(filteredListRecords.get(0));
 
         assertEquals(5L, paymentCountInfo.getCountInfo().getCount().longValue());
 

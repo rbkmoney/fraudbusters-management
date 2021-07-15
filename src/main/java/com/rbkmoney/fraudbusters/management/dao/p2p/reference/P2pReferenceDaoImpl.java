@@ -14,8 +14,6 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFReference.P2P_F_REFERENCE;
@@ -102,7 +100,7 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
         SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(DSL.trueCondition())
                 : from.where(P2P_F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
-                        .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterRequest.getSearchValue())));
+                .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterRequest.getSearchValue())));
         SelectSeekStep2<P2pFReferenceRecord, String, String> filterReferenceRecords = addSortCondition(
                 P2P_F_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(

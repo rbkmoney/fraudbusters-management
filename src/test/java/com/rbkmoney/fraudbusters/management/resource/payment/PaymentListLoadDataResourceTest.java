@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordToRowConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsModelToWbListRecordConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.ParametersService;
@@ -27,7 +28,8 @@ import java.io.IOException;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {PaymentsListsResource.class, CsvPaymentCountInfoParser.class})
+@ContextConfiguration(classes = {PaymentsListsResource.class, CsvPaymentCountInfoParser.class,
+        WbListRecordsModelToWbListRecordConverter.class})
 public class PaymentListLoadDataResourceTest {
 
     @MockBean

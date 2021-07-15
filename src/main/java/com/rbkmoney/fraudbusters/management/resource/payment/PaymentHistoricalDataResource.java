@@ -4,10 +4,10 @@ import com.rbkmoney.damsel.fraudbusters.Filter;
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.Page;
 import com.rbkmoney.damsel.fraudbusters.PaymentInfoResult;
-import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentInfoToPaymentConverter;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsHistoricalDataApi;
-import com.rbkmoney.swag.fraudbusters.management.model.*;
-import com.rbkmoney.swag.fraudbusters.management.model.Error;
+import com.rbkmoney.swag.fraudbusters.management.model.Payment;
+import com.rbkmoney.swag.fraudbusters.management.model.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi {
 
     private final HistoricalDataServiceSrv.Iface historicalDataServiceSrv;
+    private final PaymentInfoToPaymentConverter paymentInfoToPaymentConverter;
 
     @SneakyThrows
     @Override
@@ -56,33 +57,8 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
 
     private List<Payment> mapPayments(PaymentInfoResult payments) {
         return payments.getPayments().stream()
-                .map(paymentInfo -> new Payment()
-                        .cardToken(paymentInfo.getCardToken())
-                        .amount(paymentInfo.getAmount())
-                        .clientInfo(new ClientInfo()
-                                .email(paymentInfo.getClientInfo().getEmail())
-                                .fingerprint(paymentInfo.getClientInfo().getFingerprint())
-                                .ip(paymentInfo.getClientInfo().getIp())
-                        )
-                        .currency(paymentInfo.getCurrency().symbolic_code)
-                        .error(new Error()
-                                .errorCode(paymentInfo.getError().getErrorCode())
-                                .errorReason(paymentInfo.getError().getErrorReason()))
-                        .eventTime(DateTimeUtils.toDate(paymentInfo.getEventTime()))
-                        .id(paymentInfo.getId())
-                        .merchantInfo(new MerchantInfo()
-                                .partyId(paymentInfo.getMerchantInfo().getPartyId())
-                                .shopId(paymentInfo.getMerchantInfo().shop_id)
-                        )
-                        .paymentCountry(paymentInfo.getPaymentCountry())
-                        .paymentSystem(paymentInfo.getPaymentSystem().name())
-                        .paymentTool(paymentInfo.getPaymentTool())
-                        .provider(new ProviderInfo()
-                                .providerId(paymentInfo.getProvider().getProviderId())
-                                .country(paymentInfo.getProvider().getCountry())
-                                .terminalId(paymentInfo.getProvider().getTerminalId()))
-                        .status(Payment.StatusEnum.valueOf(paymentInfo.getStatus().name()))
-                ).collect(Collectors.toList());
+                .map(paymentInfoToPaymentConverter::convert)
+                .collect(Collectors.toList());
     }
 
     private Filter createFilter(String partyId, String shopId, String paymentId, String status, String email,
