@@ -33,7 +33,7 @@
         <db.password>postgres</db.password>
         <db.schema>af</db.schema>
         <wb.list.proto.version>1.37-8cd59c1</wb.list.proto.version>
-        <fraudbusters.proto.version>1.75-120babf</fraudbusters.proto.version>
+        <fraudbusters.proto.version>1.80-46a1cc1</fraudbusters.proto.version>
         <kafka.common.lib.version>0.1.4</kafka.common.lib.version>
         <fraudo.version>0.0.17</fraudo.version>
         <geck.version>0.6.11</geck.version>
@@ -43,6 +43,10 @@
 
     <dependencies>
         <!--rbkmoney-->
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>mamsel</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>swag-fraudbusters-management</artifactId>
