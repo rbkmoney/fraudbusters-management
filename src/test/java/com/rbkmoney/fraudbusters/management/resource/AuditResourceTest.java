@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.fraudbusters.management.dao.audit.CommandAuditDao;
+import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,7 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 class AuditResourceTest {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(AuditResource.YYYY_MM_DD_HH_MM_SS);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateTimeUtils.YYYY_MM_DD_HH_MM_SS);
+
     @MockBean
     private CommandAuditDao commandAuditDao;
     @Autowired

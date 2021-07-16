@@ -1,8 +1,8 @@
 package com.rbkmoney.fraudbusters.management.service;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
-import com.rbkmoney.fraudbusters.management.converter.GroupModelToCommandConverter;
-import com.rbkmoney.fraudbusters.management.domain.GroupModel;
+import com.rbkmoney.fraudbusters.management.converter.payment.GroupToCommandConverter;
+import com.rbkmoney.swag.fraudbusters.management.model.Group;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +14,7 @@ public class GroupCommandService {
 
     private final CommandSender commandSender;
     private final String topic;
-    private final GroupModelToCommandConverter groupModelToCommandConverter;
+    private final GroupToCommandConverter groupToCommandConverter;
 
     public String sendCommandSync(Command command) {
         String key = command.getCommandBody().getGroup().getGroupId();
@@ -22,9 +22,8 @@ public class GroupCommandService {
     }
 
     public Command createTemplateCommandById(String id) {
-        return groupModelToCommandConverter.convert(GroupModel.builder()
+        return groupToCommandConverter.convert(new Group()
                 .groupId(id)
-                .priorityTemplates(new ArrayList<>())
-                .build());
+                .priorityTemplates(new ArrayList<>()));
     }
 }

@@ -38,7 +38,7 @@ public class GreyRottenRuleCleanerServiceTest {
     @BeforeEach
     void setUp() {
         WbListRecordToRowConverter wbListRecordToRowConverter = new WbListRecordToRowConverter();
-        greyRottenRuleCleanerService = new GreyRottenRuleCleanerService(wbListDao,wbListCommandService,
+        greyRottenRuleCleanerService = new GreyRottenRuleCleanerService(wbListDao, wbListCommandService,
                 wbListRecordToRowConverter);
         ReflectionTestUtils.setField(greyRottenRuleCleanerService, "freshPeriod", FRESH_PERIOD);
     }

@@ -6,7 +6,6 @@ import com.rbkmoney.damsel.wb_list.Event;
 import com.rbkmoney.fraudbusters.management.serializer.CommandFraudDeserializer;
 import com.rbkmoney.fraudbusters.management.serializer.EventDeserializer;
 import com.rbkmoney.fraudbusters.management.serializer.ReferenceInfoDeserializer;
-import com.rbkmoney.kafka.common.exception.handler.SeekToCurrentWithSleepErrorHandler;
 import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

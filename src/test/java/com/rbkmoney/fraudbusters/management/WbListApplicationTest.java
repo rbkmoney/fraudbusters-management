@@ -8,11 +8,14 @@ import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInser
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
+import com.rbkmoney.fraudbusters.management.utils.MethodPaths;
+import com.rbkmoney.swag.fraudbusters.management.model.ListResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -50,6 +53,7 @@ import static org.mockito.Mockito.when;
         classes = FraudbustersManagementApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
 
+    public static final String BASE_URL = "http://localhost:";
     private static final String VALUE = "value";
     private static final String SHOP_ID = "shopId";
     private static final String PARTY_ID = "partyId";
@@ -63,8 +67,15 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
     @MockBean
     public WbListDao wbListDao;
     TestRestTemplate restTemplate = new TestRestTemplate();
+    String paymentListPath;
     @LocalServerPort
     private int port;
+
+    @Before
+    public void init() {
+        paymentListPath = String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.INSERT_PAYMENTS_LIST_ROW_PATH,
+                port);
+    }
 
     @Test
     public void listenCreated() throws ExecutionException, InterruptedException {
@@ -188,8 +199,7 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         String value = VALUE + 66;
         HttpEntity<ListRowsInsertRequest> entity =
                 new HttpEntity<>(createListRowsInsertRequest(value), new org.springframework.http.HttpHeaders());
-        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/lists", HttpMethod.POST, entity,
-                String.class);
+        restTemplate.exchange(paymentListPath, HttpMethod.POST, entity, String.class);
 
         try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
             consumer.subscribe(Collections.singletonList(topicCommand));
@@ -202,10 +212,12 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
             log.info("{}", eventList.get(0).getRow());
         }
 
-        ResponseEntity<ArrayList> result =
-                restTemplate.getForEntity("http://localhost:" + port + "/fb-management/v1/lists/names?listType={name}",
-                        ArrayList.class, "black");
-        assertTrue(result.getBody().isEmpty());
+
+        String paymentListNames = String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.LISTS_NAMES_LIST_TYPE_PATH,
+                port);
+        ResponseEntity<ListResponse> result =
+                restTemplate.getForEntity(paymentListNames, ListResponse.class, "black");
+        assertTrue(result.getBody().getResult().isEmpty());
     }
 
     private ListRowsInsertRequest createListRowsInsertRequest(String value) {
@@ -235,12 +247,12 @@ public class WbListApplicationTest extends AbstractKafkaIntegrationTest {
         insertRequest.setRecords(collect);
         HttpEntity<ListRowsInsertRequest> entity = new HttpEntity<>(insertRequest,
                 new org.springframework.http.HttpHeaders());
-        restTemplate.exchange("http://localhost:" + port + "/fb-management/v1/lists", HttpMethod.POST, entity,
+        restTemplate.exchange(paymentListPath, HttpMethod.POST, entity,
                 String.class);
     }
 
     private void deleteFromWhiteList(String id) {
-        restTemplate.delete("http://localhost:" + port + "/fb-management/v1/lists/" + id);
+        restTemplate.delete(String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.DELETE_LIST_ROWS_PATH, port, id));
     }
 
     private List<ChangeCommand> consumeCommand(Consumer<String, ChangeCommand> consumer) {

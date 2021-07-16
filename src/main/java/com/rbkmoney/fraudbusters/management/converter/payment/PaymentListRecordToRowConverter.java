@@ -4,26 +4,23 @@ package com.rbkmoney.fraudbusters.management.converter.payment;
 import com.rbkmoney.damsel.wb_list.IdInfo;
 import com.rbkmoney.damsel.wb_list.PaymentId;
 import com.rbkmoney.damsel.wb_list.Row;
-import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverter;
-import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
+import com.rbkmoney.swag.fraudbusters.management.model.PaymentListRecord;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class PaymentListRecordToRowConverter implements Converter<PaymentListRecord, Row> {
 
-    private final ListRecordToRowConverter listRecordToRowConverter;
-
+    @NonNull
     @Override
     public Row convert(PaymentListRecord source) {
-        Row row = listRecordToRowConverter.destinationToSource(source);
-
-        row.setId(IdInfo.payment_id(new PaymentId()
+        return new Row().setId(IdInfo.payment_id(new PaymentId()
                 .setPartyId(source.getPartyId())
-                .setShopId(source.getShopId()))
-        );
-        return row;
+                .setShopId(source.getShopId())))
+                .setListName(source.getListName())
+                .setValue(source.getValue());
     }
 }

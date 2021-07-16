@@ -85,7 +85,7 @@ public class DefaultP2pReferenceDaoImpl extends AbstractDao implements DefaultRe
                 .from(P2P_F_DEFAULT_REF)
                 .where(!StringUtils.isEmpty(filterValue)
                         ? P2P_F_DEFAULT_REF.TEMPLATE_ID.like(filterValue)
-                            .or(P2P_F_DEFAULT_REF.IDENTITY_ID.like(filterValue))
+                        .or(P2P_F_DEFAULT_REF.IDENTITY_ID.like(filterValue))
                         : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }

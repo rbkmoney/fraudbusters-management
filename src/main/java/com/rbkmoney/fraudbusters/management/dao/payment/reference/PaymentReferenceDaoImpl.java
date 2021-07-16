@@ -117,8 +117,8 @@ public class PaymentReferenceDaoImpl extends AbstractDao implements PaymentRefer
         SelectConditionStep<FReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(DSL.trueCondition())
                 : from.where(F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
-                        .or(F_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue()))
-                        .or(F_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue())));
+                .or(F_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue()))
+                .or(F_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue())));
         SelectSeekStep2<FReferenceRecord, String, String> filterReferenceRecords = addSortCondition(
                 F_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -139,8 +139,8 @@ public class PaymentReferenceDaoImpl extends AbstractDao implements PaymentRefer
                 .from(F_REFERENCE)
                 .where(!StringUtils.isEmpty(filterValue)
                         ? F_REFERENCE.TEMPLATE_ID.like(filterValue)
-                                .or(F_REFERENCE.PARTY_ID.like(filterValue)
-                                        .or(F_REFERENCE.SHOP_ID.like(filterValue)))
+                        .or(F_REFERENCE.PARTY_ID.like(filterValue)
+                                .or(F_REFERENCE.SHOP_ID.like(filterValue)))
                         : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }

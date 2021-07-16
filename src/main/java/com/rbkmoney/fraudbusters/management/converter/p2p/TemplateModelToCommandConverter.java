@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.converter.p2p;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandBody;

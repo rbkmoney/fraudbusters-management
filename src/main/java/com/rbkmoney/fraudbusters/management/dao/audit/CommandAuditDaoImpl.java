@@ -46,8 +46,8 @@ public class CommandAuditDaoImpl extends AbstractDao implements CommandAuditDao 
         SelectConditionStep<CommandAuditRecord> where = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? select.where(condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to)))
                 : select.where(condition.and(
-                        COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
-                        .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
+                COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
+                .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
         Field field = StringUtils.isEmpty(filterRequest.getSortBy())
                 ? COMMAND_AUDIT.INSERT_TIME
                 : COMMAND_AUDIT.field(filterRequest.getSortBy());
@@ -77,7 +77,7 @@ public class CommandAuditDaoImpl extends AbstractDao implements CommandAuditDao 
                 .where(StringUtils.isEmpty(filterRequest.getSearchValue())
                         ? condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to))
                         : condition.and(COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
-                                .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
+                        .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
         return fetchOne(where, Integer.class);
     }
 

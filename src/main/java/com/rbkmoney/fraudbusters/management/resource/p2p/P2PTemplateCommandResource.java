@@ -1,8 +1,8 @@
 package com.rbkmoney.fraudbusters.management.resource.p2p;
 
 import com.rbkmoney.damsel.fraudbusters.*;
-import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pReferenceToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.dao.p2p.DefaultP2pReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.ErrorTemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
@@ -102,8 +102,9 @@ public class P2PTemplateCommandResource {
             Principal principal,
             @PathVariable(value = "id") String id,
             @Validated @RequestBody List<P2pReferenceModel> referenceModels) {
+        String userName = userInfoService.getUserName(principal);
         log.info("P2pReferenceCommandResource insertReference userName: {} referenceModels: {}",
-                userInfoService.getUserName(principal), referenceModels);
+                userName, referenceModels);
         List<String> unknownTemplates =
                 unknownTemplateFinder.findUnknownTemplate(referenceModels, templateInReferenceFilter);
         if (!CollectionUtils.isEmpty(unknownTemplates)) {
@@ -111,7 +112,7 @@ public class P2PTemplateCommandResource {
         }
         List<String> ids = referenceModels.stream()
                 .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> commandMapper.mapToConcreteCommand(principal, command, CommandType.CREATE))
+                .map(command -> commandMapper.mapToConcreteCommand(userName, command, CommandType.CREATE))
                 .map(p2PTemplateReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(ids);
@@ -141,11 +142,12 @@ public class P2PTemplateCommandResource {
     @DeleteMapping(value = "/template/{id}")
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeTemplate(Principal principal, @PathVariable(value = "id") String id) {
+        String userName = userInfoService.getUserName(principal);
         log.info("TemplateManagementResource removeTemplate initiator: {} id: {}",
-                userInfoService.getUserName(principal), id);
+                userName, id);
         Command command = p2pTemplateCommandService.createTemplateCommandById(id);
         String idMessage = p2pTemplateCommandService
-                .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
+                .sendCommandSync(commandMapper.mapToConcreteCommand(userName, command, CommandType.DELETE));
         return ResponseEntity.ok().body(idMessage);
     }
 
@@ -160,11 +162,12 @@ public class P2PTemplateCommandResource {
     public ResponseEntity<String> deleteReference(Principal principal,
                                                   @PathVariable String templateId,
                                                   @RequestParam String identityId) {
+        String userName = userInfoService.getUserName(principal);
         log.info("TemplateManagementResource deleteReference initiator: {}  templateId: {}, identityId: {}",
-                userInfoService.getUserName(principal), templateId, identityId);
+                userName, templateId, identityId);
         Command command = p2PTemplateReferenceService.createReferenceCommandByIds(templateId, identityId);
         String id = p2PTemplateReferenceService
-                .sendCommandSync(commandMapper.mapToConcreteCommand(principal, command, CommandType.DELETE));
+                .sendCommandSync(commandMapper.mapToConcreteCommand(userName, command, CommandType.DELETE));
         return ResponseEntity.ok().body(id);
     }
 
