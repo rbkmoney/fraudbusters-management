@@ -20,7 +20,7 @@ public class UserInfoService {
     }
 
     public String getUserName(Principal principal) {
-        if (principal == null || StringUtils.isEmpty(principal.getName())) {
+        if (principal == null || !StringUtils.hasText(principal.getName())) {
             return UNKNOWN;
         }
         return principal.getName();

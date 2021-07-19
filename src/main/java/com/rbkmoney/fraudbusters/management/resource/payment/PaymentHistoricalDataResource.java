@@ -4,9 +4,8 @@ import com.rbkmoney.damsel.fraudbusters.Filter;
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.Page;
 import com.rbkmoney.damsel.fraudbusters.PaymentInfoResult;
-import com.rbkmoney.fraudbusters.management.converter.payment.PaymentInfoToPaymentConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentInfoResultToPaymentsConverter;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsHistoricalDataApi;
-import com.rbkmoney.swag.fraudbusters.management.model.Payment;
 import com.rbkmoney.swag.fraudbusters.management.model.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -17,16 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi {
 
     private final HistoricalDataServiceSrv.Iface historicalDataServiceSrv;
-    private final PaymentInfoToPaymentConverter paymentInfoToPaymentConverter;
+    private final PaymentInfoResultToPaymentsConverter paymentInfoResultToPaymentsConverter;
 
     @SneakyThrows
     @Override
@@ -40,38 +36,22 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
                                                               @Valid String cardToken, @Valid String fingerprint,
                                                               @Valid String terminal) {
         PaymentInfoResult payments = historicalDataServiceSrv.getPayments(
-                createFilter(partyId, shopId, paymentId, status, email, providerCountry, cardToken, fingerprint,
-                        terminal),
-                createPage(lastId, size));
+                new Filter()
+                        .setEmail(email)
+                        .setCardToken(cardToken)
+                        .setPaymentId(paymentId)
+                        .setFingerprint(fingerprint)
+                        .setPartyId(partyId)
+                        .setProviderCountry(providerCountry)
+                        .setShopId(shopId)
+                        .setStatus(status)
+                        .setTerminal(terminal),
+                new Page()
+                        .setContinuationId(lastId)
+                        .setSize(size));
         return ResponseEntity.ok(new PaymentResponse()
-                .result(mapPayments(payments))
+                .result(paymentInfoResultToPaymentsConverter.convert(payments))
                 .continuationId(payments.getContinuationId())
         );
-    }
-
-    private Page createPage(String lastId, Integer size) {
-        return new Page()
-                .setContinuationId(lastId)
-                .setSize(size);
-    }
-
-    private List<Payment> mapPayments(PaymentInfoResult payments) {
-        return payments.getPayments().stream()
-                .map(paymentInfoToPaymentConverter::convert)
-                .collect(Collectors.toList());
-    }
-
-    private Filter createFilter(String partyId, String shopId, String paymentId, String status, String email,
-                                String providerCountry, String cardToken, String fingerprint, String terminal) {
-        return new Filter()
-                .setEmail(email)
-                .setCardToken(cardToken)
-                .setPaymentId(paymentId)
-                .setFingerprint(fingerprint)
-                .setPartyId(partyId)
-                .setProviderCountry(providerCountry)
-                .setShopId(shopId)
-                .setStatus(status)
-                .setTerminal(terminal);
     }
 }

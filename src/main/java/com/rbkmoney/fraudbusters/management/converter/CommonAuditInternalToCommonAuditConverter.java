@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class CommonAuditInternalToSwagConverter implements
+public class CommonAuditInternalToCommonAuditConverter implements
         Converter<List<com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit>, List<CommandAudit>> {
 
     @Override

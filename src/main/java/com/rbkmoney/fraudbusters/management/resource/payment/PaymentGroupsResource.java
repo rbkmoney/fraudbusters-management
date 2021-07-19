@@ -1,11 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.damsel.fraudbusters.Command;
-import com.rbkmoney.damsel.fraudbusters.CommandType;
-import com.rbkmoney.damsel.fraudbusters.UserInfo;
 import com.rbkmoney.fraudbusters.management.converter.payment.GroupModelToGroupConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.GroupToCommandConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.PaymentGroupReferenceModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentGroupReferenceModelToGroupReferenceConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
@@ -41,7 +37,6 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
     private final PaymentGroupReferenceService paymentGroupReferenceService;
     private final GroupCommandService paymentGroupCommandService;
     private final GroupToCommandConverter groupToCommandConverter;
-    private final PaymentGroupReferenceModelToCommandConverter groupReferenceToCommandConverter;
     private final PaymentGroupReferenceModelToGroupReferenceConverter referenceModelToGroupReferenceConverter;
     private final GroupModelToGroupConverter groupModelToGroupConverter;
 
@@ -71,12 +66,11 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
         log.info("filterReference idRegexp: {}", filterRequest.getSearchValue());
         List<PaymentGroupReferenceModel> listByTemplateId = referenceDao.filterReference(filterRequest);
         Integer count = referenceDao.countFilterReference(filterRequest.getSearchValue());
-        return ResponseEntity.ok().body(
-                new GroupsReferencesResponse()
-                        .count(count)
-                        .result(listByTemplateId.stream()
-                                .map(referenceModelToGroupReferenceConverter::convert)
-                                .collect(Collectors.toList()))
+        return ResponseEntity.ok().body(new GroupsReferencesResponse()
+                .count(count)
+                .result(listByTemplateId.stream()
+                        .map(referenceModelToGroupReferenceConverter::convert)
+                        .collect(Collectors.toList()))
         );
     }
 
@@ -94,11 +88,10 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertGroup(@Valid Group group) {
-        log.info("insertTemplate initiator: {} group: {}", userInfoService.getUserName(), group);
+        String userName = userInfoService.getUserName();
+        log.info("insertTemplate initiator: {} group: {}", userName, group);
         var command = groupToCommandConverter.convert(group);
-        command.setCommandType(CommandType.CREATE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName()));
+        paymentGroupCommandService.initCreateCommand(command, userName);
         String idMessage = paymentGroupCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
@@ -106,36 +99,22 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ListResponse> insertGroupReferences(String id, @Valid List<GroupReference> groupReference) {
-        log.info("insertReference initiator: {} referenceModels: {}", userInfoService.getUserName(),
-                groupReference);
+        String userName = userInfoService.getUserName();
+        log.info("insertReference initiator: {} referenceModels: {}", userName, groupReference);
         List<String> ids = groupReference.stream()
-                .map(reference -> convertReferenceModel(reference, id))
-                .map(command -> {
-                    command.setCommandType(CommandType.CREATE);
-                    command.setUserInfo(new UserInfo()
-                            .setUserId(userInfoService.getUserName()));
-                    return command;
-                })
+                .map(reference -> paymentGroupCommandService.convertReferenceModel(reference, id))
+                .map(command -> paymentGroupCommandService.initCreateCommand(command, userName))
                 .map(paymentGroupReferenceService::sendCommandSync)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(new ListResponse()
                 .result(ids));
     }
 
-    private Command convertReferenceModel(GroupReference groupReferenceModel, String groupId) {
-        var command = groupReferenceToCommandConverter.convert(groupReferenceModel);
-        command.getCommandBody().getGroupReference().setGroupId(groupId);
-        return command;
-    }
-
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroup(String id) {
         log.info("removeGroup initiator: {} id: {}", userInfoService.getUserName(), id);
-        var command = paymentGroupCommandService.createTemplateCommandById(id);
-        command.setCommandType(CommandType.DELETE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName()));
+        var command = paymentGroupCommandService.initDeleteGroupReferenceCommand(id);
         String idMessage = paymentGroupCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
@@ -144,18 +123,13 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroupReference(String id, @NotNull @Valid String partyId,
                                                        @NotNull @Valid String shopId, @Valid String groupId) {
+        String userName = userInfoService.getUserName();
         log.info("removeGroupReference initiator: {} groupId: {} partyId: {} shopId: {}",
-                userInfoService.getUserName(), groupId, partyId, shopId);
-        var groupReferenceModel = new GroupReference()
-                .partyId(partyId)
-                .shopId(shopId)
-                .groupId(groupId);
-        var command = convertReferenceModel(groupReferenceModel, groupId);
-        command.setCommandType(CommandType.DELETE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName()));
+                userName, groupId, partyId, shopId);
+        var command = paymentGroupCommandService.initDeleteGroupReferenceCommand(partyId, shopId, groupId, userName);
         String resultId = paymentGroupReferenceService.sendCommandSync(command);
         log.info("removeGroupReference sendCommand id: {}", resultId);
         return ResponseEntity.ok().body(resultId);
     }
+
 }

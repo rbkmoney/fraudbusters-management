@@ -43,7 +43,6 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
     private final UnknownPaymentTemplateInReferenceFilter templateInReferenceFilter;
     private final CommandMapper commandMapper;
     private final PaymentTemplateReferenceService paymentTemplateReferenceService;
-    private final DefaultPaymentReferenceDaoImpl defaultReferenceDao;
     private final PaymentReferenceModelToCommandConverter paymentReferenceModelToCommandConverter;
     private final PaymentReferenceModelToPaymentReferenceConverter modelToPaymentReferenceConverter;
     private final DefaultPaymentReferenceModelToPaymentReferenceConverter defaultModelToPaymentReferenceConverter;
@@ -57,7 +56,7 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
         var filterRequest = new FilterRequest(searchValue, lastId, sortFieldValue, size, sortBy,
                 PagingDataUtils.getSortOrder(sortOrder));
         log.info("filterReferences initiator: {} filterRequest: {}", userInfoService.getUserName(), filterRequest);
-        FilterRequestUtils.prepareFilterRequest(filterRequest);
+        filterRequest.setSearchValue(FilterRequestUtils.prepareSearchValue(filterRequest.getSearchValue()));
         List<DefaultPaymentReferenceModel> paymentReferenceModels =
                 defaultPaymentReferenceDao.filterReferences(filterRequest);
         Integer count = defaultPaymentReferenceDao.countFilterModel(searchValue);
@@ -99,7 +98,7 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
                 .shopId(paymentReference.getShopId())
                 .templateId(paymentReference.getTemplateId())
                 .build();
-        defaultReferenceDao.insert(defaultReferenceModel);
+        defaultPaymentReferenceDao.insert(defaultReferenceModel);
         return ResponseEntity.ok().body(uid);
     }
 
@@ -125,7 +124,7 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeDefaultReference(String id) {
         log.info("removeDefaultReference initiator: {} id: {}", userInfoService.getUserName(), id);
-        defaultReferenceDao.remove(id);
+        defaultPaymentReferenceDao.remove(id);
         return ResponseEntity.ok().body(id);
     }
 

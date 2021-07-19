@@ -17,7 +17,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferen
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.filter.UnknownPaymentTemplateInReferenceFilter;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentGroupsResource;
-import com.rbkmoney.fraudbusters.management.resource.payment.PaymentTemplateCommandResource;
+import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsTemplatesResource;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsReferenceResource;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import com.rbkmoney.swag.fraudbusters.management.model.*;
@@ -81,7 +81,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     public UnknownPaymentTemplateInReferenceFilter unknownPaymentTemplateInReferenceFilter;
 
     @Autowired
-    PaymentTemplateCommandResource paymentTemplateCommandResource;
+    PaymentsTemplatesResource paymentTemplateCommandResource;
 
     @Autowired
     PaymentsReferenceResource paymentsReferenceResource;

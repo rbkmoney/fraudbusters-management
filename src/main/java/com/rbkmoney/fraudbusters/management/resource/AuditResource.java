@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.damsel.fraudbusters.CommandType;
-import com.rbkmoney.fraudbusters.management.converter.CommonAuditInternalToSwagConverter;
+import com.rbkmoney.fraudbusters.management.converter.CommonAuditInternalToCommonAuditConverter;
 import com.rbkmoney.fraudbusters.management.dao.audit.CommandAuditDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ObjectType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
@@ -33,7 +33,7 @@ public class AuditResource implements AuditApi {
 
     private final CommandAuditDao commandAuditDao;
     private final UserInfoService userInfoService;
-    private final CommonAuditInternalToSwagConverter commonAuditInternalToSwagConverter;
+    private final CommonAuditInternalToCommonAuditConverter commonAuditInternalToCommonAuditConverter;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
@@ -57,7 +57,7 @@ public class AuditResource implements AuditApi {
         return ResponseEntity.ok()
                 .body(new FilterLogsResponse()
                         .count(count)
-                        .result(commonAuditInternalToSwagConverter.convert(commandAudits))
+                        .result(commonAuditInternalToCommonAuditConverter.convert(commandAudits))
                 );
     }
 

@@ -2,16 +2,13 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
-import com.rbkmoney.damsel.fraudbusters.UserInfo;
-import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.TemplateToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.TemplateValidateErrorsToValidateTemplateResponseConverter;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
-import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.service.PaymentsTemplatesService;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.utils.CommandMapper;
-import com.rbkmoney.fraudbusters.management.utils.FilterRequestUtils;
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsTemplatesApi;
@@ -20,26 +17,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class PaymentTemplateCommandResource implements PaymentsTemplatesApi {
+public class PaymentsTemplatesResource implements PaymentsTemplatesApi {
 
     private final TemplateCommandService paymentTemplateCommandService;
-    private final TemplateToCommandConverter templateModelToCommandConverter;
     private final ValidationTemplateService paymentValidationService;
     private final TemplateDao paymentTemplateDao;
     private final UserInfoService userInfoService;
     private final CommandMapper commandMapper;
-    private final TemplateModelToTemplateConverter templateModelToTemplateConverter;
+    private final PaymentsTemplatesService paymentsReferenceService;
+    private final TemplateValidateErrorsToValidateTemplateResponseConverter errorsToValidateTemplateResponseConverter;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -50,15 +45,8 @@ public class PaymentTemplateCommandResource implements PaymentsTemplatesApi {
                 PagingDataUtils.getSortOrder(sortOrder));
         String userName = userInfoService.getUserName();
         log.info("filterTemplates initiator: {} filterRequest: {}", userName, filterRequest);
-        FilterRequestUtils.prepareFilterRequest(filterRequest);
-        List<TemplateModel> templateModels = paymentTemplateDao.filterModel(filterRequest);
-        Integer count = paymentTemplateDao.countFilterModel(filterRequest.getSearchValue());
-        return ResponseEntity.ok().body(new TemplatesResponse()
-                .count(count)
-                .result(templateModels.stream()
-                        .map(templateModelToTemplateConverter::destinationToSource)
-                        .collect(Collectors.toList())
-                ));
+        TemplatesResponse templatesResponse = paymentsReferenceService.filterTemplates(filterRequest);
+        return ResponseEntity.ok().body(templatesResponse);
     }
 
     @Override
@@ -77,23 +65,7 @@ public class PaymentTemplateCommandResource implements PaymentsTemplatesApi {
         String userName = userInfoService.getUserName();
         log.info("insertTemplate initiator: {} templateModel: {}", userName,
                 template);
-        var command = templateModelToCommandConverter.convert(template);
-        List<TemplateValidateError> templateValidateErrors = paymentValidationService.validateTemplate(
-                command.getCommandBody().getTemplate()
-        );
-        if (!CollectionUtils.isEmpty(templateValidateErrors)) {
-            return ResponseEntity.badRequest().body(new CreateTemplateResponse()
-                    .template(template.getTemplate())
-                    .errors(templateValidateErrors.get(0).getReason()));
-        }
-        command.setCommandType(CommandType.CREATE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userName));
-        String idMessage = paymentTemplateCommandService.sendCommandSync(command);
-        return ResponseEntity.ok().body(new CreateTemplateResponse()
-                .id(idMessage)
-                .template(template.getTemplate())
-        );
+        return ResponseEntity.ok().body(paymentsReferenceService.createTemplate(template, userName));
     }
 
     @Override
@@ -117,12 +89,7 @@ public class PaymentTemplateCommandResource implements PaymentsTemplatesApi {
                         .setId(template.getId())
                         .setTemplate(template.getTemplate().getBytes()));
         log.info("validateTemplate result: {}", templateValidateErrors);
-        return ResponseEntity.ok().body(new ValidateTemplatesResponse()
-                .validateResults(templateValidateErrors.stream()
-                        .map(templateValidateError -> new ErrorTemplate()
-                                .errors(templateValidateError.getReason())
-                                .id(templateValidateError.id))
-                        .collect(Collectors.toList()))
-        );
+        return ResponseEntity.ok().body(errorsToValidateTemplateResponseConverter.convert(templateValidateErrors));
     }
+
 }

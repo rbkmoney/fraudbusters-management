@@ -73,7 +73,7 @@ public class P2pGroupCommandResource {
     public ResponseEntity<String> removeGroup(Principal principal,
                                               @PathVariable(value = "id") String id) {
         log.info("removeGroup initiator: {} id: {}", userInfoService.getUserName(principal), id);
-        Command command = p2pGroupCommandService.createTemplateCommandById(id);
+        Command command = p2pGroupCommandService.initDeleteGroupReferenceCommand(id);
         command.setCommandType(CommandType.DELETE);
         command.setUserInfo(new UserInfo()
                 .setUserId(userInfoService.getUserName(principal)));
