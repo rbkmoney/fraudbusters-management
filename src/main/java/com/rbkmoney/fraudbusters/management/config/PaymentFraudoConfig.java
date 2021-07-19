@@ -4,9 +4,10 @@ import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.fraudbusters.management.converter.p2p.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.GroupToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.PaymentGroupReferenceModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
-import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupCommandService;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -46,11 +47,14 @@ public class PaymentFraudoConfig {
     }
 
     @Bean
-    public GroupCommandService paymentGroupCommandService(CommandSender commandSender,
-                                                          @Value("${kafka.topic.fraudbusters.payment.group.list}")
-                                                                  String topic,
-                                                          GroupToCommandConverter groupToCommandConverter) {
-        return new GroupCommandService(commandSender, topic, groupToCommandConverter);
+    public PaymentGroupCommandService paymentGroupCommandService(
+            CommandSender commandSender,
+            @Value("${kafka.topic.fraudbusters.payment.group.list}")
+                    String topic,
+            GroupToCommandConverter groupToCommandConverter,
+            PaymentGroupReferenceModelToCommandConverter groupReferenceToCommandConverter) {
+        return new PaymentGroupCommandService(commandSender, topic, groupToCommandConverter,
+                groupReferenceToCommandConverter);
     }
 
 }

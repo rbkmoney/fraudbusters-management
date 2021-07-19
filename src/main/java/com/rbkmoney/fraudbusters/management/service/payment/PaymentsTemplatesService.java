@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.service;
+package com.rbkmoney.fraudbusters.management.service.payment;
 
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
@@ -8,6 +8,7 @@ import com.rbkmoney.fraudbusters.management.converter.payment.TemplateToCommandC
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.utils.FilterRequestUtils;
 import com.rbkmoney.swag.fraudbusters.management.model.CreateTemplateResponse;

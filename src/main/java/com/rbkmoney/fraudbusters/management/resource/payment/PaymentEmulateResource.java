@@ -2,7 +2,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverter;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
-import com.rbkmoney.fraudbusters.management.service.PaymentEmulateService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentEmulateService;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsEmulationsApi;
 import com.rbkmoney.swag.fraudbusters.management.model.EmulateResponse;

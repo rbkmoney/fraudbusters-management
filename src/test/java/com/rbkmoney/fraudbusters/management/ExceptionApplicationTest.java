@@ -14,6 +14,7 @@ import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsListsResource;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentsListsService;
 import com.rbkmoney.fraudbusters.management.utils.*;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -48,9 +52,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, PaymentsListsResource.class,
-        UserInfoService.class,
-        WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class, CountInfoUtils.class,
-        CsvPaymentCountInfoParser.class, WbListRecordsModelToWbListRecordConverter.class})
+        UserInfoService.class, WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class,
+        CountInfoUtils.class, CountInfoSwagUtils.class, CsvPaymentCountInfoParser.class,
+        WbListRecordsModelToWbListRecordConverter.class, PaymentsListsService.class})
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 public class ExceptionApplicationTest {
 

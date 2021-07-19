@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.service;
+package com.rbkmoney.fraudbusters.management.service.payment;
 
 import com.rbkmoney.damsel.wb_list.Command;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordToRowConverter;
@@ -8,6 +8,7 @@ import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.exception.NotFoundException;
+import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
@@ -15,6 +16,7 @@ import com.rbkmoney.swag.fraudbusters.management.model.PaymentCountInfo;
 import com.rbkmoney.swag.fraudbusters.management.model.WbListRecordsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestController
+@Service
 @RequiredArgsConstructor
 public class PaymentsListsService {
 

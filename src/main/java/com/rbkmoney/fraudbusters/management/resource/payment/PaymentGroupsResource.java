@@ -8,7 +8,7 @@ import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupRefere
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupCommandService;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupReferenceService;
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
@@ -35,7 +35,7 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
     private final PaymentGroupReferenceDao referenceDao;
     private final UserInfoService userInfoService;
     private final PaymentGroupReferenceService paymentGroupReferenceService;
-    private final GroupCommandService paymentGroupCommandService;
+    private final PaymentGroupCommandService paymentGroupCommandService;
     private final GroupToCommandConverter groupToCommandConverter;
     private final PaymentGroupReferenceModelToGroupReferenceConverter referenceModelToGroupReferenceConverter;
     private final GroupModelToGroupConverter groupModelToGroupConverter;
@@ -91,7 +91,7 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
         String userName = userInfoService.getUserName();
         log.info("insertTemplate initiator: {} group: {}", userName, group);
         var command = groupToCommandConverter.convert(group);
-        paymentGroupCommandService.initCreateCommand(command, userName);
+        command = paymentGroupCommandService.initCreateCommand(command, userName);
         String idMessage = paymentGroupCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }
@@ -113,8 +113,9 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroup(String id) {
-        log.info("removeGroup initiator: {} id: {}", userInfoService.getUserName(), id);
-        var command = paymentGroupCommandService.initDeleteGroupReferenceCommand(id);
+        String userName = userInfoService.getUserName();
+        log.info("removeGroup initiator: {} id: {}", userName, id);
+        var command = paymentGroupCommandService.initDeleteGroupReferenceCommand(id, userName);
         String idMessage = paymentGroupCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }

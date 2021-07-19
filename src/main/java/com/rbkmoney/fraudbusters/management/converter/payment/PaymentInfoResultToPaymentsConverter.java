@@ -4,10 +4,12 @@ import com.rbkmoney.damsel.fraudbusters.PaymentInfoResult;
 import com.rbkmoney.swag.fraudbusters.management.model.Payment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 @RequiredArgsConstructor
 public class PaymentInfoResultToPaymentsConverter implements Converter<PaymentInfoResult, List<Payment>> {
 

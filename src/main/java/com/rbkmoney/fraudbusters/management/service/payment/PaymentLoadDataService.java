@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.service;
+package com.rbkmoney.fraudbusters.management.service.payment;
 
 import com.rbkmoney.damsel.fraudbusters.FraudPayment;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;

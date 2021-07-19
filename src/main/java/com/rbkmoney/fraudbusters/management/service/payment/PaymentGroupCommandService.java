@@ -1,10 +1,11 @@
-package com.rbkmoney.fraudbusters.management.service;
+package com.rbkmoney.fraudbusters.management.service.payment;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.damsel.fraudbusters.UserInfo;
 import com.rbkmoney.fraudbusters.management.converter.payment.GroupToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentGroupReferenceModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.service.CommandSender;
 import com.rbkmoney.swag.fraudbusters.management.model.Group;
 import com.rbkmoney.swag.fraudbusters.management.model.GroupReference;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 
 @Slf4j
 @RequiredArgsConstructor
-public class GroupCommandService {
+public class PaymentGroupCommandService {
 
     private final CommandSender commandSender;
     private final String topic;
@@ -26,12 +27,12 @@ public class GroupCommandService {
         return commandSender.send(topic, command, key);
     }
 
-    public Command initDeleteGroupReferenceCommand(String id) {
+    public Command initDeleteGroupReferenceCommand(String id, String initiator) {
         return groupToCommandConverter.convert(new Group()
                 .groupId(id)
                 .priorityTemplates(new ArrayList<>()))
                 .setCommandType(CommandType.DELETE)
-                .setUserInfo(new UserInfo());
+                .setUserInfo(new UserInfo(initiator));
     }
 
     public Command initDeleteGroupReferenceCommand(String partyId, String shopId, String groupId, String initiator) {

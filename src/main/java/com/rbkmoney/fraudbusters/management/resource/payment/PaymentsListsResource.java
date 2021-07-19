@@ -3,7 +3,7 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import com.rbkmoney.fraudbusters.management.service.PaymentsListsService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentsListsService;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.ParametersService;

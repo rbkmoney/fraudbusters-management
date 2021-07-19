@@ -8,9 +8,9 @@ import com.rbkmoney.fraudbusters.management.dao.audit.CommandAuditDao;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class AuditServiceImpl implements AuditService {
 

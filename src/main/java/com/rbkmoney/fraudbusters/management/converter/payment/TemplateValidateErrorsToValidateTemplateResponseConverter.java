@@ -5,10 +5,12 @@ import com.rbkmoney.swag.fraudbusters.management.model.ErrorTemplate;
 import com.rbkmoney.swag.fraudbusters.management.model.ValidateTemplatesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 @RequiredArgsConstructor
 public class TemplateValidateErrorsToValidateTemplateResponseConverter
         implements Converter<List<TemplateValidateError>, ValidateTemplatesResponse> {

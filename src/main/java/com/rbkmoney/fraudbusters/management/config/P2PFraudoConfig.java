@@ -39,7 +39,7 @@ public class P2PFraudoConfig {
                                                            @Value("${kafka.topic.fraudbusters.p2p.group.list}")
                                                                    String topic,
                                                            GroupModelToCommandConverter groupModelToCommandConverter) {
-        return new GroupModelCommandService(commandSender, topic, groupModelToCommandConverter);
+        return new GroupModelCommandService(commandSender, topic);
     }
 
 

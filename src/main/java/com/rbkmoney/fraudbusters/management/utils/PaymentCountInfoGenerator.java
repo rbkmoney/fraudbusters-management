@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentCountInfoGenerator {
 
-    private final CountInfoUtils countInfoGenerator;
+    private final CountInfoSwagUtils countInfoSwagUtils;
     private final PaymentListRecordToRowConverter paymentListRecordToRowConverter;
     private final PaymentCountInfoRequestToRowConverter countInfoListRecordToRowConverter;
 
     public PaymentCountInfo initDestination(String rowInfo, PaymentListRecord listRecord) {
-        PaymentCountInfo paymentCountInfo = new PaymentCountInfo();
+        var paymentCountInfo = new PaymentCountInfo();
         paymentCountInfo.setListRecord(listRecord);
         if (!StringUtil.isNullOrEmpty(rowInfo)) {
             com.rbkmoney.swag.fraudbusters.management.model.CountInfo countInfoValue =
-                    countInfoGenerator.initExternalRowCountInfo(rowInfo);
+                    countInfoSwagUtils.initExternalRowCountInfo(rowInfo);
             paymentCountInfo.setCountInfo(countInfoValue);
         }
         return paymentCountInfo;

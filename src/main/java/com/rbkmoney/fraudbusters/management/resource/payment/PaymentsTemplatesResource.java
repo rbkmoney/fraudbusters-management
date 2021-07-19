@@ -5,7 +5,7 @@ import com.rbkmoney.damsel.fraudbusters.TemplateValidateError;
 import com.rbkmoney.fraudbusters.management.converter.payment.TemplateValidateErrorsToValidateTemplateResponseConverter;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import com.rbkmoney.fraudbusters.management.service.PaymentsTemplatesService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentsTemplatesService;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.ValidationTemplateService;
 import com.rbkmoney.fraudbusters.management.utils.CommandMapper;

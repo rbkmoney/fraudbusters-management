@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.fraudbusters.management.service.PaymentLoadDataService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentLoadDataService;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsLoadDataApi;
 import lombok.RequiredArgsConstructor;

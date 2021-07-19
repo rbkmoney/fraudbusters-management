@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.service;
+package com.rbkmoney.fraudbusters.management.service.payment;
 
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
@@ -12,6 +12,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.misc.Pair;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class PaymentEmulateService {
 

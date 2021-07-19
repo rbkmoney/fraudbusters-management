@@ -4,6 +4,7 @@ import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsModelToWbListRecordConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentsListsService;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.utils.ParametersService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
@@ -29,7 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {PaymentsListsResource.class, CsvPaymentCountInfoParser.class,
-        WbListRecordsModelToWbListRecordConverter.class})
+        WbListRecordsModelToWbListRecordConverter.class, PaymentsListsService.class})
 public class PaymentListLoadDataResourceTest {
 
     @MockBean
