@@ -33,7 +33,7 @@ public class PaymentsTemplatesResource implements PaymentsTemplatesApi {
     private final TemplateDao paymentTemplateDao;
     private final UserInfoService userInfoService;
     private final CommandMapper commandMapper;
-    private final PaymentsTemplatesService paymentsReferenceService;
+    private final PaymentsTemplatesService paymentsTemplatesService;
     private final TemplateValidateErrorsToValidateTemplateResponseConverter errorsToValidateTemplateResponseConverter;
 
     @Override
@@ -45,7 +45,7 @@ public class PaymentsTemplatesResource implements PaymentsTemplatesApi {
                 PagingDataUtils.getSortOrder(sortOrder));
         String userName = userInfoService.getUserName();
         log.info("filterTemplates initiator: {} filterRequest: {}", userName, filterRequest);
-        TemplatesResponse templatesResponse = paymentsReferenceService.filterTemplates(filterRequest);
+        TemplatesResponse templatesResponse = paymentsTemplatesService.filterTemplates(filterRequest);
         return ResponseEntity.ok().body(templatesResponse);
     }
 
@@ -65,7 +65,7 @@ public class PaymentsTemplatesResource implements PaymentsTemplatesApi {
         String userName = userInfoService.getUserName();
         log.info("insertTemplate initiator: {} templateModel: {}", userName,
                 template);
-        return ResponseEntity.ok().body(paymentsReferenceService.createTemplate(template, userName));
+        return ResponseEntity.ok().body(paymentsTemplatesService.createTemplate(template, userName));
     }
 
     @Override
