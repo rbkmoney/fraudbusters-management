@@ -3,7 +3,7 @@ package com.rbkmoney.fraudbusters.management.resource;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.fraudbusters.management.domain.enums.ObjectType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import com.rbkmoney.fraudbusters.management.service.AuditService;
+import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.AuditApi;

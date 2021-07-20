@@ -1,10 +1,8 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
-import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import com.rbkmoney.fraudbusters.management.service.payment.PaymentsListsService;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentsListsService;
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.ParametersService;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
@@ -30,7 +28,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaymentsListsResource implements PaymentsListsApi {
 
-    private final WbListDao wbListDao;
     private final WbListCommandService wbListCommandService;
     private final PaymentCountInfoGenerator paymentCountInfoGenerator;
     private final UserInfoService userInfoService;
@@ -77,7 +74,7 @@ public class PaymentsListsResource implements PaymentsListsApi {
     @PreAuthorize("hasAnyRole('fraud-monitoring', 'fraud-officer')")
     public ResponseEntity<ListResponse> getCurrentListNames(@NotNull @Valid String listType) {
         var listResponse = new ListResponse();
-        listResponse.setResult(wbListDao.getCurrentListNames(ListType.valueOf(listType)));
+        listResponse.setResult(paymentsListsService.getCurrentListNames(listType));
         return ResponseEntity.ok().body(listResponse);
     }
 

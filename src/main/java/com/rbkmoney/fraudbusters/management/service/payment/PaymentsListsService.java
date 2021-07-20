@@ -82,4 +82,8 @@ public class PaymentsListsService {
                 userInfoService.getUserName());
     }
 
+    public List<String> getCurrentListNames(String listType) {
+        return wbListDao.getCurrentListNames(ListType.valueOf(listType));
+    }
+
 }

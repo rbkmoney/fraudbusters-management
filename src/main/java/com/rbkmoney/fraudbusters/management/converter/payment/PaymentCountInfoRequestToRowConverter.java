@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 public class PaymentCountInfoRequestToRowConverter implements Converter<PaymentCountInfo, Row> {
 
     private final PaymentListRecordToRowConverter paymentListRecordToRowConverter;
-    private final CountInfoApiUtils countInfoSwagUtils;
+    private final CountInfoApiUtils countInfoApiUtils;
 
     @Override
     public Row convert(PaymentCountInfo destination) {
         PaymentListRecord listRecord = destination.getListRecord();
         return paymentListRecordToRowConverter.convert(listRecord)
-                .setRowInfo(countInfoSwagUtils.initRowInfo(destination.getCountInfo()));
+                .setRowInfo(countInfoApiUtils.initRowInfo(destination.getCountInfo()));
     }
 
 }
