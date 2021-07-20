@@ -19,7 +19,7 @@ public class PaymentsDefaultReferenceService {
     private final DefaultPaymentReferenceDaoImpl defaultPaymentReferenceDao;
     private final UserInfoService userInfoService;
 
-    public String inertDefaultReference(PaymentReference paymentReference) {
+    public String insertDefaultReference(PaymentReference paymentReference) {
         var uid = UUID.randomUUID().toString();
         var defaultReferenceModel = DefaultPaymentReferenceModel.builder()
                 .id(uid)

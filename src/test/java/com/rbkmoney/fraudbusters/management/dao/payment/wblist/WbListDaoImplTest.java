@@ -9,7 +9,7 @@ import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.WbListRecordsRecord;
-import com.rbkmoney.fraudbusters.management.utils.CountInfoSwagUtils;
+import com.rbkmoney.fraudbusters.management.utils.CountInfoApiUtils;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.swag.fraudbusters.management.model.PaymentCountInfo;
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 
 @ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class,
         PaymentListRecordToRowConverter.class, PaymentCountInfoRequestToRowConverter.class,
-        ListRecordToRowConverterImpl.class, CountInfoSwagUtils.class,
+        ListRecordToRowConverterImpl.class, CountInfoApiUtils.class,
         PaymentCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
 public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 

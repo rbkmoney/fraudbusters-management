@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PaymentUnknownTemplateFinder {
 
-    public List<String> findUnknownTemplate(List<PaymentReference> referenceModels,
-                                            Predicate<PaymentReference> filter) {
+    public List<String> find(List<PaymentReference> referenceModels, Predicate<PaymentReference> filter) {
         return referenceModels.stream()
                 .filter(t -> !filter.test(t))
                 .map(PaymentReference::getTemplateId)

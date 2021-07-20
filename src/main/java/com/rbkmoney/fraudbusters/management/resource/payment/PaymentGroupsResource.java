@@ -9,7 +9,7 @@ import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupCommandService;
-import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupReferenceService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupReferenceCommandService;
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsGroupsApi;
@@ -34,7 +34,7 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
     private final PaymentGroupDao groupDao;
     private final PaymentGroupReferenceDao referenceDao;
     private final UserInfoService userInfoService;
-    private final PaymentGroupReferenceService paymentGroupReferenceService;
+    private final PaymentGroupReferenceCommandService paymentGroupReferenceService;
     private final PaymentGroupCommandService paymentGroupCommandService;
     private final GroupToCommandConverter groupToCommandConverter;
     private final PaymentGroupReferenceModelToGroupReferenceConverter referenceModelToGroupReferenceConverter;

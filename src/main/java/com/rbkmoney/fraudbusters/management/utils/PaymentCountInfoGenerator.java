@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentCountInfoGenerator {
 
-    private final CountInfoSwagUtils countInfoSwagUtils;
+    private final CountInfoApiUtils countInfoSwagUtils;
     private final PaymentListRecordToRowConverter paymentListRecordToRowConverter;
     private final PaymentCountInfoRequestToRowConverter countInfoListRecordToRowConverter;
 

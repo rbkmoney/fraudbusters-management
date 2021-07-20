@@ -70,7 +70,7 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
     public ResponseEntity<String> insertDefaultReference(@Valid PaymentReference paymentReference) {
         log.info("insertDefaultReference initiator: {} referenceModels: {}", userInfoService.getUserName(),
                 paymentReference);
-        String uid = paymentsDefaultReferenceService.inertDefaultReference(paymentReference);
+        String uid = paymentsDefaultReferenceService.insertDefaultReference(paymentReference);
         return ResponseEntity.ok().body(uid);
     }
 
@@ -106,7 +106,7 @@ public class PaymentsReferenceResource implements PaymentsReferencesApi {
         String userName = userInfoService.getUserName();
         log.info("insertReference initiator: {} referenceModels: {}", userName, paymentReference);
         List<String> unknownTemplates =
-                unknownTemplateFinder.findUnknownTemplate(paymentReference, templateInReferenceFilter);
+                unknownTemplateFinder.find(paymentReference, templateInReferenceFilter);
         if (!CollectionUtils.isEmpty(unknownTemplates)) {
             return new ResponseEntity<>(unknownTemplates, HttpStatus.UNPROCESSABLE_ENTITY);
         }

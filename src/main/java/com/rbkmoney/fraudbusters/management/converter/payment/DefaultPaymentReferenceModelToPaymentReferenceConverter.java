@@ -3,14 +3,12 @@ package com.rbkmoney.fraudbusters.management.converter.payment;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import com.rbkmoney.swag.fraudbusters.management.model.PaymentReference;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 
 @Component
-@RequiredArgsConstructor
 public class DefaultPaymentReferenceModelToPaymentReferenceConverter
         implements Converter<DefaultPaymentReferenceModel, PaymentReference> {
 

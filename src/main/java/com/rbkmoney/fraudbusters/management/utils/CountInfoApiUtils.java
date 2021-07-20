@@ -12,7 +12,7 @@ import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
-public class CountInfoSwagUtils {
+public class CountInfoApiUtils {
 
     private final ObjectMapper objectMapper;
 

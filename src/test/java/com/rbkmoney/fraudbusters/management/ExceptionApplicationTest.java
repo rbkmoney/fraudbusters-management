@@ -53,7 +53,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, PaymentsListsResource.class,
         UserInfoService.class, WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class,
-        CountInfoUtils.class, CountInfoSwagUtils.class, CsvPaymentCountInfoParser.class,
+        CountInfoUtils.class, CountInfoApiUtils.class, CsvPaymentCountInfoParser.class,
         WbListRecordsModelToWbListRecordConverter.class, PaymentsListsService.class})
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 public class ExceptionApplicationTest {
