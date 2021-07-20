@@ -35,6 +35,10 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
                                                               @Valid String email, @Valid String providerCountry,
                                                               @Valid String cardToken, @Valid String fingerprint,
                                                               @Valid String terminal) {
+        log.info("-> filterPaymentsInfo lastId: {} size: {} partyId: {} shopId: {} paymentId: {} status: {} email: {}" +
+                        " providerCountry: {} cardToken: {} fingerprint: {} terminal: {}",
+                lastId, size, partyId, shopId, paymentId, status, email, providerCountry, cardToken, fingerprint,
+                terminal);
         PaymentInfoResult payments = historicalDataServiceSrv.getPayments(
                 new Filter()
                         .setEmail(email)
@@ -49,9 +53,10 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
                 new Page()
                         .setContinuationId(lastId)
                         .setSize(size));
-        return ResponseEntity.ok(new PaymentResponse()
+        var paymentResponse = new PaymentResponse()
                 .result(paymentInfoResultToPaymentsConverter.convert(payments))
-                .continuationId(payments.getContinuationId())
-        );
+                .continuationId(payments.getContinuationId());
+        log.info("<- filterPaymentsInfo paymentResponse: {}", paymentResponse);
+        return ResponseEntity.ok(paymentResponse);
     }
 }
