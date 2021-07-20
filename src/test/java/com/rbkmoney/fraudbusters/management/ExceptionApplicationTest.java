@@ -108,17 +108,6 @@ public class ExceptionApplicationTest {
         return listRecord;
     }
 
-//    @Test(expected = HttpClientErrorException.BadRequest.class)
-//    public void executionRestTestBadRequest() {
-//        RestTemplate restTemplate = restTemplateBuilder.build();
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<Object> requestEntity = new HttpEntity<>(null, headers);
-//        restTemplate.exchange(paymentListPath, HttpMethod.POST,
-//                requestEntity, new ParameterizedTypeReference<>() {
-//                });
-//    }
-
     @Test
     public void executionRestTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
