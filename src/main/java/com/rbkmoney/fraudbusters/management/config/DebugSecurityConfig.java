@@ -8,10 +8,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@Profile("debug")
 public class DebugSecurityConfig {
 
     @Bean
-    @Profile("debug")
     public WebMvcConfigurer corsConfigurer(@Value("${cors.allowed-origins}") String[] allowedOrigins) {
         return new WebMvcConfigurer() {
             @Override
