@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.rbkmoney.fraudbusters.management.domain.tables.FGroup.F_GROUP;
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFGroup.P2P_F_GROUP;
 
 @Component
@@ -106,7 +107,7 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
                             .or(P2P_F_GROUP.TEMPLATE_ID.like(filterValue)));
         }
         List<GroupPriorityRow> list =
-                fetch(StringUtils.isEmpty(filterValue) ? from : from.where(P2P_F_GROUP.GROUP_ID.in(selectGroupsId)),
+                fetch(!StringUtils.hasText(filterValue) ? from : from.where(P2P_F_GROUP.GROUP_ID.in(selectGroupsId)),
                         (rs, rowNum) -> createGroupPriorityRow(rs)
                 );
         return groupRowToModelMapper.groupByGroupId(list);
@@ -117,7 +118,7 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
                 .groupId(rs.getString(P2P_F_GROUP.GROUP_ID.getName()))
                 .priorityIdModel(PriorityIdModel.builder()
                         .id(rs.getString(P2P_F_GROUP.TEMPLATE_ID.getName()))
-                        .lastUpdateTime(rs.getString(P2P_F_GROUP.LAST_UPDATE_DATE.getName()))
+                        .lastUpdateTime(rs.getTimestamp(F_GROUP.LAST_UPDATE_DATE.getName()).toLocalDateTime())
                         .priority(rs.getLong(P2P_F_GROUP.PRIORITY.getName()))
                         .build())
                 .build();

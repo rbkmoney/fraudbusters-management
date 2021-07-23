@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Slf4j
@@ -23,7 +24,9 @@ public class PaymentsDefaultReferenceService {
         var uid = UUID.randomUUID().toString();
         var defaultReferenceModel = DefaultPaymentReferenceModel.builder()
                 .id(uid)
-                .lastUpdateDate(paymentReference.getLastUpdateDate().format(DateTimeUtils.DATE_TIME_FORMATTER))
+                .lastUpdateDate(paymentReference.getLastUpdateDate()!=null
+                        ? paymentReference.getLastUpdateDate().format(DateTimeUtils.DATE_TIME_FORMATTER)
+                        : LocalDateTime.now().format(DateTimeUtils.DATE_TIME_FORMATTER))
                 .modifiedByUser(userInfoService.getUserName())
                 .partyId(paymentReference.getPartyId())
                 .shopId(paymentReference.getShopId())

@@ -42,11 +42,10 @@ public class PaymentGroupsResource implements PaymentsGroupsApi {
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<GroupsResponse> filterGroups(@Valid String sortOrder, @Valid String searchValue,
-                                                       @Valid String sortBy, @Valid String sortFieldValue,
-                                                       @Valid Integer size) {
-        log.info("filterGroup initiator: {} groupId: {}", userInfoService.getUserName(), searchValue);
+    public ResponseEntity<GroupsResponse> filterGroups(@Valid String searchValue) {
+        log.info("-> filterGroup initiator: {} searchValue: {}", userInfoService.getUserName(), searchValue);
         List<GroupModel> groupModels = groupDao.filterGroup(searchValue);
+        log.info("filterGroup groupModels: {}", groupModels);
         return ResponseEntity.ok().body(new GroupsResponse()
                 .result(groupModels.stream()
                         .map(groupModelToGroupConverter::convert)

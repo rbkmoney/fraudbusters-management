@@ -19,10 +19,11 @@ public class WbListRecordsModelToWbListRecordConverter implements Converter<WbLi
                 .createdByUser(wbListRecord.getCreatedByUser())
                 .insertTime(wbListRecord.getInsertTime())
                 .listName(wbListRecord.getListName())
-                .listType(WbListRecord.ListTypeEnum.valueOf(wbListRecord.getListType().name()))
+                .listType(WbListRecord.ListTypeEnum.fromValue(wbListRecord.getListType().name()))
                 .partyId(wbListRecord.getPartyId())
                 .shopId(wbListRecord.getShopId())
                 .rowInfo(wbListRecord.getRowInfo())
-                .value(wbListRecord.getValue());
+                .value(wbListRecord.getValue())
+                .id(wbListRecord.getId());
     }
 }

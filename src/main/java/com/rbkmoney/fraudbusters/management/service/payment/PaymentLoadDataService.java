@@ -25,10 +25,10 @@ public class PaymentLoadDataService {
         if (csvFraudPaymentParser.hasCsvFormat(file)) {
             try {
                 List<FraudPayment> fraudPayments = csvFraudPaymentParser.parse(file.getInputStream());
-                log.info("PaymentLoadDataResource loadFraudOperation initiator: {} fraudPaymentRecords: {}",
+                log.debug("PaymentLoadDataResource loadFraudOperation initiator: {} fraudPaymentRecords: {}",
                         userName, fraudPayments);
                 paymentServiceSrv.insertFraudPayments(fraudPayments);
-                log.info("PaymentLoadDataResource loaded fraudPayments: {}", fraudPayments);
+                log.debug("PaymentLoadDataResource loaded fraudPayments: {}", fraudPayments);
             } catch (IOException | TException e) {
                 log.error("PaymentLoadDataResource error when loadFraudOperation e: ", e);
                 throw new RuntimeException(e);

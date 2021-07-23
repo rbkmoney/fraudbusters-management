@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CsvFraudPaymentParserTest {
@@ -27,6 +28,11 @@ public class CsvFraudPaymentParserTest {
                 new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
 
         Assert.assertTrue(csvFraudPaymentParser.hasCsvFormat(multipartFile));
+    }
+
+    @Test
+    public void testttt(){
+        LocalDateTime parse = LocalDateTime.parse("2021-04-27 12:33:40.340621");
     }
 
     @Test

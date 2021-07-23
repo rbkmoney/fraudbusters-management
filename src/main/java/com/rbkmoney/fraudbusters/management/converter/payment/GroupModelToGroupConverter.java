@@ -31,7 +31,7 @@ public class GroupModelToGroupConverter
 
     private List<PriorityId> convertPriorityTemplates(List<PriorityIdModel> priorityTemplates) {
         return priorityTemplates.stream()
-                .map(priorityModelToPriorityIdConverter::convert)
+                .map(priorityModelToPriorityIdConverter::destinationToSource)
                 .collect(Collectors.toList());
     }
 }

@@ -16,11 +16,12 @@ public class CommonAuditInternalToCommonAuditConverter implements
             List<com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit> commandAudits) {
         return commandAudits.stream()
                 .map(commandAudit -> new com.rbkmoney.swag.fraudbusters.management.model.CommandAudit()
-                        .commandType(CommandAudit.CommandTypeEnum.valueOf(commandAudit.getCommandType().getName()))
+                        .commandType(CommandAudit.CommandTypeEnum.valueOf(commandAudit.getCommandType().name()))
                         .id(commandAudit.getId())
                         .initiator(commandAudit.getInitiator())
                         .insertTime(commandAudit.getInsertTime())
-                        .objectType(CommandAudit.ObjectTypeEnum.valueOf(commandAudit.getObjectType().getName())))
+                        ._object(commandAudit.getObject())
+                        .objectType(CommandAudit.ObjectTypeEnum.fromValue(commandAudit.getObjectType().name())))
                 .collect(Collectors.toList());
     }
 }

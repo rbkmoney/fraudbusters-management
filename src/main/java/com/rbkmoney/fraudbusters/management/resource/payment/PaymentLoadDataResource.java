@@ -24,7 +24,9 @@ public class PaymentLoadDataResource implements PaymentsLoadDataApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Void> loadFraudPayments(@Valid MultipartFile file) {
         String userName = userInfoService.getUserName();
+        log.info("-> loadFraudPayments initiator: {} fileName: {}", userName, file.getName());
         paymentLoadDataService.loadFraudPayments(file, userName);
+        log.info("<- loadFraudPayments success load");
         return ResponseEntity.ok().build();
     }
 
