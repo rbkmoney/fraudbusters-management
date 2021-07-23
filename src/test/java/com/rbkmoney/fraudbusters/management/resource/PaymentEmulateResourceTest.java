@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,8 +60,8 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(GROUP_ID);
         ArrayList<PriorityIdModel> priorityTemplates = new ArrayList<>();
-        priorityTemplates.add(new PriorityIdModel(2L, TEMPLATE_1, null));
-        priorityTemplates.add(new PriorityIdModel(1L, TEMPLATE_2, null));
+        priorityTemplates.add(new PriorityIdModel(2L, TEMPLATE_1, LocalDateTime.now()));
+        priorityTemplates.add(new PriorityIdModel(1L, TEMPLATE_2, LocalDateTime.now()));
         groupModel.setPriorityTemplates(priorityTemplates);
         groupDao.insert(groupModel);
 

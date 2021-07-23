@@ -78,8 +78,9 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
 
     @Override
     public GroupModel getById(String id) {
-        SelectConditionStep<Record5<Long, String, Long, String, String>> where = getDslContext()
-                .select(F_GROUP.ID, F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID, F_GROUP.MODIFIED_BY_USER)
+        SelectConditionStep<Record6<Long, String, Long, String, String, LocalDateTime>> where = getDslContext()
+                .select(F_GROUP.ID, F_GROUP.GROUP_ID, F_GROUP.PRIORITY, F_GROUP.TEMPLATE_ID, F_GROUP.MODIFIED_BY_USER,
+                        F_GROUP.LAST_UPDATE_DATE)
                 .from(F_GROUP)
                 .where(F_GROUP.GROUP_ID.eq(id));
         List<PriorityIdModel> list = fetch(where, (rs, rowNum) ->
