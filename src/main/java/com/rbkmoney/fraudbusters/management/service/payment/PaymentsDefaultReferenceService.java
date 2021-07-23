@@ -24,7 +24,7 @@ public class PaymentsDefaultReferenceService {
         var uid = UUID.randomUUID().toString();
         var defaultReferenceModel = DefaultPaymentReferenceModel.builder()
                 .id(uid)
-                .lastUpdateDate(paymentReference.getLastUpdateDate()!=null
+                .lastUpdateDate(paymentReference.getLastUpdateDate() != null
                         ? paymentReference.getLastUpdateDate().format(DateTimeUtils.DATE_TIME_FORMATTER)
                         : LocalDateTime.now().format(DateTimeUtils.DATE_TIME_FORMATTER))
                 .modifiedByUser(userInfoService.getUserName())

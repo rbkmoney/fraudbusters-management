@@ -31,11 +31,6 @@ public class CsvFraudPaymentParserTest {
     }
 
     @Test
-    public void testttt(){
-        LocalDateTime parse = LocalDateTime.parse("2021-04-27 12:33:40.340621");
-    }
-
-    @Test
     public void parse() throws FileNotFoundException {
         File file = new File("src/test/resources/csv/test.csv");
         FileInputStream input = new FileInputStream(file);
