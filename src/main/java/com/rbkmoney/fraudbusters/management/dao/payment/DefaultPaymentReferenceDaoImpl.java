@@ -67,8 +67,8 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao
         SelectConditionStep<FDefaultRefRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(DSL.trueCondition())
                 : from.where(F_DEFAULT_REF.TEMPLATE_ID.like(filterRequest.getSearchValue())
-                        .or(F_DEFAULT_REF.PARTY_ID.like(filterRequest.getSearchValue()))
-                        .or(F_DEFAULT_REF.SHOP_ID.like(filterRequest.getSearchValue())));
+                .or(F_DEFAULT_REF.PARTY_ID.like(filterRequest.getSearchValue()))
+                .or(F_DEFAULT_REF.SHOP_ID.like(filterRequest.getSearchValue())));
         SelectSeekStep2<FDefaultRefRecord, String, String> filterReferenceRecords = addSortCondition(
                 F_DEFAULT_REF.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -89,8 +89,8 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao
                 .from(F_DEFAULT_REF)
                 .where(!StringUtils.isEmpty(filterValue)
                         ? F_DEFAULT_REF.TEMPLATE_ID.like(filterValue)
-                                .or(F_DEFAULT_REF.PARTY_ID.like(filterValue)
-                                        .or(F_DEFAULT_REF.SHOP_ID.like(filterValue)))
+                        .or(F_DEFAULT_REF.PARTY_ID.like(filterValue)
+                                .or(F_DEFAULT_REF.SHOP_ID.like(filterValue)))
                         : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }

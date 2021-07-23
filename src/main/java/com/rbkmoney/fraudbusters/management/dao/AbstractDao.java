@@ -3,7 +3,6 @@ package com.rbkmoney.fraudbusters.management.dao;
 import com.rbkmoney.dao.impl.AbstractGenericDao;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionField;
 import com.rbkmoney.fraudbusters.management.dao.condition.ConditionParameterSource;
-import org.jooq.Record;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.util.StringUtils;

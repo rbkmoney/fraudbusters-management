@@ -1,9 +1,6 @@
 package com.rbkmoney.fraudbusters.management.service;
 
-import com.rbkmoney.damsel.wb_list.ChangeCommand;
-import com.rbkmoney.damsel.wb_list.Command;
-import com.rbkmoney.damsel.wb_list.ListType;
-import com.rbkmoney.damsel.wb_list.Row;
+import com.rbkmoney.damsel.wb_list.*;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +26,9 @@ public class WbListCommandService {
 
     public String sendCommandSync(Row row, ListType type, Command command, String initiator) {
         row.setListType(type);
-        String uuid = UUID.randomUUID().toString();
+        var uuid = UUID.randomUUID().toString();
         try {
-            ChangeCommand changeCommand = createChangeCommand(row, command);
+            var changeCommand = createChangeCommand(row, command, initiator);
             kafkaTemplate.send(topicCommand, uuid, changeCommand)
                     .get();
             log.info("WbListCommandService sent command: {}", changeCommand);
@@ -46,11 +43,12 @@ public class WbListCommandService {
         return uuid;
     }
 
-    private ChangeCommand createChangeCommand(Row row, Command command) {
-        ChangeCommand changeCommand = new ChangeCommand();
-        changeCommand.setRow(row);
-        changeCommand.setCommand(command);
-        return changeCommand;
+    private ChangeCommand createChangeCommand(Row row, Command command, String initiator) {
+        return new ChangeCommand()
+                .setRow(row)
+                .setCommand(command)
+                .setUserInfo(new UserInfo()
+                        .setUserId(initiator));
     }
 
     public <T> ResponseEntity<List<String>> sendListRecords(List<T> records,
@@ -59,8 +57,8 @@ public class WbListCommandService {
                                                             String initiator) {
         try {
             List<String> recordIds = records.stream()
-                    .map(record -> {
-                        Row row = func.apply(record, listType);
+                    .map(record -> func.apply(record, listType))
+                    .map(row -> {
                         log.info("WbListResource list add row {}", row);
                         return sendCommandSync(row, listType, Command.CREATE, initiator);
                     })

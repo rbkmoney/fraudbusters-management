@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.rbkmoney</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>1.1.1</version>
+        <version>1.2.9</version>
     </parent>
 
     <artifactId>fraudbusters-management</artifactId>
@@ -32,16 +32,22 @@
         <db.user>postgres</db.user>
         <db.password>postgres</db.password>
         <db.schema>af</db.schema>
-        <wb.list.proto.version>1.36-feec206</wb.list.proto.version>
-        <fraudbusters.proto.version>1.61-da7ac39</fraudbusters.proto.version>
+        <wb.list.proto.version>1.37-8cd59c1</wb.list.proto.version>
+        <fraudbusters.proto.version>1.80-46a1cc1</fraudbusters.proto.version>
         <kafka.common.lib.version>0.1.4</kafka.common.lib.version>
         <fraudo.version>0.0.17</fraudo.version>
         <geck.version>0.6.11</geck.version>
         <db.common.lib.version>0.0.3</db.common.lib.version>
+        <swag-fraudbusters-management.version>1.40-a30524b-server</swag-fraudbusters-management.version>
     </properties>
 
     <dependencies>
         <!--rbkmoney-->
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>swag-fraudbusters-management</artifactId>
+            <version>${swag-fraudbusters-management.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>spring-boot-starter-metrics-statsd</artifactId>
@@ -131,18 +137,7 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-spring-boot-starter</artifactId>
-            <version>12.0.4</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.68</version>
+            <version>14.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -197,16 +192,6 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>1.4.2.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

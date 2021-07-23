@@ -85,7 +85,7 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
         List<PriorityIdModel> list = fetch(where, (rs, rowNum) ->
                 PriorityIdModel.builder()
                         .priority(rs.getLong(F_GROUP.PRIORITY.getName()))
-                        .lastUpdateTime(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
+                        .lastUpdateTime(rs.getTimestamp(F_GROUP.LAST_UPDATE_DATE.getName()).toLocalDateTime())
                         .id(rs.getString(F_GROUP.TEMPLATE_ID.getName())).build()
         );
         return !CollectionUtils.isEmpty(list)
@@ -118,7 +118,7 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                 .groupId(rs.getString(F_GROUP.GROUP_ID.getName()))
                 .priorityIdModel(PriorityIdModel.builder()
                         .id(rs.getString(F_GROUP.TEMPLATE_ID.getName()))
-                        .lastUpdateTime(rs.getString(F_GROUP.LAST_UPDATE_DATE.getName()))
+                        .lastUpdateTime(rs.getTimestamp(F_GROUP.LAST_UPDATE_DATE.getName()).toLocalDateTime())
                         .priority(rs.getLong(F_GROUP.PRIORITY.getName()))
                         .build())
                 .build();

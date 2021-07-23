@@ -113,8 +113,8 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
         SelectConditionStep<P2pWbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(condition)
                 : from.where(condition.and(
-                        P2P_WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
-                                .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterRequest.getSearchValue()))));
+                P2P_WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
+                        .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterRequest.getSearchValue()))));
         Field field = StringUtils.isEmpty(filterRequest.getSortBy())
                 ? P2P_WB_LIST_RECORDS.INSERT_TIME
                 : P2P_WB_LIST_RECORDS.field(filterRequest.getSortBy());
@@ -142,8 +142,8 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
         SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue)
                 ? from.where(condition)
                 : from.where(condition.and(
-                        P2P_WB_LIST_RECORDS.VALUE.like(filterValue)
-                                .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterValue))));
+                P2P_WB_LIST_RECORDS.VALUE.like(filterValue)
+                        .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterValue))));
         return fetchOne(where, Integer.class);
     }
 

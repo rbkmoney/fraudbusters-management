@@ -3,12 +3,12 @@ package com.rbkmoney.fraudbusters.management.resource.p2p;
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandType;
 import com.rbkmoney.damsel.fraudbusters.UserInfo;
-import com.rbkmoney.fraudbusters.management.converter.GroupModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.GroupModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pGroupReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pGroupReferenceModel;
-import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
 import com.rbkmoney.fraudbusters.management.service.p2p.P2PGroupReferenceService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentGroupCommandService;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class P2pGroupCommandResource {
 
     private final P2PGroupReferenceService p2pGroupReferenceService;
-    private final GroupCommandService p2pGroupCommandService;
+    private final PaymentGroupCommandService p2pGroupCommandService;
     private final GroupModelToCommandConverter groupModelToCommandConverter;
     private final P2pGroupReferenceToCommandConverter groupReferenceToCommandConverter;
     private final UserInfoService userInfoService;
@@ -72,11 +72,9 @@ public class P2pGroupCommandResource {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeGroup(Principal principal,
                                               @PathVariable(value = "id") String id) {
-        log.info("removeGroup initiator: {} id: {}", userInfoService.getUserName(principal), id);
-        Command command = p2pGroupCommandService.createTemplateCommandById(id);
-        command.setCommandType(CommandType.DELETE);
-        command.setUserInfo(new UserInfo()
-                .setUserId(userInfoService.getUserName(principal)));
+        String userName = userInfoService.getUserName(principal);
+        log.info("removeGroup initiator: {} id: {}", userName, id);
+        Command command = p2pGroupCommandService.initDeleteGroupReferenceCommand(id, userName);
         String idMessage = p2pGroupCommandService.sendCommandSync(command);
         return ResponseEntity.ok().body(idMessage);
     }

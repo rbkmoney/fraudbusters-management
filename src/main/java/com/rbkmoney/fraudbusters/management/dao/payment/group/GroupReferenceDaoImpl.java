@@ -76,8 +76,8 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
         SelectConditionStep<FGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
                 ? from.where(DSL.trueCondition())
                 : from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())
-                        .or(F_GROUP_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue())
-                                .or(F_GROUP_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue()))));
+                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue())
+                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue()))));
         SelectSeekStep2<FGroupReferenceRecord, String, Long> filterGroupReferenceRecords = addSortCondition(
                 F_GROUP_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -96,8 +96,8 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
                 .from(F_GROUP_REFERENCE)
                 .where(!StringUtils.isEmpty(filterValue)
                         ? F_GROUP_REFERENCE.GROUP_ID.like(filterValue)
-                                .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
-                                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue)))
+                        .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
+                                .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue)))
                         : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }

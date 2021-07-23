@@ -45,18 +45,6 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         return new NullAuthenticatedSessionStrategy();
     }
 
-    @Bean
-    @Profile("debug")
-    public WebMvcConfigurer corsConfigurer(@Value("${cors.allowed-origins}") String[] allowedOrigins) {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins(allowedOrigins)
-                        .allowedMethods("GET", "POST", "PUT", "DELETE");
-            }
-        };
-    }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);

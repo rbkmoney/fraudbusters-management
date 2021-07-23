@@ -18,10 +18,9 @@ public class CountInfoUtils {
     private final ObjectMapper objectMapper;
 
     public CountInfo initRowCountInfo(String rowInfo) {
-        CountInfo countInfoValue = new CountInfo();
+        var countInfoValue = new CountInfo();
         try {
-            com.rbkmoney.damsel.wb_list.CountInfo countInfo =
-                    objectMapper.readValue(rowInfo, com.rbkmoney.damsel.wb_list.CountInfo.class);
+            var countInfo = objectMapper.readValue(rowInfo, com.rbkmoney.damsel.wb_list.CountInfo.class);
             countInfoValue.setCount(countInfo.getCount());
             countInfoValue.setEndCountTime(countInfo.getTimeToLive());
             countInfoValue.setStartCountTime(countInfo.getStartCountTime());
@@ -40,4 +39,5 @@ public class CountInfoUtils {
                 .setStartCountTime(startCountTime)
                 .setTimeToLive(countInfo.getEndCountTime())));
     }
+
 }
