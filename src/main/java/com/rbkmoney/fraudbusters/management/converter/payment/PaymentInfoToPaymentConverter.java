@@ -12,36 +12,39 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class PaymentInfoToPaymentConverter
-        implements Converter<com.rbkmoney.damsel.fraudbusters.PaymentInfo, Payment> {
+        implements Converter<com.rbkmoney.damsel.fraudbusters.Payment, Payment> {
 
     @NonNull
     @Override
-    public Payment convert(com.rbkmoney.damsel.fraudbusters.PaymentInfo paymentInfo) {
+    public Payment convert(com.rbkmoney.damsel.fraudbusters.Payment payment) {
+        var bankCard = payment.getPaymentTool().getBankCard();
+        var cost = payment.getCost();
+        var merchantInfo = payment.getReferenceInfo().getMerchantInfo();
         return new Payment()
-                .cardToken(paymentInfo.getCardToken())
-                .amount(paymentInfo.getAmount())
+                .cardToken(bankCard.getToken())
+                .amount(cost.getAmount())
                 .clientInfo(new ClientInfo()
-                        .email(paymentInfo.getClientInfo().getEmail())
-                        .fingerprint(paymentInfo.getClientInfo().getFingerprint())
-                        .ip(paymentInfo.getClientInfo().getIp())
+                        .email(payment.getClientInfo().getEmail())
+                        .fingerprint(payment.getClientInfo().getFingerprint())
+                        .ip(payment.getClientInfo().getIp())
                 )
-                .currency(paymentInfo.getCurrency())
+                .currency(cost.getCurrency().getSymbolicCode())
                 .error(new Error()
-                        .errorCode(paymentInfo.getError().getErrorCode())
-                        .errorReason(paymentInfo.getError().getErrorReason()))
-                .eventTime(DateTimeUtils.toDate(paymentInfo.getEventTime()))
-                .id(paymentInfo.getId())
+                        .errorCode(payment.getError().getErrorCode())
+                        .errorReason(payment.getError().getErrorReason()))
+                .eventTime(DateTimeUtils.toDate(payment.getEventTime()))
+                .id(payment.getId())
                 .merchantInfo(new MerchantInfo()
-                        .partyId(paymentInfo.getMerchantInfo().getPartyId())
-                        .shopId(paymentInfo.getMerchantInfo().getShopId())
+                        .partyId(merchantInfo.getPartyId())
+                        .shopId(merchantInfo.getShopId())
                 )
-                .paymentCountry(paymentInfo.getPaymentCountry())
-                .paymentSystem(paymentInfo.getPaymentSystem())
-                .paymentTool(paymentInfo.getPaymentTool())
+                .paymentCountry(payment.getPaymentTool().getBankCard().getIssuerCountry().name())
+                .paymentSystem(payment.getPaymentTool().getBankCard().getPaymentSystem().getId())
+                .paymentTool(payment.getPaymentTool().getFieldValue().toString())
                 .provider(new ProviderInfo()
-                        .providerId(paymentInfo.getProvider().getProviderId())
-                        .country(paymentInfo.getProvider().getCountry())
-                        .terminalId(paymentInfo.getProvider().getTerminalId()))
-                .status(Payment.StatusEnum.valueOf(paymentInfo.getStatus().name()));
+                        .providerId(payment.getProviderInfo().getProviderId())
+                        .country(payment.getProviderInfo().getCountry())
+                        .terminalId(payment.getProviderInfo().getTerminalId()))
+                .status(Payment.StatusEnum.valueOf(payment.getStatus().name()));
     }
 }

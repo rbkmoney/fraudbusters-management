@@ -1,7 +1,8 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
+import com.rbkmoney.damsel.fraudbusters.HistoricalData;
+import com.rbkmoney.damsel.fraudbusters.HistoricalDataResponse;
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
-import com.rbkmoney.damsel.fraudbusters.PaymentInfoResult;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,10 @@ public class PaymentHistoricalDataResourceTest {
 
     @Test
     public void filterPaymentsInfo() throws Exception {
-        when(iface.getPayments(any(), any())).thenReturn(new PaymentInfoResult()
-                .setPayments(new ArrayList<>()));
+        HistoricalData historicalData = new HistoricalData();
+        historicalData.setPayments(new ArrayList<>());
+        when(iface.getPayments(any(), any(), any())).thenReturn(new HistoricalDataResponse()
+                .setData(historicalData));
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("paymentId", "test");
         params.add("size", "100");

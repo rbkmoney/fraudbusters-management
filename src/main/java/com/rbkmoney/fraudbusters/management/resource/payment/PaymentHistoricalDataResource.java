@@ -1,9 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.damsel.fraudbusters.Filter;
-import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
-import com.rbkmoney.damsel.fraudbusters.Page;
-import com.rbkmoney.damsel.fraudbusters.PaymentInfoResult;
+import com.rbkmoney.damsel.fraudbusters.*;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentInfoResultToPaymentsConverter;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsHistoricalDataApi;
 import com.rbkmoney.swag.fraudbusters.management.model.PaymentResponse;
@@ -39,24 +36,41 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
                         " providerCountry: {} cardToken: {} fingerprint: {} terminal: {}",
                 lastId, size, partyId, shopId, paymentId, status, email, providerCountry, cardToken, fingerprint,
                 terminal);
-        PaymentInfoResult payments = historicalDataServiceSrv.getPayments(
-                new Filter()
-                        .setEmail(email)
-                        .setCardToken(cardToken)
-                        .setPaymentId(paymentId)
-                        .setFingerprint(fingerprint)
-                        .setPartyId(partyId)
-                        .setProviderCountry(providerCountry)
-                        .setShopId(shopId)
-                        .setStatus(status)
-                        .setTerminal(terminal),
-                new Page()
-                        .setContinuationId(lastId)
-                        .setSize(size));
+        var payments = historicalDataServiceSrv.getPayments(
+                createFilter(partyId, shopId, paymentId, status, email, providerCountry, cardToken, fingerprint,
+                        terminal),
+                createPage(lastId, size),
+                createPage(sortOrder, sortBy));
         var paymentResponse = new PaymentResponse()
-                .result(paymentInfoResultToPaymentsConverter.convert(payments))
+                .result(paymentInfoResultToPaymentsConverter.convert(payments.getData().getPayments()))
                 .continuationId(payments.getContinuationId());
         log.info("<- filterPaymentsInfo paymentResponse: {}", paymentResponse);
         return ResponseEntity.ok(paymentResponse);
+    }
+
+    private Sort createPage(String sortOrder, String sortBy) {
+        return new Sort()
+                .setField(sortBy)
+                .setOrder(sortOrder != null ? SortOrder.valueOf(sortOrder) : SortOrder.ASC);
+    }
+
+    private Page createPage(String lastId, Integer size) {
+        return new Page()
+                .setContinuationId(lastId)
+                .setSize(size);
+    }
+
+    private Filter createFilter(String partyId, String shopId, String paymentId, String status, String email,
+                                String providerCountry, String cardToken, String fingerprint, String terminal) {
+        return new Filter()
+                .setEmail(email)
+                .setCardToken(cardToken)
+                .setPaymentId(paymentId)
+                .setFingerprint(fingerprint)
+                .setPartyId(partyId)
+                .setProviderCountry(providerCountry)
+                .setShopId(shopId)
+                .setStatus(status)
+                .setTerminal(terminal);
     }
 }
