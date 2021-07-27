@@ -44,6 +44,8 @@ public class PaymentHistoricalDataResourceTest {
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("paymentId", "test");
         params.add("size", "100");
+        params.add("from", "2021-07-27 00:00:00");
+        params.add("to", "2021-07-27 13:28:54");
         this.mockMvc.perform(get("/payments-historical-data/payments-info")
                 .queryParams(params))
                 .andDo(print())
