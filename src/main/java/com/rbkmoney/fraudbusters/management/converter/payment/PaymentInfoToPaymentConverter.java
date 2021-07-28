@@ -1,6 +1,5 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
-import com.rbkmoney.damsel.domain.PaymentTool;
 import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import com.rbkmoney.swag.fraudbusters.management.model.Error;
 import com.rbkmoney.swag.fraudbusters.management.model.*;
@@ -18,7 +17,7 @@ public class PaymentInfoToPaymentConverter
     @NonNull
     @Override
     public Payment convert(com.rbkmoney.damsel.fraudbusters.Payment payment) {
-        PaymentTool paymentTool = payment.getPaymentTool();
+        var paymentTool = payment.getPaymentTool();
         var bankCard = paymentTool.getBankCard();
         var cost = payment.getCost();
         var merchantInfo = payment.getReferenceInfo().getMerchantInfo();
@@ -47,6 +46,6 @@ public class PaymentInfoToPaymentConverter
                         .providerId(payment.getProviderInfo().getProviderId())
                         .country(payment.getProviderInfo().getCountry())
                         .terminalId(payment.getProviderInfo().getTerminalId()))
-                .status(Payment.StatusEnum.valueOf(payment.getStatus().name()));
+                .status(Payment.StatusEnum.fromValue(payment.getStatus().name()));
     }
 }
