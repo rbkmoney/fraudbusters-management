@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
+import com.rbkmoney.damsel.domain.PaymentTool;
 import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import com.rbkmoney.swag.fraudbusters.management.model.Error;
 import com.rbkmoney.swag.fraudbusters.management.model.*;
@@ -17,7 +18,8 @@ public class PaymentInfoToPaymentConverter
     @NonNull
     @Override
     public Payment convert(com.rbkmoney.damsel.fraudbusters.Payment payment) {
-        var bankCard = payment.getPaymentTool().getBankCard();
+        PaymentTool paymentTool = payment.getPaymentTool();
+        var bankCard = paymentTool.getBankCard();
         var cost = payment.getCost();
         var merchantInfo = payment.getReferenceInfo().getMerchantInfo();
         return new Payment()
@@ -38,9 +40,9 @@ public class PaymentInfoToPaymentConverter
                         .partyId(merchantInfo.getPartyId())
                         .shopId(merchantInfo.getShopId())
                 )
-                .paymentCountry(payment.getPaymentTool().getBankCard().getIssuerCountry().name())
-                .paymentSystem(payment.getPaymentTool().getBankCard().getPaymentSystem().getId())
-                .paymentTool(payment.getPaymentTool().getFieldValue().toString())
+                .paymentCountry(bankCard.isSetIssuerCountry() ? bankCard.getIssuerCountry().name() : null)
+                .paymentSystem(bankCard.getPaymentSystem().getId())
+                .paymentTool(paymentTool.getFieldValue().toString())
                 .provider(new ProviderInfo()
                         .providerId(payment.getProviderInfo().getProviderId())
                         .country(payment.getProviderInfo().getCountry())
