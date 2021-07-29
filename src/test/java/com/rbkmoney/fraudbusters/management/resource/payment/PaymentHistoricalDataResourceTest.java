@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -49,7 +50,43 @@ public class PaymentHistoricalDataResourceTest {
         this.mockMvc.perform(get("/payments-historical-data/payments-info")
                 .queryParams(params))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .json("{\n" +
+                                "\t\"continuationId\": null,\n" +
+                                "\t\"result\": [{\n" +
+                                "\t\t\"id\": \"test\",\n" +
+                                "\t\t\"eventTime\": \"2021-07-29T13:16:18.348795\",\n" +
+                                "\t\t\"merchantInfo\": {\n" +
+                                "\t\t\t\"partyId\": \"party\",\n" +
+                                "\t\t\t\"shopId\": \"shop\"\n" +
+                                "\t\t},\n" +
+                                "\t\t\"amount\": 123,\n" +
+                                "\t\t\"currency\": \"RUB\",\n" +
+                                "\t\t\"cardToken\": null,\n" +
+                                "\t\t\"clientInfo\": {\n" +
+                                "\t\t\t\"ip\": \"123.123.123.123\",\n" +
+                                "\t\t\t\"fingerprint\": \"finger\",\n" +
+                                "\t\t\t\"email\": \"email\"\n" +
+                                "\t\t},\n" +
+                                "\t\t\"status\": \"captured\",\n" +
+                                "\t\t\"payerType\": null,\n" +
+                                "\t\t\"mobile\": null,\n" +
+                                "\t\t\"recurrent\": null,\n" +
+                                "\t\t\"error\": {\n" +
+                                "\t\t\t\"errorCode\": null,\n" +
+                                "\t\t\t\"errorReason\": null\n" +
+                                "\t\t},\n" +
+                                "\t\t\"paymentSystem\": \"visa\",\n" +
+                                "\t\t\"paymentCountry\": null,\n" +
+                                "\t\t\"paymentTool\": \"BankCard(token:null, payment_system:PaymentSystemRef(id:visa), bin:1234, last_digits:null, bank_name:test)\",\n" +
+                                "\t\t\"provider\": {\n" +
+                                "\t\t\t\"providerId\": \"test\",\n" +
+                                "\t\t\t\"terminalId\": \"1234\",\n" +
+                                "\t\t\t\"country\": \"RUS\"\n" +
+                                "\t\t}\n" +
+                                "\t}]\n" +
+                                "}"));
     }
 
     @NotNull
@@ -69,7 +106,7 @@ public class PaymentHistoricalDataResourceTest {
                 new Payment()
                         .setId("test")
                         .setMobile(false)
-                        .setEventTime(Instant.now().toString())
+                        .setEventTime("2021-07-29T13:16:18.348795")
                         .setPaymentTool(paymentTool)
                         .setClientInfo(new ClientInfo()
                                 .setEmail("email")
