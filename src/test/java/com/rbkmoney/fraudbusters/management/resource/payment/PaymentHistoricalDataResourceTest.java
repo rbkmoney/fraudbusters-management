@@ -4,6 +4,7 @@ import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.damsel.fraudbusters.ClientInfo;
 import com.rbkmoney.damsel.fraudbusters.*;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,6 +39,21 @@ public class PaymentHistoricalDataResourceTest {
 
     @Test
     public void filterPaymentsInfo() throws Exception {
+        when(iface.getPayments(any(), any(), any())).thenReturn(new HistoricalDataResponse()
+                .setData(createHistoricalData()));
+        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("paymentId", "test");
+        params.add("size", "100");
+        params.add("from", "2021-07-27 00:00:00");
+        params.add("to", "2021-07-27 13:28:54");
+        this.mockMvc.perform(get("/payments-historical-data/payments-info")
+                .queryParams(params))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @NotNull
+    private HistoricalData createHistoricalData() {
         HistoricalData historicalData = new HistoricalData();
         BankCard bankCard = new BankCard()
                 .setBankName("test")
@@ -70,16 +86,6 @@ public class PaymentHistoricalDataResourceTest {
                         .setReferenceInfo(referenceInfo)
                         .setStatus(PaymentStatus.captured))
         );
-        when(iface.getPayments(any(), any(), any())).thenReturn(new HistoricalDataResponse()
-                .setData(historicalData));
-        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("paymentId", "test");
-        params.add("size", "100");
-        params.add("from", "2021-07-27 00:00:00");
-        params.add("to", "2021-07-27 13:28:54");
-        this.mockMvc.perform(get("/payments-historical-data/payments-info")
-                .queryParams(params))
-                .andDo(print())
-                .andExpect(status().isOk());
+        return historicalData;
     }
 }
