@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.time.Instant;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -79,7 +78,9 @@ public class PaymentHistoricalDataResourceTest {
                                 "\t\t},\n" +
                                 "\t\t\"paymentSystem\": \"visa\",\n" +
                                 "\t\t\"paymentCountry\": null,\n" +
-                                "\t\t\"paymentTool\": \"BankCard(token:null, payment_system:PaymentSystemRef(id:visa), bin:1234, last_digits:null, bank_name:test)\",\n" +
+                                "\t\t\"paymentTool\": \"BankCard(token:null, " +
+                                "payment_system:PaymentSystemRef(id:visa), " +
+                                "bin:1234, last_digits:null, bank_name:test)\",\n" +
                                 "\t\t\"provider\": {\n" +
                                 "\t\t\t\"providerId\": \"test\",\n" +
                                 "\t\t\t\"terminalId\": \"1234\",\n" +
