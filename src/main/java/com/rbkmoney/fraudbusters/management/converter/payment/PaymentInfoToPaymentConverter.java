@@ -20,7 +20,7 @@ public class PaymentInfoToPaymentConverter
         var paymentTool = payment.getPaymentTool();
         var bankCard = paymentTool.getBankCard();
         var cost = payment.getCost();
-        var merchantInfo = payment.getReferenceInfo().getMerchantInfo();
+        var referenceInfo = payment.getReferenceInfo();
         return new Payment()
                 .cardToken(bankCard.getToken())
                 .amount(cost.getAmount())
@@ -31,13 +31,17 @@ public class PaymentInfoToPaymentConverter
                 )
                 .currency(cost.getCurrency().getSymbolicCode())
                 .error(new Error()
-                        .errorCode(payment.getError().getErrorCode())
-                        .errorReason(payment.getError().getErrorReason()))
+                        .errorCode(payment.isSetError() ? payment.getError().getErrorCode() : null)
+                        .errorReason(payment.isSetError() ? payment.getError().getErrorReason() : null))
                 .eventTime(DateTimeUtils.toDate(payment.getEventTime()))
                 .id(payment.getId())
                 .merchantInfo(new MerchantInfo()
-                        .partyId(merchantInfo.getPartyId())
-                        .shopId(merchantInfo.getShopId())
+                        .partyId(payment.getReferenceInfo().isSetMerchantInfo()
+                                ? referenceInfo.getMerchantInfo().getPartyId()
+                                : null)
+                        .shopId(payment.getReferenceInfo().isSetMerchantInfo()
+                                ? referenceInfo.getMerchantInfo().getShopId()
+                                : null)
                 )
                 .paymentCountry(bankCard.isSetIssuerCountry() ? bankCard.getIssuerCountry().name() : null)
                 .paymentSystem(bankCard.getPaymentSystem().getId())

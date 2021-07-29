@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management.config;
 
 import com.rbkmoney.damsel.fraudbusters.P2PServiceSrv;
-import com.rbkmoney.fraudbusters.management.converter.p2p.GroupModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
@@ -37,10 +36,8 @@ public class P2PFraudoConfig {
     @Bean
     public GroupModelCommandService p2pGroupCommandService(CommandSender commandSender,
                                                            @Value("${kafka.topic.fraudbusters.p2p.group.list}")
-                                                                   String topic,
-                                                           GroupModelToCommandConverter groupModelToCommandConverter) {
+                                                                   String topic) {
         return new GroupModelCommandService(commandSender, topic);
     }
-
 
 }

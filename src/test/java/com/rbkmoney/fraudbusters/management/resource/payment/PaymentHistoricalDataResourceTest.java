@@ -1,8 +1,8 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.damsel.fraudbusters.HistoricalData;
-import com.rbkmoney.damsel.fraudbusters.HistoricalDataResponse;
-import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
+import com.rbkmoney.damsel.domain.*;
+import com.rbkmoney.damsel.fraudbusters.ClientInfo;
+import com.rbkmoney.damsel.fraudbusters.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.util.ArrayList;
+import java.time.Instant;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -38,7 +39,37 @@ public class PaymentHistoricalDataResourceTest {
     @Test
     public void filterPaymentsInfo() throws Exception {
         HistoricalData historicalData = new HistoricalData();
-        historicalData.setPayments(new ArrayList<>());
+        BankCard bankCard = new BankCard()
+                .setBankName("test")
+                .setBin("1234")
+                .setPaymentSystem(new PaymentSystemRef()
+                        .setId("visa"));
+        PaymentTool paymentTool = new PaymentTool();
+        paymentTool.setBankCard(bankCard);
+        ReferenceInfo referenceInfo = new ReferenceInfo();
+        referenceInfo.setMerchantInfo(new MerchantInfo().setPartyId("party")
+                .setShopId("shop"));
+        historicalData.setPayments(List.of(
+                new Payment()
+                        .setId("test")
+                        .setMobile(false)
+                        .setEventTime(Instant.now().toString())
+                        .setPaymentTool(paymentTool)
+                        .setClientInfo(new ClientInfo()
+                                .setEmail("email")
+                                .setFingerprint("finger")
+                                .setIp("123.123.123.123"))
+                        .setCost(new Cash()
+                                .setAmount(123L)
+                                .setCurrency(new CurrencyRef()
+                                        .setSymbolicCode("RUB")))
+                        .setProviderInfo(new ProviderInfo()
+                                .setProviderId("test")
+                                .setCountry("RUS")
+                                .setTerminalId("1234"))
+                        .setReferenceInfo(referenceInfo)
+                        .setStatus(PaymentStatus.captured))
+        );
         when(iface.getPayments(any(), any(), any())).thenReturn(new HistoricalDataResponse()
                 .setData(historicalData));
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();

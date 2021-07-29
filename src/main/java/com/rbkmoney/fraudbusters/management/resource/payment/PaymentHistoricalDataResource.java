@@ -46,7 +46,7 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
                 createFilter(createTimestampInterval(from, to), partyId, shopId, paymentId, status, email,
                         providerCountry, cardToken, fingerprint, terminal),
                 createPage(continuationId, size),
-                createPage(sortOrder, sortBy));
+                createSort(sortOrder, sortBy));
         var paymentResponse = new PaymentResponse()
                 .result(paymentInfoResultToPaymentsConverter.convert(payments.getData().getPayments()))
                 .continuationId(payments.getContinuationId());
@@ -64,7 +64,7 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
                         .setBoundType(BoundType.inclusive));
     }
 
-    private Sort createPage(String sortOrder, String sortBy) {
+    private Sort createSort(String sortOrder, String sortBy) {
         return new Sort()
                 .setField(sortBy)
                 .setOrder(sortOrder != null ? SortOrder.valueOf(sortOrder) : SortOrder.ASC);
