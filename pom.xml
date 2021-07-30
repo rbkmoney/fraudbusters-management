@@ -33,12 +33,12 @@
         <db.password>postgres</db.password>
         <db.schema>af</db.schema>
         <wb.list.proto.version>1.37-8cd59c1</wb.list.proto.version>
-        <fraudbusters.proto.version>1.90-39722d0</fraudbusters.proto.version>
+        <fraudbusters.proto.version>1.92-cb27835</fraudbusters.proto.version>
         <kafka.common.lib.version>0.1.4</kafka.common.lib.version>
         <fraudo.version>0.0.17</fraudo.version>
         <geck.version>0.6.11</geck.version>
         <db.common.lib.version>0.0.3</db.common.lib.version>
-        <swag-fraudbusters-management.version>1.46-12494ee-server</swag-fraudbusters-management.version>
+        <swag-fraudbusters-management.version>1.50-0287828-server</swag-fraudbusters-management.version>
     </properties>
 
     <dependencies>
