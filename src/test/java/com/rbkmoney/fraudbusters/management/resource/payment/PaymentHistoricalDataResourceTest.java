@@ -53,8 +53,8 @@ public class PaymentHistoricalDataResourceTest {
                                 "\"payerType\":null,\"mobile\":null,\"recurrent\":null,\"error\":{\"errorCode\":null," +
                                 "\"errorReason\":null},\"paymentSystem\":\"visa\",\"paymentCountry\":null," +
                                 "\"paymentTool\":\"BankCard(token:null, payment_system:PaymentSystemRef(id:visa)," +
-                                " bin:1234, last_digits:null, bank_name:test)\",\"provider\":{\"providerId\":\"test\"," +
-                                "\"terminalId\":\"1234\",\"country\":\"RUS\"}}]}"));
+                                " bin:1234, last_digits:null, bank_name:test)\",\"provider\":{\"providerId\":\"test\"" +
+                                ",\"terminalId\":\"1234\",\"country\":\"RUS\"}}]}"));
     }
 
     @Test
@@ -68,8 +68,8 @@ public class PaymentHistoricalDataResourceTest {
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json("{\"continuationId\":null,\"result\":[{\"id\":\"test\",\"paymentId\":null," +
-                                "\"eventTime\":\"2021-07-29T13:16:18.348795\",\"merchantInfo\":{\"partyId\":\"party\"," +
-                                "\"shopId\":\"shop\"},\"paymentTool\":" +
+                                "\"eventTime\":\"2021-07-29T13:16:18.348795\",\"merchantInfo\":{\"partyId\":\"party\"" +
+                                ",\"shopId\":\"shop\"},\"paymentTool\":" +
                                 "\"BankCard(token:null, payment_system:PaymentSystemRef(id:visa), bin:1234, " +
                                 "last_digits:null, bank_name:test)\",\"amount\":123,\"currency\":\"RUB\"," +
                                 "\"provider\":{\"providerId\":\"test\",\"terminalId\":\"1234\",\"country\":\"RUS\"}," +
@@ -89,8 +89,8 @@ public class PaymentHistoricalDataResourceTest {
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json("{\"continuationId\":null,\"result\":[{\"payment\":{\"id\":\"test\"," +
-                                "\"eventTime\":\"2021-07-29T13:16:18.348795\",\"merchantInfo\":{\"partyId\":\"party\"," +
-                                "\"shopId\":\"shop\"},\"amount\":123,\"currency\":\"RUB\",\"cardToken\":null," +
+                                "\"eventTime\":\"2021-07-29T13:16:18.348795\",\"merchantInfo\":{\"partyId\":\"party\"" +
+                                ",\"shopId\":\"shop\"},\"amount\":123,\"currency\":\"RUB\",\"cardToken\":null," +
                                 "\"clientInfo\":{\"ip\":\"123.123.123.123\",\"fingerprint\":\"finger\"," +
                                 "\"email\":\"email\"},\"status\":\"captured\",\"payerType\":null,\"mobile\":null," +
                                 "\"recurrent\":null,\"error\":{\"errorCode\":null,\"errorReason\":null}," +
@@ -113,8 +113,8 @@ public class PaymentHistoricalDataResourceTest {
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json("{\"continuationId\":null,\"result\":[{\"payment\":{\"id\":\"test\"," +
-                                "\"eventTime\":\"2021-07-29T13:16:18.348795\",\"merchantInfo\":{\"partyId\":\"party\"," +
-                                "\"shopId\":\"shop\"},\"amount\":123,\"currency\":\"RUB\",\"cardToken\":null," +
+                                "\"eventTime\":\"2021-07-29T13:16:18.348795\",\"merchantInfo\":{\"partyId\":\"party\"" +
+                                ",\"shopId\":\"shop\"},\"amount\":123,\"currency\":\"RUB\",\"cardToken\":null," +
                                 "\"clientInfo\":{\"ip\":\"123.123.123.123\",\"fingerprint\":\"finger\"," +
                                 "\"email\":\"email\"},\"status\":\"captured\",\"payerType\":null,\"mobile\":null," +
                                 "\"recurrent\":null,\"error\":{\"errorCode\":null,\"errorReason\":null}," +
@@ -136,10 +136,11 @@ public class PaymentHistoricalDataResourceTest {
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json("{\"continuationId\":null,\"result\":[{\"id\":\"test\",\"paymentId\":null," +
-                                "\"eventTime\":\"2021-07-29T13:16:18.348795\",\"merchantInfo\":{\"partyId\":\"party\"," +
-                                "\"shopId\":\"shop\"},\"paymentTool\":\"BankCard(token:null, " +
-                                "payment_system:PaymentSystemRef(id:visa), bin:1234, last_digits:null, bank_name:test)\"" +
-                                ",\"amount\":123,\"currency\":\"RUB\",\"provider\":{\"providerId\":\"test\"," +
+                                "\"eventTime\":\"2021-07-29T13:16:18.348795\",\"merchantInfo\":{\"partyId\":\"party\"" +
+                                ",\"shopId\":\"shop\"},\"paymentTool\":\"BankCard(token:null, " +
+                                "payment_system:PaymentSystemRef(id:visa), bin:1234, last_digits:null, " +
+                                "bank_name:test)\",\"amount\":123,\"currency\":\"RUB\",\"provider\":" +
+                                "{\"providerId\":\"test\"," +
                                 "\"terminalId\":\"1234\",\"country\":\"RUS\"},\"status\":\"accepted\"," +
                                 "\"category\":\"authorisation\",\"chargebackCode\":\"123\",\"clientInfo\":" +
                                 "{\"ip\":\"123.123.123.123\",\"fingerprint\":\"finger\",\"email\":\"email\"}," +
