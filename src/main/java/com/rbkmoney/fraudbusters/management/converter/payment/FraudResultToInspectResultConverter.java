@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class FraudResultToInspectResultConverter
         implements Converter<com.rbkmoney.damsel.fraudbusters.HistoricalTransactionCheck, InspectResult> {
 
-    private final PaymentInfoToPaymentConverter paymentInfoToPaymentConverter;
+    private final PaymentToApiPaymentConverter paymentInfoToPaymentConverter;
 
     @NonNull
     @Override

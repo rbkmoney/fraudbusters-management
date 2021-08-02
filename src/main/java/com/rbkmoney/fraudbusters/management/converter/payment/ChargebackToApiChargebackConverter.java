@@ -5,14 +5,13 @@ import com.rbkmoney.swag.fraudbusters.management.model.Chargeback;
 import com.rbkmoney.swag.fraudbusters.management.model.ClientInfo;
 import com.rbkmoney.swag.fraudbusters.management.model.MerchantInfo;
 import com.rbkmoney.swag.fraudbusters.management.model.ProviderInfo;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 
 @Component
-public class ChargebackInfoToChargebackConverter
+public class ChargebackToApiChargebackConverter
         implements Converter<com.rbkmoney.damsel.fraudbusters.Chargeback, Chargeback> {
 
     @NonNull

@@ -24,9 +24,9 @@ public class PaymentHistoricalDataResource implements PaymentsHistoricalDataApi 
 
     private final HistoricalDataServiceSrv.Iface historicalDataServiceSrv;
     private final ListToListConverter listToListConverter;
-    private final PaymentInfoToPaymentConverter paymentInfoToPaymentConverter;
-    private final ChargebackInfoToChargebackConverter chargebackInfoToChargebackConverter;
-    private final RefundInfoToRefundConverter refundInfoToRefundConverter;
+    private final PaymentToApiPaymentConverter paymentInfoToPaymentConverter;
+    private final ChargebackToApiChargebackConverter chargebackInfoToChargebackConverter;
+    private final RefundToApiRefundConverter refundInfoToRefundConverter;
     private final FraudPaymentInfoToFraudPaymentConverter fraudPaymentInfoToFraudPaymentConverter;
     private final FraudResultToInspectResultConverter fraudResultToInspectResultConverter;
 

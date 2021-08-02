@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class FraudPaymentInfoToFraudPaymentConverter
         implements Converter<com.rbkmoney.damsel.fraudbusters.FraudPaymentInfo, FraudPayment> {
 
-    private final PaymentInfoToPaymentConverter paymentInfoToPaymentConverter;
+    private final PaymentToApiPaymentConverter paymentInfoToPaymentConverter;
 
     @NonNull
     @Override

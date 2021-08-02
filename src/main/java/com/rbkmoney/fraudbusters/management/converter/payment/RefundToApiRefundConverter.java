@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class RefundInfoToRefundConverter
+public class RefundToApiRefundConverter
         implements Converter<com.rbkmoney.damsel.fraudbusters.Refund, Refund> {
 
     @NonNull

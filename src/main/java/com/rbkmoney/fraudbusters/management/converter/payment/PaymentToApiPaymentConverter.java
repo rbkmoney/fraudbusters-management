@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PaymentInfoToPaymentConverter
+public class PaymentToApiPaymentConverter
         implements Converter<com.rbkmoney.damsel.fraudbusters.Payment, Payment> {
 
     @NonNull
@@ -44,12 +44,13 @@ public class PaymentInfoToPaymentConverter
                                 : null)
                 )
                 .paymentCountry(bankCard.isSetIssuerCountry() ? bankCard.getIssuerCountry().name() : null)
-                .paymentSystem(bankCard.getPaymentSystem().getId())
+                .paymentSystem(bankCard.isSetPaymentSystem() ? bankCard.getPaymentSystem().getId() : null)
                 .paymentTool(paymentTool.getFieldValue().toString())
-                .provider(new ProviderInfo()
-                        .providerId(payment.getProviderInfo().getProviderId())
+                .provider(payment.isSetProviderInfo()
+                        ? new ProviderInfo().providerId(payment.getProviderInfo().getProviderId())
                         .country(payment.getProviderInfo().getCountry())
-                        .terminalId(payment.getProviderInfo().getTerminalId()))
+                        .terminalId(payment.getProviderInfo().getTerminalId())
+                        : new ProviderInfo())
                 .status(Payment.StatusEnum.fromValue(payment.getStatus().name()));
     }
 }
