@@ -29,7 +29,7 @@ public class PaymentFraudoConfig {
     }
 
     @Bean
-    public HistoricalDataServiceSrv.Iface historicalDataServiceSrv(@Value("${service.payment.url}") Resource resource,
+    public HistoricalDataServiceSrv.Iface historicalDataServiceSrv(@Value("${service.historical.url}") Resource resource,
                                                                    @Value("${service.payment.networkTimeout}")
                                                                            int networkTimeout)
             throws IOException {
