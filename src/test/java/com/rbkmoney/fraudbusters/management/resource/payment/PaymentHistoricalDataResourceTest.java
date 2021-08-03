@@ -98,7 +98,7 @@ public class PaymentHistoricalDataResourceTest {
                                 "\"BankCard(token:null, payment_system:PaymentSystemRef(id:visa), bin:1234, " +
                                 "last_digits:null, bank_name:test)\",\"provider\":{\"providerId\":\"test\"," +
                                 "\"terminalId\":\"1234\",\"country\":\"RUS\"}},\"checkedTemplate\":null," +
-                                "\"resultStatus\":\"<ResultStatus accept:Accept()>\",\"ruleChecked\":null," +
+                                "\"resultStatus\":\"accept\",\"ruleChecked\":null," +
                                 "\"notificationsRule\":null}]}"));
     }
 
