@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +34,8 @@ public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(GROUP_1);
         groupModel.setPriorityTemplates(List.of(
-                new PriorityIdModel(2L, TEST_TEMPL_1, null),
-                new PriorityIdModel(1L, TEST_TEMPL_2, null)));
+                new PriorityIdModel(2L, TEST_TEMPL_1, LocalDateTime.now()),
+                new PriorityIdModel(1L, TEST_TEMPL_2, LocalDateTime.now())));
         groupDao.insert(groupModel);
 
         GroupModel byId = groupDao.getById(GROUP_1);
@@ -63,8 +64,8 @@ public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(UPDATE_GROUP);
         groupModel.setPriorityTemplates(List.of(
-                new PriorityIdModel(2L, TEST_TEMPL_1, null),
-                new PriorityIdModel(1L, TEST_TEMPL_2, null)));
+                new PriorityIdModel(2L, TEST_TEMPL_1, LocalDateTime.now()),
+                new PriorityIdModel(1L, TEST_TEMPL_2, LocalDateTime.now())));
         groupDao.insert(groupModel);
 
         GroupModel foundGroupModel = groupDao.getById(UPDATE_GROUP);

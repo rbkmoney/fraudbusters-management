@@ -11,16 +11,15 @@ import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInser
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
 import com.rbkmoney.fraudbusters.management.listener.WbListEventListener;
-import com.rbkmoney.fraudbusters.management.resource.payment.ListsResource;
+import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsListsResource;
 import com.rbkmoney.fraudbusters.management.service.WbListCommandService;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
-import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
-import com.rbkmoney.fraudbusters.management.utils.ParametersService;
-import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
-import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentsListsService;
+import com.rbkmoney.fraudbusters.management.utils.*;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -52,10 +51,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, ListsResource.class,
-        UserInfoService.class,
-        WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class, CountInfoUtils.class,
-        CsvPaymentCountInfoParser.class})
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, PaymentsListsResource.class,
+        UserInfoService.class, WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class,
+        CountInfoUtils.class, CountInfoApiUtils.class, CsvPaymentCountInfoParser.class,
+        WbListRecordsModelToWbListRecordConverter.class, PaymentsListsService.class})
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 public class ExceptionApplicationTest {
 
@@ -65,7 +64,7 @@ public class ExceptionApplicationTest {
     private static final String SHOP_ID = "shopId";
     private static final String PARTY_ID = "partyId";
     private static final String LIST_NAME = "listName";
-    private static final String SERVICE_URL = "http://localhost:%s/fb-management/v1";
+
     @Value("${kafka.topic.wblist.event.sink}")
     public String topicEventSink;
     @MockBean
@@ -89,6 +88,17 @@ public class ExceptionApplicationTest {
     @LocalServerPort
     int serverPort;
 
+    String paymentListPath;
+    String paymentListFilterPath;
+
+    @Before
+    public void init() {
+        paymentListPath = String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.INSERT_PAYMENTS_LIST_ROW_PATH,
+                serverPort);
+        paymentListFilterPath = String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.INSERT_PAYMENTS_FILTER_PATH,
+                serverPort);
+    }
+
     private ListRecord createRow() {
         PaymentListRecord listRecord = new PaymentListRecord();
         listRecord.setShopId(SHOP_ID);
@@ -98,23 +108,13 @@ public class ExceptionApplicationTest {
         return listRecord;
     }
 
-    @Test(expected = HttpClientErrorException.BadRequest.class)
-    public void executionRestTestBadRequest() {
-        RestTemplate restTemplate = restTemplateBuilder.build();
-        String format = String.format(SERVICE_URL, serverPort);
-        restTemplate.exchange(format + "/lists", HttpMethod.POST,
-                new HttpEntity<>(null), new ParameterizedTypeReference<>() {
-                });
-    }
-
     @Test
     public void executionRestTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
                 .thenReturn(ResponseEntity.ok(List.of(ID_TEST)));
 
-        String format = String.format(SERVICE_URL, serverPort);
-        ResponseEntity<List<String>> response = restTemplate.exchange(format + "/lists", HttpMethod.POST,
+        ResponseEntity<List<String>> response = restTemplate.exchange(paymentListPath, HttpMethod.POST,
                 new HttpEntity<>(createRequest()), new ParameterizedTypeReference<>() {
                 });
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -126,9 +126,7 @@ public class ExceptionApplicationTest {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
                 .thenThrow(new DaoException(TEST_MESSAGE));
-
-        String format = String.format(SERVICE_URL, serverPort);
-        restTemplate.postForEntity(format + "/lists", createRequest(), ErrorResponse.class);
+        restTemplate.postForEntity(paymentListPath, createRequest(), ErrorResponse.class);
     }
 
     private ListRowsInsertRequest createRequest() {
@@ -146,8 +144,7 @@ public class ExceptionApplicationTest {
         Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
                 .thenThrow(new KafkaSerializationException(TEST_MESSAGE));
 
-        String format = String.format(SERVICE_URL, serverPort);
-        restTemplate.postForEntity(format + "/lists", createRequest(), ErrorResponse.class);
+        restTemplate.postForEntity(paymentListPath, createRequest(), ErrorResponse.class);
     }
 
     @Test(expected = HttpClientErrorException.BadRequest.class)
@@ -156,7 +153,7 @@ public class ExceptionApplicationTest {
                 .thenThrow(new KafkaSerializationException(TEST_MESSAGE));
         HashMap<String, Object> uriVariables = new HashMap<>();
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromUriString(String.format(SERVICE_URL, serverPort) + "/lists/filter")
+                UriComponentsBuilder.fromUriString(paymentListFilterPath)
                         .queryParam("partyId", PARTY_ID)
                         .queryParam("shopId", SHOP_ID);
         uriVariables.put("partyId", PARTY_ID);

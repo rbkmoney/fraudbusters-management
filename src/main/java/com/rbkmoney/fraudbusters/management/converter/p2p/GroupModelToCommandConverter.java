@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.converter.p2p;
 
 import com.rbkmoney.damsel.fraudbusters.Command;
 import com.rbkmoney.damsel.fraudbusters.CommandBody;
@@ -20,8 +20,8 @@ public class GroupModelToCommandConverter implements Converter<GroupModel, Comma
     @NonNull
     @Override
     public Command convert(GroupModel groupModel) {
-        Command command = new Command();
-        Group group = new Group();
+        var command = new Command();
+        var group = new Group();
         group.setGroupId(groupModel.getGroupId());
         group.setTemplateIds(groupModel.getPriorityTemplates().stream()
                 .map(pair -> new PriorityId()

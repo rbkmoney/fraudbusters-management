@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PaymentGroupReferenceService {
+public class PaymentGroupReferenceCommandService {
 
     private final CommandSender commandSender;
 

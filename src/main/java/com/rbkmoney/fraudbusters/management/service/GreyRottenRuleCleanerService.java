@@ -21,13 +21,11 @@ import java.util.List;
 public class GreyRottenRuleCleanerService {
 
     private static final String CLEAN_INITIATOR = "fraudbusters";
-
-    @Value("${service.cleaner.fresh-period}")
-    private Integer freshPeriod;
-
     private final WbListDao wbListDao;
     private final WbListCommandService wbListCommandService;
     private final WbListRecordToRowConverter wbListRecordToRowConverter;
+    @Value("${service.cleaner.fresh-period}")
+    private Integer freshPeriod;
 
     @Scheduled(cron = "${service.cleaner.cron}")
     void clean() {
@@ -38,13 +36,13 @@ public class GreyRottenRuleCleanerService {
             return;
         }
         rotRecords.forEach(record -> {
-            Row row = wbListRecordToRowConverter.convert(record);
-            wbListCommandService.sendCommandSync(
-                    row,
-                    com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
-                    Command.DELETE,
-                    CLEAN_INITIATOR);
-        }
+                    Row row = wbListRecordToRowConverter.convert(record);
+                    wbListCommandService.sendCommandSync(
+                            row,
+                            com.rbkmoney.damsel.wb_list.ListType.valueOf(record.getListType().name()),
+                            Command.DELETE,
+                            CLEAN_INITIATOR);
+                }
         );
     }
 }

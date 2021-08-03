@@ -1,11 +1,10 @@
 package com.rbkmoney.fraudbusters.management.config;
 
 import com.rbkmoney.damsel.fraudbusters.P2PServiceSrv;
-import com.rbkmoney.fraudbusters.management.converter.GroupModelToCommandConverter;
-import com.rbkmoney.fraudbusters.management.converter.TemplateModelToCommandConverter;
+import com.rbkmoney.fraudbusters.management.converter.p2p.TemplateModelToCommandConverter;
 import com.rbkmoney.fraudbusters.management.service.CommandSender;
-import com.rbkmoney.fraudbusters.management.service.GroupCommandService;
 import com.rbkmoney.fraudbusters.management.service.TemplateCommandService;
+import com.rbkmoney.fraudbusters.management.service.p2p.GroupModelCommandService;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,11 +34,10 @@ public class P2PFraudoConfig {
     }
 
     @Bean
-    public GroupCommandService p2pGroupCommandService(CommandSender commandSender,
-                                                      @Value("${kafka.topic.fraudbusters.p2p.group.list}") String topic,
-                                                      GroupModelToCommandConverter groupModelToCommandConverter) {
-        return new GroupCommandService(commandSender, topic, groupModelToCommandConverter);
+    public GroupModelCommandService p2pGroupCommandService(CommandSender commandSender,
+                                                           @Value("${kafka.topic.fraudbusters.p2p.group.list}")
+                                                                   String topic) {
+        return new GroupModelCommandService(commandSender, topic);
     }
-
 
 }

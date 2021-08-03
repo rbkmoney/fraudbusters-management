@@ -17,11 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RowToWbListRecordsConverterTest {
 
-    private RowToWbListRecordsConverter converter;
-
-    private RowUtilsService rowUtilsService;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private RowToWbListRecordsConverter converter;
+    private RowUtilsService rowUtilsService;
 
     @BeforeEach
     void setUp() {
@@ -44,7 +42,5 @@ class RowToWbListRecordsConverterTest {
                 ZoneOffset.UTC).toString();
         assertEquals(row.getRowInfo().getCountInfo().getTimeToLive(), actualTimeToLive);
         assertThat(wbListRecords.getRowInfo(), containsString(actualTimeToLive));
-
-
     }
 }

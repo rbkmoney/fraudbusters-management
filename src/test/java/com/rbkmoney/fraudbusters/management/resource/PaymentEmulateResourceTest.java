@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
+import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverterImpl;
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
@@ -15,20 +16,24 @@ import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentEmulateResource;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentEmulateService;
 import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
-import org.apache.http.auth.BasicUserPrincipal;
+import com.rbkmoney.swag.fraudbusters.management.model.EmulateResponse;
+import com.rbkmoney.swag.fraudbusters.management.model.Template;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @ContextConfiguration(classes = {PaymentEmulateResource.class, PaymentGroupDao.class, PaymentTemplateDao.class,
-        GroupReferenceDaoImpl.class, PaymentReferenceDaoImpl.class, GroupRowToModelMapper.class, UserInfoService.class})
+        GroupReferenceDaoImpl.class, PaymentReferenceDaoImpl.class, GroupRowToModelMapper.class, UserInfoService.class,
+        TemplateModelToTemplateConverterImpl.class, PaymentEmulateService.class})
 public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest {
 
     private static final String PARTY_ID = "partyId";
@@ -55,8 +60,8 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(GROUP_ID);
         ArrayList<PriorityIdModel> priorityTemplates = new ArrayList<>();
-        priorityTemplates.add(new PriorityIdModel(2L, TEMPLATE_1, null));
-        priorityTemplates.add(new PriorityIdModel(1L, TEMPLATE_2, null));
+        priorityTemplates.add(new PriorityIdModel(2L, TEMPLATE_1, LocalDateTime.now()));
+        priorityTemplates.add(new PriorityIdModel(1L, TEMPLATE_2, LocalDateTime.now()));
         groupModel.setPriorityTemplates(priorityTemplates);
         groupDao.insert(groupModel);
 
@@ -92,13 +97,13 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
         referenceModel1.setIsGlobal(false);
         referenceDao.insert(referenceModel1);
 
-        ResponseEntity<List<TemplateModel>> rulesByPartyAndShop = paymentEmulateResource.getRulesByPartyAndShop(
-                new BasicUserPrincipal("test"),
+        ResponseEntity<EmulateResponse> rulesByPartyAndShop = paymentEmulateResource.getTemplatesFlow(
                 PARTY_ID,
                 SHOP_ID);
 
         Assert.assertTrue(rulesByPartyAndShop.hasBody());
-        List<TemplateModel> templateModels = rulesByPartyAndShop.getBody();
+        EmulateResponse emulateResponse = rulesByPartyAndShop.getBody();
+        List<Template> templateModels = emulateResponse.getResult();
         Assert.assertFalse(templateModels.isEmpty());
         Assert.assertEquals(5, templateModels.size());
 
@@ -110,12 +115,12 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
 
         referenceDao.remove(referenceModel1);
 
-        rulesByPartyAndShop = paymentEmulateResource.getRulesByPartyAndShop(
-                new BasicUserPrincipal("test"),
+        rulesByPartyAndShop = paymentEmulateResource.getTemplatesFlow(
                 PARTY_ID,
                 SHOP_ID);
+        emulateResponse = rulesByPartyAndShop.getBody();
         Assert.assertTrue(rulesByPartyAndShop.hasBody());
-        templateModels = rulesByPartyAndShop.getBody();
+        templateModels = emulateResponse.getResult();
         Assert.assertFalse(templateModels.isEmpty());
         Assert.assertEquals(4, templateModels.size());
 
