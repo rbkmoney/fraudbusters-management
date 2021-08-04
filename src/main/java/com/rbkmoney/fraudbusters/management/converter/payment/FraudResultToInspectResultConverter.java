@@ -1,5 +1,7 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
+import com.rbkmoney.damsel.fraudbusters.WithdrawalStatus;
+import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.swag.fraudbusters.management.model.InspectResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
@@ -21,7 +23,7 @@ public class FraudResultToInspectResultConverter
         return new InspectResult()
                 .payment(paymentInfoToPaymentConverter.convert(transactionCheck.getTransaction()))
                 .checkedTemplate(checkResult.getCheckedTemplate())
-                .resultStatus(checkResult.getConcreteCheckResult().getResultStatus().toString())
+                .resultStatus(checkResult.getConcreteCheckResult().getResultStatus().getSetField().getFieldName())
                 .notificationsRule(checkResult.getConcreteCheckResult().getNotificationsRule())
                 .ruleChecked(checkResult.getConcreteCheckResult().getRuleChecked());
     }
