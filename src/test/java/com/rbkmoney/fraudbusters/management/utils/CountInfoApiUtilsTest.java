@@ -5,7 +5,9 @@ import com.rbkmoney.damsel.wb_list.RowInfo;
 import com.rbkmoney.swag.fraudbusters.management.model.CountInfo;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,5 +39,7 @@ class CountInfoApiUtilsTest {
 
         assertEquals(START_TIME, rowInfo.getCountInfo().getStartCountTime());
         assertEquals(END_TIME, rowInfo.getCountInfo().getTimeToLive());
+
+        Instant parse = LocalDateTime.parse(rowInfo.getCountInfo().getStartCountTime()).toInstant(ZoneOffset.UTC);
     }
 }
