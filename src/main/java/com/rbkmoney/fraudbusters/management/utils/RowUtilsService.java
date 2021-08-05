@@ -51,8 +51,9 @@ public class RowUtilsService {
                 .map(Row::getRowInfo)
                 .map(RowInfo::getCountInfo)
                 .map(CountInfo::getTimeToLive)
-                .map(LocalDateTime::parse)
-                .orElse(null);
+                .map(Instant::parse)
+                .map(instant -> LocalDateTime.ofInstant(instant, ZoneOffset.UTC))
+                .orElseGet(() -> null);
     }
 
 }

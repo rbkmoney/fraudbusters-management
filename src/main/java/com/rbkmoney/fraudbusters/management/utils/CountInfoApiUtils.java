@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -32,12 +33,12 @@ public class CountInfoApiUtils {
 
     public RowInfo initRowInfo(CountInfo countInfo) {
         String startCountTime =
-                StringUtil.isNullOrEmpty(countInfo.getStartCountTime().format(DateTimeFormatter.ISO_DATE_TIME))
+                StringUtil.isNullOrEmpty(countInfo.getStartCountTime().toInstant(ZoneOffset.UTC).toString())
                         ? Instant.now().toString()
-                        : countInfo.getStartCountTime().format(DateTimeFormatter.ISO_DATE_TIME);
+                        : countInfo.getStartCountTime().toInstant(ZoneOffset.UTC).toString();
         return RowInfo.count_info(new com.rbkmoney.damsel.wb_list.CountInfo()
                 .setCount(countInfo.getCount())
                 .setStartCountTime(startCountTime)
-                .setTimeToLive(countInfo.getEndCountTime().format(DateTimeFormatter.ISO_DATE_TIME)));
+                .setTimeToLive(countInfo.getEndCountTime().toInstant(ZoneOffset.UTC).toString()));
     }
 }

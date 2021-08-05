@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CountInfoApiUtilsTest {
 
-    public static final String START_TIME = "2021-08-05T07:43:13.416";
-    public static final String END_TIME = "2021-09-05T07:43:16";
+    public static final String START_TIME = "2021-08-05T07:43:13.416Z";
+    public static final String END_TIME = "2021-09-05T07:43:16Z";
 
     CountInfoApiUtils countInfoApiUtils = new CountInfoApiUtils(new ObjectMapper());
 
@@ -26,20 +26,20 @@ class CountInfoApiUtilsTest {
                 "            \"startCountTime\": \"" + START_TIME + "\"" +
                 "        }");
 
-        assertEquals(LocalDateTime.parse(START_TIME), countInfo.getStartCountTime());
-        assertEquals(LocalDateTime.parse(END_TIME), countInfo.getEndCountTime());
+        assertEquals(LocalDateTime.ofInstant(Instant.parse(START_TIME), ZoneId.of("UTC")),
+                countInfo.getStartCountTime());
+        assertEquals(LocalDateTime.ofInstant(Instant.parse(END_TIME), ZoneId.of("UTC")),
+                countInfo.getEndCountTime());
     }
 
     @Test
     void initRowInfo() {
         RowInfo rowInfo = countInfoApiUtils.initRowInfo(new CountInfo()
                 .count(4L)
-                .startCountTime(LocalDateTime.parse(START_TIME))
-                .endCountTime(LocalDateTime.parse(END_TIME)));
+                .startCountTime(LocalDateTime.ofInstant(Instant.parse(START_TIME), ZoneId.of("UTC")))
+                .endCountTime(LocalDateTime.ofInstant(Instant.parse(END_TIME), ZoneId.of("UTC"))));
 
         assertEquals(START_TIME, rowInfo.getCountInfo().getStartCountTime());
         assertEquals(END_TIME, rowInfo.getCountInfo().getTimeToLive());
-
-        Instant parse = LocalDateTime.parse(rowInfo.getCountInfo().getStartCountTime()).toInstant(ZoneOffset.UTC);
     }
 }
