@@ -6,7 +6,9 @@ import com.rbkmoney.swag.fraudbusters.management.model.DataSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,7 +22,9 @@ public class TestDataSetModelToDataSetApiConverter implements Converter<TestData
         return new DataSet()
                 .lastModificationAt(DateTimeUtils.toDate(testDataSetModel.getLastModificationTime()))
                 .lastModificationInitiator(testDataSetModel.getLastModificationInitiator())
-                .rows(testDataSetModel.getTestPaymentModelList().stream()
+                .rows(CollectionUtils.isEmpty(testDataSetModel.getTestPaymentModelList())
+                        ? List.of()
+                        : testDataSetModel.getTestPaymentModelList().stream()
                         .map(testPaymentModelToDataSetRowConverter::convert)
                         .collect(Collectors.toList()));
     }

@@ -5,6 +5,7 @@ import com.rbkmoney.swag.fraudbusters.management.model.DataSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.stream.Collectors;
 
@@ -15,14 +16,18 @@ public class DataSetToTestDataSetModelConverter implements Converter<DataSet, Te
     private final DataSetRowToTestPaymentModelConverter dataSetRowToTestPaymentModelConverter;
 
     @Override
-    public TestDataSetModel convert(DataSet testDataSetModel) {
+    public TestDataSetModel convert(DataSet dataSet) {
         TestDataSetModel.TestDataSetModelBuilder builder = TestDataSetModel.builder();
         return builder
-                .id(testDataSetModel.getId())
-                .name(testDataSetModel.getName())
-                .lastModificationInitiator(testDataSetModel.getLastModificationInitiator())
-                .lastModificationTime(testDataSetModel.getLastModificationAt().toString())
-                .testPaymentModelList(testDataSetModel.getRows().stream()
+                .id(dataSet.getId())
+                .name(dataSet.getName())
+                .lastModificationInitiator(dataSet.getLastModificationInitiator())
+                .lastModificationTime(dataSet.getLastModificationAt() != null
+                        ? dataSet.getLastModificationAt().toString()
+                        : null)
+                .testPaymentModelList(CollectionUtils.isEmpty(dataSet.getRows())
+                        ? null
+                        : dataSet.getRows().stream()
                         .map(dataSetRowToTestPaymentModelConverter::convert)
                         .collect(Collectors.toList()))
                 .build();
