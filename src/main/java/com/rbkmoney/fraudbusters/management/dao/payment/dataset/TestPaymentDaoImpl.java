@@ -5,7 +5,6 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.TestPaymentRecord;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.DeleteConditionStep;
-import org.jooq.InsertOnDuplicateSetMoreStep;
 import org.jooq.Query;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -40,17 +39,16 @@ public class TestPaymentDaoImpl extends AbstractDao implements TestPaymentDao {
 
     @Override
     public void insertBatch(List<TestPaymentModel> dataSetModels) {
-        var dslContext = getDslContext();
-        List<InsertOnDuplicateSetMoreStep<TestPaymentRecord>> collect = dataSetModels.stream()
-                .map(paymentModel ->
-                        dslContext.insertInto(TEST_PAYMENT)
-                                .set(getDslContext().newRecord(TEST_PAYMENT, paymentModel))
-                                .onConflict(TEST_PAYMENT.ID)
-                                .doUpdate()
-                                .set(getDslContext().newRecord(TEST_PAYMENT, paymentModel)))
+        List<Query> queries = dataSetModels.stream()
+                .map(payment -> getDslContext().newRecord(TEST_PAYMENT, payment))
+                .map(paymentRecord -> getDslContext()
+                        .insertInto(TEST_PAYMENT)
+                        .set(paymentRecord)
+                        .onConflict(TEST_PAYMENT.ID)
+                        .doUpdate()
+                        .set(getDslContext().newRecord(TEST_PAYMENT, paymentRecord)))
                 .collect(Collectors.toList());
-        dslContext.batch(collect)
-                .execute();
+        batchExecute(queries);
     }
 
     @Override

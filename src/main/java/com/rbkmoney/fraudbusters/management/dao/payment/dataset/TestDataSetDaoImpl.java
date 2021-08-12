@@ -33,12 +33,13 @@ public class TestDataSetDaoImpl extends AbstractDao implements TestDataSetDao {
 
     @Override
     public Optional<Long> insert(TestDataSetModel dataSetModel) {
-        dataSetModel.setLastUpdateDate(null);
+        dataSetModel.setLastModificationTime(null);
         Query query = getDslContext().insertInto(TEST_DATA_SET)
                 .set(getDslContext().newRecord(TEST_DATA_SET, dataSetModel))
                 .onConflict(TEST_DATA_SET.NAME)
                 .doUpdate()
-                .set(getDslContext().newRecord(TEST_DATA_SET, dataSetModel));
+                .set(getDslContext().newRecord(TEST_DATA_SET, dataSetModel))
+                .returning(TEST_DATA_SET.ID);
         var keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).map(Number::longValue);
@@ -76,8 +77,8 @@ public class TestDataSetDaoImpl extends AbstractDao implements TestDataSetDao {
 
         return fetch(
                 addSeekIfNeed(
-                        Long.valueOf(filterRequest.getLastId()),
-                        DateTimeUtils.toDate(filterRequest.getSortBy()),
+                        filterRequest.getLastId() != null ? Long.valueOf(filterRequest.getLastId()) : null,
+                        filterRequest.getSortBy() != null ? DateTimeUtils.toDate(filterRequest.getSortBy()) : null,
                         filterRequest.getSize(),
                         queryOrdered
                 ),

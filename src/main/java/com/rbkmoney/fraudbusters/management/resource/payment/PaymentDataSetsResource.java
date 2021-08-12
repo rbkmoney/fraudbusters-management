@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
+import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import com.rbkmoney.fraudbusters.management.converter.payment.DataSetToTestDataSetModelConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.TestDataSetModelToDataSetApiConverter;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
@@ -36,6 +37,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> applyRuleOnHistoricalDataSet(
             @Valid ApplyRuleOnHistoricalDataSetRequest applyRuleOnHistoricalDataSetRequest) {
+        //TODO
         return PaymentsDataSetApi.super.applyRuleOnHistoricalDataSet(applyRuleOnHistoricalDataSetRequest);
     }
 

@@ -16,8 +16,8 @@ public class TestDataSetModel {
     private String id;
     private String name;
     private String template;
-    private String lastUpdateDate;
-    private String modifiedByUser;
+    private String lastModificationTime;
+    private String lastModificationInitiator;
     private List<TestPaymentModel> testPaymentModelList;
 
 }

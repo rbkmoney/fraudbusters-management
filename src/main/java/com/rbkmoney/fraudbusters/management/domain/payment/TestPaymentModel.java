@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TestPaymentModel {
 
-    private String id;
-    private String testDataSetId;
+    private Long id;
+    private Long testDataSetId;
 
     private String lastModificationDate;
     private String lastModificationInitiator;

@@ -18,8 +18,8 @@ public class TestDataSetModelToDataSetApiConverter implements Converter<TestData
     @Override
     public DataSet convert(TestDataSetModel testDataSetModel) {
         return new DataSet()
-                .lastModificationAt(DateTimeUtils.toDate(testDataSetModel.getLastUpdateDate()))
-                .lastModificationInitiator(testDataSetModel.getModifiedByUser())
+                .lastModificationAt(DateTimeUtils.toDate(testDataSetModel.getLastModificationTime()))
+                .lastModificationInitiator(testDataSetModel.getLastModificationInitiator())
                 .rows(testDataSetModel.getTestPaymentModelList().stream()
                         .map(testPaymentModelToDataSetRowConverter::convert)
                         .collect(Collectors.toList()));

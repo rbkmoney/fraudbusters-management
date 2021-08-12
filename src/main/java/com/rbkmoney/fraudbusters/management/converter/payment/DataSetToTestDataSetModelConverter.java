@@ -20,8 +20,8 @@ public class DataSetToTestDataSetModelConverter implements Converter<DataSet, Te
         return builder
                 .id(testDataSetModel.getId())
                 .name(testDataSetModel.getName())
-                .modifiedByUser(testDataSetModel.getLastModificationInitiator())
-                .lastUpdateDate(testDataSetModel.getLastModificationAt().toString())
+                .lastModificationInitiator(testDataSetModel.getLastModificationInitiator())
+                .lastModificationTime(testDataSetModel.getLastModificationAt().toString())
                 .testPaymentModelList(testDataSetModel.getRows().stream()
                         .map(dataSetRowToTestPaymentModelConverter::convert)
                         .collect(Collectors.toList()))

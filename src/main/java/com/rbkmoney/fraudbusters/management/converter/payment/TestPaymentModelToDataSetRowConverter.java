@@ -16,7 +16,7 @@ public class TestPaymentModelToDataSetRowConverter implements Converter<TestPaym
     @Override
     public DataSetRow convert(TestPaymentModel testDataSetModel) {
         return new DataSetRow()
-                .id(testDataSetModel.getTestDataSetId())
+                .id(String.valueOf(testDataSetModel.getTestDataSetId()))
                 .payment(new Payment()
                         .id(testDataSetModel.getPaymentId())
                         .eventTime(DateTimeUtils.toDate(testDataSetModel.getEventTime()))
