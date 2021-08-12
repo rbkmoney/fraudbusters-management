@@ -1,7 +1,11 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverter;
-import com.rbkmoney.fraudbusters.management.service.payment.PaymentEmulateService;
+import com.rbkmoney.fraudbusters.management.converter.payment.DataSetToTestDataSetModelConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.TestDataSetModelToDataSetApiConverter;
+import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
+import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.service.payment.PaymentsDataSetService;
+import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsDataSetApi;
 import com.rbkmoney.swag.fraudbusters.management.model.ApplyRuleOnHistoricalDataSetRequest;
@@ -15,12 +19,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class PaymentDataSetsResource implements PaymentsDataSetApi {
 
     private final UserInfoService userInfoService;
+    private final PaymentsDataSetService paymentsDataSetService;
+    private final TestDataSetModelToDataSetApiConverter testDataSetModelToDataSetApiConverter;
+    private final DataSetToTestDataSetModelConverter dataSetToTestDataSetModelConverter;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -30,28 +40,59 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<DataSetsResponse> filterDataSets(@Valid String from, @Valid String to,
+    public ResponseEntity<DataSetsResponse> filterDataSets(@Valid String continuationId, @Valid String sortOrder,
+                                                           @Valid String sortBy, @Valid Integer size,
+                                                           @Valid String from, @Valid String to,
                                                            @Valid String dataSetName) {
-        return PaymentsDataSetApi.super.filterDataSets(from, to, dataSetName);
+        var filterRequest = new FilterRequest(dataSetName, continuationId, null, size, sortBy,
+                PagingDataUtils.getSortOrder(sortOrder));
+        String userName = userInfoService.getUserName();
+        log.info("filterDataSets initiator: {} filterRequest: {}", userName, filterRequest);
+        List<TestDataSetModel> testDataSetModels = paymentsDataSetService.filterDataSets(filterRequest);
+        return ResponseEntity.ok(new DataSetsResponse()
+                .continuationId(buildContinuationId(size, testDataSetModels))
+                .result(testDataSetModels.stream()
+                        .map(testDataSetModelToDataSetApiConverter::convert)
+                        .collect(Collectors.toList())
+                ));
+    }
+
+    private String buildContinuationId(Integer filterSize, List<TestDataSetModel> dataSetModels) {
+        if (dataSetModels.size() == filterSize) {
+            var lastDataSet = dataSetModels.get(dataSetModels.size() - 1);
+            return lastDataSet.getId();
+        }
+        return null;
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<DataSet> getDataSet(String setId) {
-        return PaymentsDataSetApi.super.getDataSet(setId);
+        String userName = userInfoService.getUserName();
+        log.info("insertDataSet initiator: {} id: {}", userName, setId);
+        var dataSet = paymentsDataSetService.getDataSet(setId);
+        log.info("getDataSet succeeded insertDataSet: {}", dataSet);
+        return ResponseEntity.ok(testDataSetModelToDataSetApiConverter.convert(dataSet));
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> insertDataSet(@Valid DataSet dataSet) {
-        return PaymentsDataSetApi.super.insertDataSet(dataSet);
+        String userName = userInfoService.getUserName();
+        log.info("insertDataSet initiator: {} dataSet: {}", userName, dataSet);
+        Long id = paymentsDataSetService.insertDataSet(dataSetToTestDataSetModelConverter.convert(dataSet), userName);
+        log.info("insertDataSet succeeded name: {}", dataSet);
+        return ResponseEntity.ok(String.valueOf(id));
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> removeDataSet(String id) {
-        return PaymentsDataSetApi.super.removeDataSet(id);
+        String userName = userInfoService.getUserName();
+        log.info("removeDataSet initiator: {} id: {}", userName, id);
+        paymentsDataSetService.removeDataSet(id, userName);
+        log.info("removeDataSet succeeded id: {}", id);
+        return ResponseEntity.ok(id);
     }
 
 }
