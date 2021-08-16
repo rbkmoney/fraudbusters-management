@@ -11,7 +11,7 @@ CREATE TABLE af.test_data_set
 CREATE TABLE af.test_payment
 (
     id                          BIGSERIAL         NOT NULL,
-    test_data_set_id            BIGSERIAL         NOT NULL,
+    test_data_set_id            bigint         NOT NULL,
     last_modification_initiator CHARACTER VARYING NOT NULL,
     last_modification_time      TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() at time zone 'utc'),
 
