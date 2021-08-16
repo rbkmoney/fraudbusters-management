@@ -41,7 +41,7 @@ public class DataSetRowToTestPaymentModelConverter implements Converter<DataSetR
                 .terminalId(payment.getProvider() != null ? payment.getProvider().getTerminalId() : null)
                 .paymentCountry(payment.getPaymentCountry())
                 .status(payment.getStatus().name())
-                .testDataSetId(Long.valueOf(dataSetRow.getId()))
+                .testDataSetId(dataSetRow.getId() != null ? Long.valueOf(dataSetRow.getId()) : null)
                 .build();
     }
 
