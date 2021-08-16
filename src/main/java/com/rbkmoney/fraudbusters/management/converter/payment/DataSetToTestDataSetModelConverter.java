@@ -19,7 +19,7 @@ public class DataSetToTestDataSetModelConverter implements Converter<DataSet, Te
     public TestDataSetModel convert(DataSet dataSet) {
         TestDataSetModel.TestDataSetModelBuilder builder = TestDataSetModel.builder();
         return builder
-                .id(dataSet.getId())
+                .id(dataSet.getId() != null ? dataSet.getId() : null)
                 .name(dataSet.getName())
                 .lastModificationInitiator(dataSet.getLastModificationInitiator())
                 .lastModificationTime(dataSet.getLastModificationAt() != null
