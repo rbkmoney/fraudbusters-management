@@ -5,7 +5,6 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentsDataSetService;
 import com.rbkmoney.swag.fraudbusters.management.model.DataSet;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -91,7 +90,6 @@ class PaymentDataSetsResourceTest {
                         .string("id"));
     }
 
-    @NotNull
     private LinkedMultiValueMap<String, String> createParams() {
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("paymentId", "test");

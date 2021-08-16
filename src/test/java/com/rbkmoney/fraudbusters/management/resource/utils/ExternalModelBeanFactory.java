@@ -5,14 +5,12 @@ import com.rbkmoney.damsel.fraudbusters.ClientInfo;
 import com.rbkmoney.damsel.fraudbusters.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExternalModelBeanFactory {
 
-    @NotNull
     public static PaymentTool createPaymentToolBankCard() {
         BankCard bankCard = new BankCard()
                 .setBankName("test")
@@ -74,7 +72,7 @@ public class ExternalModelBeanFactory {
     }
 
     public static Chargeback createChargebacks(PaymentTool paymentTool,
-                                                           ReferenceInfo referenceInfo) {
+                                               ReferenceInfo referenceInfo) {
         return new Chargeback()
                 .setId("test")
                 .setEventTime("2021-07-29T13:16:18.348795")
@@ -88,7 +86,6 @@ public class ExternalModelBeanFactory {
                 .setStatus(ChargebackStatus.accepted);
     }
 
-    @NotNull
     public static ReferenceInfo createReferenceInfo() {
         ReferenceInfo referenceInfo = new ReferenceInfo();
         referenceInfo.setMerchantInfo(new MerchantInfo()
@@ -112,7 +109,6 @@ public class ExternalModelBeanFactory {
     }
 
 
-    @NotNull
     public static HistoricalData createHistoricalData() {
         HistoricalData historicalData = new HistoricalData();
         PaymentTool paymentTool = createPaymentToolBankCard();
@@ -121,7 +117,6 @@ public class ExternalModelBeanFactory {
         return historicalData;
     }
 
-    @NotNull
     public static HistoricalData createHistoricalDataRefunds() {
         HistoricalData historicalData = new HistoricalData();
         PaymentTool paymentTool = createPaymentToolBankCard();
@@ -130,7 +125,6 @@ public class ExternalModelBeanFactory {
         return historicalData;
     }
 
-    @NotNull
     public static HistoricalData createHistoricalDataInspectResults() {
         HistoricalData historicalData = new HistoricalData();
         PaymentTool paymentTool = createPaymentToolBankCard();
@@ -140,7 +134,6 @@ public class ExternalModelBeanFactory {
         return historicalData;
     }
 
-    @NotNull
     public static HistoricalData createHistoricalDataFraudPaymentInfos() {
         HistoricalData historicalData = new HistoricalData();
         PaymentTool paymentTool = createPaymentToolBankCard();
@@ -150,7 +143,6 @@ public class ExternalModelBeanFactory {
         return historicalData;
     }
 
-    @NotNull
     public static HistoricalData createHistoricalDataChargebacks() {
         HistoricalData historicalData = new HistoricalData();
         PaymentTool paymentTool = createPaymentToolBankCard();

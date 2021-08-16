@@ -7,7 +7,6 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.utils.FilterRequestUtils;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -56,7 +55,6 @@ public class PaymentsDataSetService {
         return id.orElse(null);
     }
 
-    @NotNull
     private TestPaymentModel updateModel(String initiator, Optional<Long> id,
                                          TestPaymentModel testPaymentModel) {
         testPaymentModel.setTestDataSetId(id.get());
