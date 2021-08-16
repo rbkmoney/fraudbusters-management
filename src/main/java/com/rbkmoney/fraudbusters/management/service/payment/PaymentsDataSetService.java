@@ -49,15 +49,15 @@ public class PaymentsDataSetService {
         if (id.isPresent() && !CollectionUtils.isEmpty(dataSetModel.getTestPaymentModelList())) {
             List<TestPaymentModel> testPaymentModelList = dataSetModel.getTestPaymentModelList();
             testPaymentDao.insertBatch(testPaymentModelList.stream()
-                    .map(testPaymentModel -> updateModel(initiator, id, testPaymentModel))
+                    .map(testPaymentModel -> updateModel(initiator, id.get(), testPaymentModel))
                     .collect(Collectors.toList()));
         }
         return id.orElse(null);
     }
 
-    private TestPaymentModel updateModel(String initiator, Optional<Long> id,
+    private TestPaymentModel updateModel(String initiator, Long id,
                                          TestPaymentModel testPaymentModel) {
-        testPaymentModel.setTestDataSetId(id.get());
+        testPaymentModel.setTestDataSetId(id);
         testPaymentModel.setLastModificationInitiator(initiator);
         testPaymentModel.setLastModificationDate(null);
         return testPaymentModel;
