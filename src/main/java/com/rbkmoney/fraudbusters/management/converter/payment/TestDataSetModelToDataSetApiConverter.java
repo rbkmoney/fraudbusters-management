@@ -20,6 +20,7 @@ public class TestDataSetModelToDataSetApiConverter implements Converter<TestData
     @Override
     public DataSet convert(TestDataSetModel testDataSetModel) {
         return new DataSet()
+                .id(testDataSetModel.getId())
                 .name(testDataSetModel.getName())
                 .lastModificationAt(DateTimeUtils.toDate(testDataSetModel.getLastModificationTime()))
                 .lastModificationInitiator(testDataSetModel.getLastModificationInitiator())
