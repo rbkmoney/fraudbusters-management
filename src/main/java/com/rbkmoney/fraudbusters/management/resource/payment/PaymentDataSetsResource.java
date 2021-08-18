@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
+import com.rbkmoney.damsel.fraudbusters.*;
 import com.rbkmoney.fraudbusters.management.converter.payment.DataSetToTestDataSetModelConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.TestDataSetModelToDataSetApiConverter;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
@@ -14,6 +14,7 @@ import com.rbkmoney.swag.fraudbusters.management.model.DataSet;
 import com.rbkmoney.swag.fraudbusters.management.model.DataSetsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.thrift.TException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,13 +33,33 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
     private final PaymentsDataSetService paymentsDataSetService;
     private final TestDataSetModelToDataSetApiConverter testDataSetModelToDataSetApiConverter;
     private final DataSetToTestDataSetModelConverter dataSetToTestDataSetModelConverter;
+    private final HistoricalDataServiceSrv.Iface historicalDataServiceSrv;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> applyRuleOnHistoricalDataSet(
             @Valid ApplyRuleOnHistoricalDataSetRequest applyRuleOnHistoricalDataSetRequest) {
-        //TODO
-        return PaymentsDataSetApi.super.applyRuleOnHistoricalDataSet(applyRuleOnHistoricalDataSetRequest);
+        String userName = userInfoService.getUserName();
+        log.info("applyRuleOnHistoricalDataSet initiator: {} applyRuleOnHistoricalDataSetRequest: {}", userName,
+                applyRuleOnHistoricalDataSetRequest);
+        var emulationRule = new EmulationRule();
+        emulationRule.setTemplateEmulation(new OnlyTemplateEmulation()
+                .setTemplate(new Template()
+                        .setTemplate(applyRuleOnHistoricalDataSetRequest.getTemplate().getBytes())));
+        try {
+            var historicalDataSetCheckResult =
+                    historicalDataServiceSrv.applyRuleOnHistoricalDataSet(new EmulationRuleApplyRequest()
+                            .setEmulationRule(emulationRule)
+                            .setTransactions(applyRuleOnHistoricalDataSetRequest.getRecords().stream()
+                                    .map(payment -> new Payment())
+                                    .collect(Collectors.toSet())));
+            var historicalTransactionCheck =
+                    historicalDataSetCheckResult.getHistoricalTransactionCheck();
+            log.info("applyRuleOnHistoricalDataSet historicalTransactionCheck: {}", historicalTransactionCheck);
+            return ResponseEntity.ok().body(historicalTransactionCheck.toString());
+        } catch (TException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

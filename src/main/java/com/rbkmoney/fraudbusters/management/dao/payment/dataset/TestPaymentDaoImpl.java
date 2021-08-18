@@ -71,7 +71,7 @@ public class TestPaymentDaoImpl extends AbstractDao implements TestPaymentDao {
     public List<TestPaymentModel> getByDataSetId(Long id) {
         Query query = getDslContext()
                 .selectFrom(TEST_PAYMENT)
-                .where(TEST_PAYMENT.ID.eq(id));
+                .where(TEST_PAYMENT.TEST_DATA_SET_ID.eq(id));
         return fetch(query, listRecordRowMapper);
     }
 }
