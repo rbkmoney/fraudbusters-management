@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PaymentDataSetsResource implements PaymentsDataSetApi {
 
+    public static final String EMULATION_TEMPLATE = "emulation_template";
     private final UserInfoService userInfoService;
     private final PaymentsDataSetService paymentsDataSetService;
     private final TestDataSetModelToDataSetApiConverter testDataSetModelToDataSetApiConverter;
@@ -45,6 +46,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
         var emulationRule = new EmulationRule();
         emulationRule.setTemplateEmulation(new OnlyTemplateEmulation()
                 .setTemplate(new Template()
+                        .setId(EMULATION_TEMPLATE)
                         .setTemplate(applyRuleOnHistoricalDataSetRequest.getTemplate().getBytes())));
         try {
             var historicalDataSetCheckResult =
