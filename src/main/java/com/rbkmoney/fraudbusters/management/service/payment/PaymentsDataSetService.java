@@ -1,7 +1,9 @@
 package com.rbkmoney.fraudbusters.management.service.payment;
 
+import com.rbkmoney.fraudbusters.management.dao.payment.dataset.TestDataSetCheckingResultDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.dataset.TestDataSetDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.dataset.TestPaymentDao;
+import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class PaymentsDataSetService {
 
     private final TestDataSetDao testDataSetDao;
+    private final TestDataSetCheckingResultDao testDataSetCheckingResultDao;
     private final TestPaymentDao testPaymentDao;
 
     public List<TestDataSetModel> filterDataSets(FilterRequest filterRequest) {
@@ -52,6 +55,12 @@ public class PaymentsDataSetService {
                     .map(testPaymentModel -> updateModel(initiator, id.get(), testPaymentModel))
                     .collect(Collectors.toList()));
         }
+        return id.orElse(null);
+    }
+
+    public Long insertCheckedDataSet(TestCheckedDataSetModel dataSetModel, String initiator) {
+        dataSetModel.setInitiator(initiator);
+        Optional<Long> id = testDataSetCheckingResultDao.insert(dataSetModel);
         return id.orElse(null);
     }
 

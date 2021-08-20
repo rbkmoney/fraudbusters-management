@@ -11,7 +11,7 @@ CREATE TABLE af.test_data_set
 CREATE TABLE af.test_payment
 (
     id                          BIGSERIAL         NOT NULL,
-    test_data_set_id            BIGINT         NOT NULL,
+    test_data_set_id            BIGINT            NOT NULL,
     last_modification_initiator CHARACTER VARYING NOT NULL,
     last_modification_time      TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() at time zone 'utc'),
 
@@ -47,7 +47,11 @@ CREATE TABLE af.test_payment
     terminal_id                 CHARACTER VARYING,
     country                     CHARACTER VARYING,
 
+    bin                         CHARACTER VARYING,
+    last_digits                 CHARACTER VARYING,
+
     CONSTRAINT data_set_payment_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_test_data_set FOREIGN KEY (test_data_set_id) REFERENCES af.test_data_set (id)
+    CONSTRAINT fk_test_data_set FOREIGN KEY (test_data_set_id) REFERENCES af.test_data_set (id),
+    UNIQUE (payment_id)
 );
 

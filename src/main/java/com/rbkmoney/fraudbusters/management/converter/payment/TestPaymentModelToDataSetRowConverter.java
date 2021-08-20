@@ -23,6 +23,8 @@ public class TestPaymentModelToDataSetRowConverter implements Converter<TestPaym
                         .amount(testDataSetModel.getAmount())
                         .currency(testDataSetModel.getCurrency())
                         .cardToken(testDataSetModel.getCardToken())
+                        .bin(testDataSetModel.getBin())
+                        .lastDigits(testDataSetModel.getLastDigits())
                         .paymentCountry(testDataSetModel.getPaymentCountry())
                         .clientInfo(new ClientInfo()
                                 .email(testDataSetModel.getEmail())

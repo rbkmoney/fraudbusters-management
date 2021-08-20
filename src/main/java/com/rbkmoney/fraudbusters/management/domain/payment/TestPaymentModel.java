@@ -24,6 +24,9 @@ public class TestPaymentModel {
     private String currency;
 
     private String cardToken;
+    private String bin;
+    private String lastDigits;
+
     private String status;
 
     private String payerType;

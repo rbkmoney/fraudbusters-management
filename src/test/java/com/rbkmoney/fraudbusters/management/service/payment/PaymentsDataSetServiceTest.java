@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.service.payment;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.dao.payment.dataset.TestDataSetCheckingResultDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.dataset.TestDataSetDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.dataset.TestPaymentDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
@@ -15,7 +16,8 @@ import java.util.List;
 import static com.rbkmoney.fraudbusters.management.service.payment.DataSetModelUtils.TEST_INITIATOR;
 import static org.junit.Assert.assertEquals;
 
-@ContextConfiguration(classes = {PaymentsDataSetService.class, TestDataSetDaoImpl.class, TestPaymentDaoImpl.class})
+@ContextConfiguration(classes = {TestDataSetCheckingResultDaoImpl.class, PaymentsDataSetService.class,
+        TestDataSetDaoImpl.class, TestPaymentDaoImpl.class})
 public class PaymentsDataSetServiceTest extends AbstractPostgresIntegrationTest {
 
     @Autowired
@@ -31,6 +33,7 @@ public class PaymentsDataSetServiceTest extends AbstractPostgresIntegrationTest 
                         TEST_INITIATOR);
 
         testDataSetModel.setName(DataSetModelUtils.TEST + "2");
+        testDataSetModel.getTestPaymentModelList().get(0).setPaymentId(DataSetModelUtils.TEST + "2");
         Long idSecond = paymentsDataSetService
                 .insertDataSet(testDataSetModel, TEST_INITIATOR);
 

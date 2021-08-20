@@ -1,8 +1,11 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
-import com.rbkmoney.damsel.fraudbusters.*;
+import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
+import com.rbkmoney.fraudbusters.management.converter.payment.ApplyRuleOnHistoricalRequestToEmulationRuleApplyRequestConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.DataSetToTestDataSetModelConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.HistoricalDataSetCheckResultToTestCheckedDataSetModelConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.TestDataSetModelToDataSetApiConverter;
+import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentsDataSetService;
@@ -29,39 +32,46 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PaymentDataSetsResource implements PaymentsDataSetApi {
 
-    public static final String EMULATION_TEMPLATE = "emulation_template";
     private final UserInfoService userInfoService;
     private final PaymentsDataSetService paymentsDataSetService;
     private final TestDataSetModelToDataSetApiConverter testDataSetModelToDataSetApiConverter;
     private final DataSetToTestDataSetModelConverter dataSetToTestDataSetModelConverter;
     private final HistoricalDataServiceSrv.Iface historicalDataServiceSrv;
+    private final ApplyRuleOnHistoricalRequestToEmulationRuleApplyRequestConverter applyConverter;
+    private final HistoricalDataSetCheckResultToTestCheckedDataSetModelConverter dataSetCheckResultToDaoModelConverter;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<String> applyRuleOnHistoricalDataSet(
-            @Valid ApplyRuleOnHistoricalDataSetRequest applyRuleOnHistoricalDataSetRequest) {
+            @Valid ApplyRuleOnHistoricalDataSetRequest request) {
         String userName = userInfoService.getUserName();
-        log.info("applyRuleOnHistoricalDataSet initiator: {} applyRuleOnHistoricalDataSetRequest: {}", userName,
-                applyRuleOnHistoricalDataSetRequest);
-        var emulationRule = new EmulationRule();
-        emulationRule.setTemplateEmulation(new OnlyTemplateEmulation()
-                .setTemplate(new Template()
-                        .setId(EMULATION_TEMPLATE)
-                        .setTemplate(applyRuleOnHistoricalDataSetRequest.getTemplate().getBytes())));
+        log.info("applyRuleOnHistoricalDataSet initiator: {} request: {}", userName, request);
         try {
-            var historicalDataSetCheckResult =
-                    historicalDataServiceSrv.applyRuleOnHistoricalDataSet(new EmulationRuleApplyRequest()
-                            .setEmulationRule(emulationRule)
-                            .setTransactions(applyRuleOnHistoricalDataSetRequest.getRecords().stream()
-                                    .map(payment -> new Payment())
-                                    .collect(Collectors.toSet())));
-            var historicalTransactionCheck =
-                    historicalDataSetCheckResult.getHistoricalTransactionCheck();
-            log.info("applyRuleOnHistoricalDataSet historicalTransactionCheck: {}", historicalTransactionCheck);
-            return ResponseEntity.ok().body(historicalTransactionCheck.toString());
+            var historicalDataSetCheckResult = historicalDataServiceSrv
+                    .applyRuleOnHistoricalDataSet(applyConverter.convert(request));
+            TestCheckedDataSetModel dataSetModel =
+                    createCheckedDataSet(request, userName, historicalDataSetCheckResult);
+            Long resultId = paymentsDataSetService.insertCheckedDataSet(
+                    dataSetModel,
+                    userName);
+            log.info("applyRuleOnHistoricalDataSet resultId: {}", resultId);
+            return ResponseEntity.ok().body(String.valueOf(resultId));
         } catch (TException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private TestCheckedDataSetModel createCheckedDataSet(ApplyRuleOnHistoricalDataSetRequest request,
+                                                         String userName,
+                                                         com.rbkmoney.damsel.fraudbusters.HistoricalDataSetCheckResult
+                                                                 historicalDataSetCheckResult) {
+        TestCheckedDataSetModel dataSetModel =
+                dataSetCheckResultToDaoModelConverter.convert(historicalDataSetCheckResult);
+        dataSetModel.setInitiator(userName);
+        dataSetModel.setPartyId(request.getReference().getPartyId());
+        dataSetModel.setShopId(request.getReference().getShopId());
+        dataSetModel.setTestDataSetId(request.getDataSetId());
+        return dataSetModel;
     }
 
     @Override
