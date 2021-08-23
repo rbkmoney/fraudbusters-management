@@ -15,6 +15,7 @@ import com.rbkmoney.swag.fraudbusters.management.api.PaymentsDataSetApi;
 import com.rbkmoney.swag.fraudbusters.management.model.ApplyRuleOnHistoricalDataSetRequest;
 import com.rbkmoney.swag.fraudbusters.management.model.DataSet;
 import com.rbkmoney.swag.fraudbusters.management.model.DataSetsResponse;
+import com.rbkmoney.swag.fraudbusters.management.model.PaymentReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -68,8 +69,11 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
         TestCheckedDataSetModel dataSetModel =
                 dataSetCheckResultToDaoModelConverter.convert(historicalDataSetCheckResult);
         dataSetModel.setInitiator(userName);
-        dataSetModel.setPartyId(request.getReference().getPartyId());
-        dataSetModel.setShopId(request.getReference().getShopId());
+        PaymentReference reference = request.getReference();
+        if (reference != null) {
+            dataSetModel.setPartyId(reference.getPartyId());
+            dataSetModel.setShopId(reference.getShopId());
+        }
         dataSetModel.setTestDataSetId(request.getDataSetId());
         return dataSetModel;
     }
