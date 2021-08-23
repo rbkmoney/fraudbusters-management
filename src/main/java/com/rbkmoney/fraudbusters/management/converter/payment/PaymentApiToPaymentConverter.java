@@ -20,7 +20,7 @@ public class PaymentApiToPaymentConverter
     @Override
     public com.rbkmoney.damsel.fraudbusters.Payment convert(Payment payment) {
         return new com.rbkmoney.damsel.fraudbusters.Payment()
-                .setId(payment.getId())
+                .setId(payment.getPaymentId())
                 .setClientInfo(createClientInfo(payment))
                 .setCost(new Cash()
                         .setAmount(payment.getAmount())

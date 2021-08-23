@@ -72,7 +72,7 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
                 .select(TEST_PAYMENT_CHECKING_RESULT.fields())
                 .from(TEST_PAYMENT)
                 .leftJoin(TEST_PAYMENT_CHECKING_RESULT)
-                .on(TEST_PAYMENT.PAYMENT_ID.eq(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID))
+                .on(TEST_PAYMENT.ID.eq(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID))
                 .where(TEST_PAYMENT_CHECKING_RESULT.TEST_DATA_SET_CHECKING_RESULT_ID.equal(id));
 
         List<TestCheckedPaymentModel> testCheckedPaymentModels =

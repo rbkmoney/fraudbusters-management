@@ -18,7 +18,7 @@ CREATE TABLE af.test_payment_checking_result
 (
     id                               BIGSERIAL NOT NULL,
     test_data_set_checking_result_id BIGINT    NOT NULL,
-    test_payment_id                  CHARACTER VARYING    NOT NULL,
+    test_payment_id                  BIGINT    NOT NULL,
 
     checked_template                 CHARACTER VARYING,
     result_status                    CHARACTER VARYING,
@@ -27,5 +27,5 @@ CREATE TABLE af.test_payment_checking_result
 
     CONSTRAINT test_payment_checking_result_pkey PRIMARY KEY (id),
     CONSTRAINT fk_test_data_set_checking_result FOREIGN KEY (test_data_set_checking_result_id) REFERENCES af.test_data_set_checking_result (id),
-    CONSTRAINT fk_test_payment_id FOREIGN KEY (test_payment_id) REFERENCES af.test_payment (payment_id)
+    CONSTRAINT fk_test_payment_id FOREIGN KEY (test_payment_id) REFERENCES af.test_payment (id)
 );
