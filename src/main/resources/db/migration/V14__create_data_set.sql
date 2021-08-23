@@ -51,7 +51,6 @@ CREATE TABLE af.test_payment
     last_digits                 CHARACTER VARYING,
 
     CONSTRAINT data_set_payment_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_test_data_set FOREIGN KEY (test_data_set_id) REFERENCES af.test_data_set (id),
-    UNIQUE (payment_id)
+    CONSTRAINT fk_test_data_set FOREIGN KEY (test_data_set_id) REFERENCES af.test_data_set (id)
 );
 
