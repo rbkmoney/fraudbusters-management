@@ -36,7 +36,7 @@ public class TestDataSetCheckingResultDaoImplTest extends AbstractPostgresIntegr
         testPaymentModel.setTestDataSetId(testDataSetId);
 
         testPaymentDao.insert(testPaymentModel);
-        Optional<Long> insert = testDataSetCheckingResultDao.insert(createCheckedDataSet(testDataSetId));
+        Optional<Long> insert = testDataSetCheckingResultDao.insert(createCheckedDataSet(testDataSetId, 1L));
 
         assertTrue(insert.isPresent());
 
@@ -45,16 +45,16 @@ public class TestDataSetCheckingResultDaoImplTest extends AbstractPostgresIntegr
         assertEquals(TEST, byId.getTemplate());
         assertFalse(byId.getTestCheckedPaymentModels().isEmpty());
 
-        assertEquals(TEST, byId.getTestCheckedPaymentModels().get(0).getTestPaymentId());
+        assertEquals(Long.valueOf(1L), byId.getTestCheckedPaymentModels().get(0).getTestPaymentId());
     }
 
-    private TestCheckedDataSetModel createCheckedDataSet(Long testDataSetId) {
+    private TestCheckedDataSetModel createCheckedDataSet(Long testDataSetId, Long paymentId) {
         return TestCheckedDataSetModel.builder()
                 .testDataSetId(testDataSetId)
                 .testCheckedPaymentModels(List.of(TestCheckedPaymentModel.builder()
+                        .testPaymentId(paymentId)
                         .resultStatus(TEST)
                         .ruleChecked(TEST)
-                        .testPaymentId(TEST)
                         .build()))
                 .initiator(TEST)
                 .template(TEST)

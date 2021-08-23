@@ -16,7 +16,7 @@ public class TestCheckedPaymentModel {
     private TestPaymentModel testPaymentModel;
 
     private Long testDataSetCheckingResultId;
-    private String testPaymentId;
+    private Long testPaymentId;
     private String checkedTemplate;
     private String resultStatus;
     private String ruleChecked;

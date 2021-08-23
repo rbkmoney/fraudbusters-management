@@ -25,7 +25,7 @@ public class HistoricalDataSetCheckResultToTestCheckedDataSetModelConverter
         testCheckedDataSetModel.setTestCheckedPaymentModels(historicalDataSetCheckResult
                 .getHistoricalTransactionCheck().stream()
                 .map(historicalTransactionCheck -> TestCheckedPaymentModel.builder()
-                        .testPaymentId(historicalTransactionCheck.getTransaction().getId())
+                        .testPaymentId(Long.valueOf(historicalTransactionCheck.getTransaction().getId()))
                         .checkedTemplate(historicalTransactionCheck.getCheckResult().getCheckedTemplate())
                         .resultStatus(
                                 historicalTransactionCheck.getCheckResult().getConcreteCheckResult().getResultStatus()

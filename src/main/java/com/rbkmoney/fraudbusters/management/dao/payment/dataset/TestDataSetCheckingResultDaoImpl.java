@@ -80,7 +80,7 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
                         .resultStatus(r.getString(TEST_PAYMENT_CHECKING_RESULT.RESULT_STATUS.getName()))
                         .checkedTemplate(r.getString(TEST_PAYMENT_CHECKING_RESULT.CHECKED_TEMPLATE.getName()))
                         .ruleChecked(r.getString(TEST_PAYMENT_CHECKING_RESULT.RULE_CHECKED.getName()))
-                        .testPaymentId(r.getString(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID.getName()))
+                        .testPaymentId(r.getLong(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID.getName()))
                         .testPaymentModel(TestPaymentModel.builder()
                                 .paymentCountry(r.getString(TEST_PAYMENT.PAYMENT_COUNTRY.getName()))
                                 .paymentId(r.getString(TEST_PAYMENT.PAYMENT_ID.getName()))
