@@ -52,9 +52,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
                     .applyRuleOnHistoricalDataSet(applyConverter.convert(request));
             TestCheckedDataSetModel dataSetModel =
                     createCheckedDataSet(request, userName, historicalDataSetCheckResult);
-            Long resultId = paymentsDataSetService.insertCheckedDataSet(
-                    dataSetModel,
-                    userName);
+            Long resultId = paymentsDataSetService.insertCheckedDataSet(dataSetModel, userName);
             log.info("applyRuleOnHistoricalDataSet resultId: {}", resultId);
             return ResponseEntity.ok().body(String.valueOf(resultId));
         } catch (TException e) {
@@ -75,6 +73,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
             dataSetModel.setShopId(reference.getShopId());
         }
         dataSetModel.setTestDataSetId(request.getDataSetId());
+        dataSetModel.setTemplate(request.getTemplate());
         return dataSetModel;
     }
 
