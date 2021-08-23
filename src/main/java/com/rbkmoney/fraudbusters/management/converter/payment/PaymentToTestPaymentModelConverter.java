@@ -52,7 +52,7 @@ public class PaymentToTestPaymentModelConverter
                 .eventTime(payment.getEventTime())
                 .paymentId(payment.getId())
                 .status(payment.getStatus().name())
-                .paymentTool(payment.isSetPaymentTool() ? payment.getPaymentTool().getFieldValue().toString() : null)
+                .paymentTool(payment.getPaymentTool().getFieldValue().toString())
                 .payerType(payment.getPayerType().name())
                 .build();
     }
