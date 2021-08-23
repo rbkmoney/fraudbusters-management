@@ -15,48 +15,34 @@ public class PaymentToTestPaymentModelConverter
     @NonNull
     @Override
     public TestPaymentModel convert(com.rbkmoney.damsel.fraudbusters.Payment payment) {
-
+        var bankCard = payment.getPaymentTool().getBankCard();
+        var referenceInfo = payment.getReferenceInfo();
+        var providerInfo = payment.getProviderInfo();
+        var clientInfo = payment.getClientInfo();
+        var error = payment.getError();
         return TestPaymentModel.builder()
                 .currency(payment.getCost().getCurrency().getSymbolicCode())
                 .amount(payment.getCost().getAmount())
                 .eventTime(payment.getEventTime())
                 .paymentId(payment.getId())
                 .status(payment.getStatus().name())
-                .paymentCountry(payment.getPaymentTool().getBankCard().getIssuerCountry().name())
-                .partyId(payment.getReferenceInfo() != null
-                        ? payment.getReferenceInfo().getMerchantInfo().getPartyId()
-                        : null)
-                .shopId(payment.getReferenceInfo() != null
-                        ? payment.getReferenceInfo().getMerchantInfo().getShopId()
-                        : null)
-                .terminalId(payment.getProviderInfo() != null
-                        ? payment.getProviderInfo().getTerminalId()
-                        : null)
-                .providerId(payment.getProviderInfo() != null
-                        ? payment.getProviderInfo().getProviderId()
-                        : null)
-                .country(payment.getProviderInfo() != null
-                        ? payment.getProviderInfo().getCountry()
-                        : null)
-                .paymentSystem(payment.getPaymentTool().getBankCard() != null
-                        ? payment.getPaymentTool().getBankCard().getPaymentSystem().getId()
-                        : null)
-                .cardToken(payment.getPaymentTool().getBankCard() != null
-                        ? payment.getPaymentTool().getBankCard().getToken()
-                        : null)
-                .bin(payment.getPaymentTool().getBankCard() != null
-                        ? payment.getPaymentTool().getBankCard().getBin()
-                        : null)
-                .lastDigits(payment.getPaymentTool().getBankCard() != null
-                        ? payment.getPaymentTool().getBankCard().getLastDigits()
-                        : null)
+                .partyId(referenceInfo != null ? referenceInfo.getMerchantInfo().getPartyId() : null)
+                .shopId(referenceInfo != null ? referenceInfo.getMerchantInfo().getShopId() : null)
+                .terminalId(providerInfo != null ? providerInfo.getTerminalId() : null)
+                .providerId(providerInfo != null ? providerInfo.getProviderId() : null)
+                .country(providerInfo != null ? providerInfo.getCountry() : null)
+                .paymentSystem(bankCard != null ? bankCard.getPaymentSystem().getId() : null)
+                .paymentCountry(bankCard != null ? bankCard.getIssuerCountry().name() : null)
+                .cardToken(bankCard != null ? bankCard.getToken() : null)
+                .bin(bankCard != null ? bankCard.getBin() : null)
+                .lastDigits(bankCard != null ? bankCard.getLastDigits() : null)
                 .paymentTool(payment.getPaymentTool().getFieldValue().toString())
-                .ip(payment.getClientInfo() != null ? payment.getClientInfo().getIp() : null)
-                .fingerprint(payment.getClientInfo() != null ? payment.getClientInfo().getFingerprint() : null)
-                .email(payment.getClientInfo() != null ? payment.getClientInfo().getEmail() : null)
+                .ip(clientInfo != null ? clientInfo.getIp() : null)
+                .fingerprint(clientInfo != null ? clientInfo.getFingerprint() : null)
+                .email(clientInfo != null ? clientInfo.getEmail() : null)
                 .payerType(payment.getPayerType().name())
-                .errorCode(payment.getError() != null ? payment.getError().getErrorCode() : null)
-                .errorReason(payment.getError() != null ? payment.getError().getErrorReason() : null)
+                .errorCode(error != null ? error.getErrorCode() : null)
+                .errorReason(error != null ? error.getErrorReason() : null)
                 .build();
     }
 }
