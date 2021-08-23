@@ -46,12 +46,9 @@ public class PaymentApiToPaymentConverter
                         .setCountry(payment.getProvider().getCountry())
                         .setProviderId(payment.getProvider().getProviderId())
                         : new ProviderInfo())
-                .setReferenceInfo(payment.getMerchantInfo() != null
-                        ? ReferenceInfo.merchant_info(new MerchantInfo()
+                .setReferenceInfo(ReferenceInfo.merchant_info(new MerchantInfo()
                         .setShopId(payment.getMerchantInfo().getShopId())
-                        .setPartyId(payment.getMerchantInfo().getPartyId()))
-                        : ReferenceInfo.merchant_info(new MerchantInfo())
-                );
+                        .setPartyId(payment.getMerchantInfo().getPartyId())));
     }
 
     private Error createError(com.rbkmoney.swag.fraudbusters.management.model.Payment payment) {
