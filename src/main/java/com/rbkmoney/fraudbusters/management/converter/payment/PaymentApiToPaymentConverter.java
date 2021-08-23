@@ -11,6 +11,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 
 @Component
 public class PaymentApiToPaymentConverter
@@ -29,8 +31,8 @@ public class PaymentApiToPaymentConverter
                 .setStatus(PaymentStatus.valueOf(payment.getStatus().getValue()))
                 .setError(createError(payment))
                 .setEventTime(payment.getEventTime().toString())
-                .setMobile(Boolean.TRUE.equals(payment.getMobile()))
-                .setRecurrent(Boolean.TRUE.equals(payment.getRecurrent()))
+                .setMobile(Optional.ofNullable(payment.getMobile()).orElse(false))
+                .setRecurrent(Optional.ofNullable(payment.getRecurrent()).orElse(false))
                 .setPayerType(payment.getPayerType() != null
                         ? PayerType.valueOf(payment.getPayerType())
                         : PayerType.payment_resource)
