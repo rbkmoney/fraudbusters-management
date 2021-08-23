@@ -29,17 +29,21 @@ public class PaymentApiToPaymentConverter
                 .setStatus(PaymentStatus.valueOf(payment.getStatus().getValue()))
                 .setError(createError(payment))
                 .setEventTime(payment.getEventTime().toString())
-                .setMobile(payment.getMobile())
-                .setRecurrent(payment.getRecurrent())
-                .setPayerType(PayerType.valueOf(payment.getPayerType()))
+                .setMobile(payment.getMobile() != null ? payment.getMobile() : false)
+                .setRecurrent(payment.getRecurrent() != null ? payment.getRecurrent() : false)
+                .setPayerType(payment.getPayerType() != null
+                        ? PayerType.valueOf(payment.getPayerType())
+                        : PayerType.payment_resource)
                 .setPaymentTool(PaymentTool.bank_card(new BankCard()
                         .setBin(payment.getBin())
                         .setLastDigits(payment.getLastDigits())
                         .setToken(payment.getCardToken())))
-                .setProviderInfo(new ProviderInfo()
+                .setProviderInfo(payment.getProvider() != null
+                        ? new ProviderInfo()
                         .setTerminalId(payment.getProvider().getProviderId())
                         .setCountry(payment.getProvider().getCountry())
-                        .setProviderId(payment.getProvider().getProviderId()));
+                        .setProviderId(payment.getProvider().getProviderId())
+                        : new ProviderInfo());
     }
 
     private Error createError(com.rbkmoney.swag.fraudbusters.management.model.Payment payment) {
