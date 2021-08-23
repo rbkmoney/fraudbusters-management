@@ -29,8 +29,8 @@ public class PaymentApiToPaymentConverter
                 .setStatus(PaymentStatus.valueOf(payment.getStatus().getValue()))
                 .setError(createError(payment))
                 .setEventTime(payment.getEventTime().toString())
-                .setMobile(payment.getMobile() != null ? payment.getMobile() : false)
-                .setRecurrent(payment.getRecurrent() != null ? payment.getRecurrent() : false)
+                .setMobile(payment.getMobile())
+                .setRecurrent(payment.getRecurrent())
                 .setPayerType(payment.getPayerType() != null
                         ? PayerType.valueOf(payment.getPayerType())
                         : PayerType.payment_resource)
