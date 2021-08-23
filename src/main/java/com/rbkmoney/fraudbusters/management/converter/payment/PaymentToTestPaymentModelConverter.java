@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 public class PaymentToTestPaymentModelConverter
         implements Converter<com.rbkmoney.damsel.fraudbusters.Payment, TestPaymentModel> {
 
+    public static final String BANK_CARD = "bank_card";
+
     @NonNull
     @Override
     public TestPaymentModel convert(com.rbkmoney.damsel.fraudbusters.Payment payment) {
@@ -31,12 +33,18 @@ public class PaymentToTestPaymentModelConverter
                 .terminalId(providerInfo != null ? providerInfo.getTerminalId() : null)
                 .providerId(providerInfo != null ? providerInfo.getProviderId() : null)
                 .country(providerInfo != null ? providerInfo.getCountry() : null)
-                .paymentSystem(bankCard != null ? bankCard.getPaymentSystem().getId() : null)
-                .paymentCountry(bankCard != null ? bankCard.getIssuerCountry().name() : null)
+                .paymentSystem(bankCard != null && bankCard.isSetPaymentSystem()
+                        ? bankCard.getPaymentSystem().getId()
+                        : null)
+                .paymentCountry(bankCard != null && bankCard.isSetIssuerCountry()
+                        ? bankCard.getIssuerCountry().name()
+                        : null)
                 .cardToken(bankCard != null ? bankCard.getToken() : null)
                 .bin(bankCard != null ? bankCard.getBin() : null)
                 .lastDigits(bankCard != null ? bankCard.getLastDigits() : null)
-                .paymentTool(payment.getPaymentTool().getFieldValue().toString())
+                .paymentTool(payment.isSetPaymentTool()
+                        ? payment.getPaymentTool().getFieldValue().toString()
+                        : null)
                 .ip(clientInfo != null ? clientInfo.getIp() : null)
                 .fingerprint(clientInfo != null ? clientInfo.getFingerprint() : null)
                 .email(clientInfo != null ? clientInfo.getEmail() : null)
