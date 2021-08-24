@@ -5,11 +5,13 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetMod
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
+import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,5 +88,4 @@ public class TestDataSetCheckingResultDaoImplTest extends AbstractPostgresIntegr
                 .currency("RUB")
                 .build();
     }
-
 }

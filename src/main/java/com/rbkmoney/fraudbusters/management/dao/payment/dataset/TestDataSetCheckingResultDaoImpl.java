@@ -139,6 +139,8 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
                         .providerId(r.getString(TEST_PAYMENT.PROVIDER_ID.getName()))
                         .status(r.getString(TEST_PAYMENT.STATUS.getName()))
                         .terminalId(r.getString(TEST_PAYMENT.TERMINAL_ID.getName()))
+                        .bin(r.getString(TEST_PAYMENT.BIN.getName()))
+                        .lastDigits(r.getString(TEST_PAYMENT.LAST_DIGITS.getName()))
                         .build()
                 )
                 .notificationRule(getNotificationRule(r))
