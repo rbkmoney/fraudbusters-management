@@ -66,15 +66,18 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
     @Override
     public TestCheckedDataSetModel getById(Long id) {
         var dslContext = getDslContext();
-        Query query = dslContext
-                .selectFrom(TEST_DATA_SET_CHECKING_RESULT)
+        Query query = dslContext.select(TEST_DATA_SET.fields())
+                .select(TEST_DATA_SET_CHECKING_RESULT.fields())
+                .from(TEST_DATA_SET)
+                .leftJoin(TEST_DATA_SET_CHECKING_RESULT)
+                .on(TEST_DATA_SET.ID.eq(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID))
                 .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id)
-                        .and(TEST_DATA_SET_CHECKING_RESULT.ID.eq(select(DSL.max(TEST_DATA_SET_CHECKING_RESULT.ID))
-                                .from(TEST_DATA_SET_CHECKING_RESULT)
-                                .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id))))
-                );
+                        .and(TEST_DATA_SET_CHECKING_RESULT.ID
+                                .eq(select(DSL.max(TEST_DATA_SET_CHECKING_RESULT.ID))
+                                        .from(TEST_DATA_SET_CHECKING_RESULT)
+                                        .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id)))));
 
-        TestCheckedDataSetModel testCheckedPaymentModel = fetchOne(query, listRecordRowMapper);
+        TestCheckedDataSetModel testCheckedPaymentModel = fetchOne(query, createDataSetRowMapper());
         SelectConditionStep<Record> where = dslContext.select(TEST_PAYMENT.fields())
                 .select(TEST_PAYMENT_CHECKING_RESULT.fields())
                 .from(TEST_PAYMENT)
@@ -84,46 +87,63 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
                         .equal(testCheckedPaymentModel.getId()));
 
         List<TestCheckedPaymentModel> testCheckedPaymentModels =
-                fetch(where, (r, i) -> TestCheckedPaymentModel.builder()
-                        .resultStatus(r.getString(TEST_PAYMENT_CHECKING_RESULT.RESULT_STATUS.getName()))
-                        .checkedTemplate(r.getString(TEST_PAYMENT_CHECKING_RESULT.CHECKED_TEMPLATE.getName()))
-                        .ruleChecked(r.getString(TEST_PAYMENT_CHECKING_RESULT.RULE_CHECKED.getName()))
-                        .testPaymentId(r.getLong(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID.getName()))
-                        .testPaymentModel(TestPaymentModel.builder()
-                                .paymentCountry(r.getString(TEST_PAYMENT.PAYMENT_COUNTRY.getName()))
-                                .paymentId(r.getString(TEST_PAYMENT.PAYMENT_ID.getName()))
-                                .testDataSetId(r.getLong(TEST_PAYMENT.TEST_DATA_SET_ID.getName()))
-                                .paymentSystem(r.getString(TEST_PAYMENT.PAYMENT_SYSTEM.getName()))
-                                .amount(r.getLong(TEST_PAYMENT.AMOUNT.getName()))
-                                .country(r.getString(TEST_PAYMENT.COUNTRY.getName()))
-                                .currency(r.getString(TEST_PAYMENT.CURRENCY.getName()))
-                                .cardToken(r.getString(TEST_PAYMENT.CARD_TOKEN.getName()))
-                                .email(r.getString(TEST_PAYMENT.EMAIL.getName()))
-                                .errorCode(r.getString(TEST_PAYMENT.ERROR_CODE.getName()))
-                                .errorReason(r.getString(TEST_PAYMENT.ERROR_REASON.getName()))
-                                .eventTime(r.getString(TEST_PAYMENT.EVENT_TIME.getName()))
-                                .fingerprint(r.getString(TEST_PAYMENT.FINGERPRINT.getName()))
-                                .id(r.getLong(TEST_PAYMENT.ID.getName()))
-                                .paymentTool(r.getString(TEST_PAYMENT.PAYMENT_TOOL.getName()))
-                                .ip(r.getString(TEST_PAYMENT.IP.getName()))
-                                .lastModificationDate(r.getString(TEST_PAYMENT.LAST_MODIFICATION_TIME.getName()))
-                                .lastModificationInitiator(
-                                        r.getString(TEST_PAYMENT.LAST_MODIFICATION_INITIATOR.getName()))
-                                .mobile(r.getBoolean(TEST_PAYMENT.MOBILE.getName()))
-                                .recurrent(r.getBoolean(TEST_PAYMENT.RECURRENT.getName()))
-                                .payerType(r.getString(TEST_PAYMENT.PAYER_TYPE.getName()))
-                                .partyId(r.getString(TEST_PAYMENT.PARTY_ID.getName()))
-                                .shopId(r.getString(TEST_PAYMENT.SHOP_ID.getName()))
-                                .providerId(r.getString(TEST_PAYMENT.PROVIDER_ID.getName()))
-                                .status(r.getString(TEST_PAYMENT.STATUS.getName()))
-                                .terminalId(r.getString(TEST_PAYMENT.TERMINAL_ID.getName()))
-                                .build()
-                        )
-                        .notificationRule(getNotificationRule(r))
-                        .build());
+                fetch(where, createCheckedPaymentRowMapper());
         testCheckedPaymentModel.setTestCheckedPaymentModels(testCheckedPaymentModels);
 
         return testCheckedPaymentModel;
+    }
+
+    private RowMapper<TestCheckedPaymentModel> createCheckedPaymentRowMapper() {
+        return (r, i) -> TestCheckedPaymentModel.builder()
+                .resultStatus(r.getString(TEST_PAYMENT_CHECKING_RESULT.RESULT_STATUS.getName()))
+                .checkedTemplate(r.getString(TEST_PAYMENT_CHECKING_RESULT.CHECKED_TEMPLATE.getName()))
+                .ruleChecked(r.getString(TEST_PAYMENT_CHECKING_RESULT.RULE_CHECKED.getName()))
+                .testPaymentId(r.getLong(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID.getName()))
+                .testPaymentModel(TestPaymentModel.builder()
+                        .paymentCountry(r.getString(TEST_PAYMENT.PAYMENT_COUNTRY.getName()))
+                        .paymentId(r.getString(TEST_PAYMENT.PAYMENT_ID.getName()))
+                        .testDataSetId(r.getLong(TEST_PAYMENT.TEST_DATA_SET_ID.getName()))
+                        .paymentSystem(r.getString(TEST_PAYMENT.PAYMENT_SYSTEM.getName()))
+                        .amount(r.getLong(TEST_PAYMENT.AMOUNT.getName()))
+                        .country(r.getString(TEST_PAYMENT.COUNTRY.getName()))
+                        .currency(r.getString(TEST_PAYMENT.CURRENCY.getName()))
+                        .cardToken(r.getString(TEST_PAYMENT.CARD_TOKEN.getName()))
+                        .email(r.getString(TEST_PAYMENT.EMAIL.getName()))
+                        .errorCode(r.getString(TEST_PAYMENT.ERROR_CODE.getName()))
+                        .errorReason(r.getString(TEST_PAYMENT.ERROR_REASON.getName()))
+                        .eventTime(r.getString(TEST_PAYMENT.EVENT_TIME.getName()))
+                        .fingerprint(r.getString(TEST_PAYMENT.FINGERPRINT.getName()))
+                        .id(r.getLong(TEST_PAYMENT.ID.getName()))
+                        .paymentTool(r.getString(TEST_PAYMENT.PAYMENT_TOOL.getName()))
+                        .ip(r.getString(TEST_PAYMENT.IP.getName()))
+                        .lastModificationDate(r.getString(TEST_PAYMENT.LAST_MODIFICATION_TIME.getName()))
+                        .lastModificationInitiator(
+                                r.getString(TEST_PAYMENT.LAST_MODIFICATION_INITIATOR.getName()))
+                        .mobile(r.getBoolean(TEST_PAYMENT.MOBILE.getName()))
+                        .recurrent(r.getBoolean(TEST_PAYMENT.RECURRENT.getName()))
+                        .payerType(r.getString(TEST_PAYMENT.PAYER_TYPE.getName()))
+                        .partyId(r.getString(TEST_PAYMENT.PARTY_ID.getName()))
+                        .shopId(r.getString(TEST_PAYMENT.SHOP_ID.getName()))
+                        .providerId(r.getString(TEST_PAYMENT.PROVIDER_ID.getName()))
+                        .status(r.getString(TEST_PAYMENT.STATUS.getName()))
+                        .terminalId(r.getString(TEST_PAYMENT.TERMINAL_ID.getName()))
+                        .build()
+                )
+                .notificationRule(getNotificationRule(r))
+                .build();
+    }
+
+    private RowMapper<TestCheckedDataSetModel> createDataSetRowMapper() {
+        return (r, i) -> TestCheckedDataSetModel.builder()
+                .template(r.getString(TEST_DATA_SET_CHECKING_RESULT.TEMPLATE.getName()))
+                .checkingTimestamp(r.getString(TEST_DATA_SET_CHECKING_RESULT.CHECKING_TIMESTAMP.getName()))
+                .createdAt(r.getString(TEST_DATA_SET_CHECKING_RESULT.CREATED_AT.getName()))
+                .partyId(r.getString(TEST_DATA_SET_CHECKING_RESULT.PARTY_ID.getName()))
+                .shopId(r.getString(TEST_DATA_SET_CHECKING_RESULT.SHOP_ID.getName()))
+                .testDataSetId(r.getLong(TEST_DATA_SET.ID.getName()))
+                .id(r.getLong(TEST_DATA_SET_CHECKING_RESULT.ID.getName()))
+                .initiator(r.getString(TEST_DATA_SET_CHECKING_RESULT.INITIATOR.getName()))
+                .build();
     }
 
     private List<String> getNotificationRule(java.sql.ResultSet r) throws SQLException {
