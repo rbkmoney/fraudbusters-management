@@ -21,6 +21,10 @@ public class TestCheckedPaymentModelToCheckedDataSetRowConverter
         var testPaymentModel = testDataSetModel.getTestPaymentModel();
         return new CheckedDataSetRow()
                 .id(String.valueOf(testDataSetModel.getTestDataSetCheckingResultId()))
+                .resultStatus(testDataSetModel.getResultStatus())
+                .ruleChecked(testDataSetModel.getRuleChecked())
+                .checkedTemplate(testDataSetModel.getCheckedTemplate())
+                .notificationRule(testDataSetModel.getNotificationRule())
                 .payment(new Payment()
                         .id(String.valueOf(testPaymentModel.getId()))
                         .paymentId(testPaymentModel.getPaymentId())

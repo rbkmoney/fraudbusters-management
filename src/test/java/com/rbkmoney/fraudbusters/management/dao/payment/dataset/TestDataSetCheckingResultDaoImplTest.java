@@ -5,12 +5,10 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetMod
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
-import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +49,8 @@ public class TestDataSetCheckingResultDaoImplTest extends AbstractPostgresIntegr
         assertEquals(TEST, byId.getTemplate());
         assertFalse(byId.getTestCheckedPaymentModels().isEmpty());
         assertEquals(Long.valueOf(1L), byId.getTestCheckedPaymentModels().get(0).getTestPaymentId());
+        assertEquals(TEST, byId.getTestCheckedPaymentModels().get(0).getResultStatus());
+        assertEquals(TEST, byId.getTestCheckedPaymentModels().get(0).getRuleChecked());
     }
 
     private TestCheckedDataSetModel createCheckedDataSet(Long testDataSetId, Long paymentId) {
