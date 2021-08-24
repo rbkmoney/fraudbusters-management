@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedPaymentModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
 import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import com.rbkmoney.swag.fraudbusters.management.model.Error;
 import com.rbkmoney.swag.fraudbusters.management.model.*;
@@ -9,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +24,8 @@ public class TestCheckedPaymentModelToCheckedDataSetRowConverter
                 .payment(new Payment()
                         .id(String.valueOf(testDataSetModel.getTestPaymentId()))
                         .paymentId(testPaymentModel.getPaymentId())
-                        .eventTime(DateTimeUtils.toDate(testPaymentModel.getEventTime()))
+                        .eventTime(
+                                LocalDateTime.parse(testPaymentModel.getEventTime(), DateTimeUtils.DATE_TIME_FORMATTER))
                         .amount(testPaymentModel.getAmount())
                         .currency(testPaymentModel.getCurrency())
                         .cardToken(testPaymentModel.getCardToken())
