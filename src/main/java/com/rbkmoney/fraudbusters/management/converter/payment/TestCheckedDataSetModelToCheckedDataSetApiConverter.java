@@ -25,7 +25,9 @@ public class TestCheckedDataSetModelToCheckedDataSetApiConverter
         return new CheckedDataSet()
                 .id(String.valueOf(testDataSetModel.getId()))
                 .checkingTimestamp(DateTimeUtils.toDate(testDataSetModel.getCheckingTimestamp()))
-                .createdAt(LocalDateTime.parse(testDataSetModel.getCreatedAt(), DateTimeUtils.DATE_TIME_FORMATTER))
+                .createdAt(testDataSetModel.getCreatedAt() != null
+                        ? LocalDateTime.parse(testDataSetModel.getCreatedAt(), DateTimeUtils.DATE_TIME_FORMATTER)
+                        : null)
                 .testDataSetId(String.valueOf(testDataSetModel.getTestDataSetId()))
                 .initiator(testDataSetModel.getInitiator())
                 .merchantInfo(new MerchantInfo()
