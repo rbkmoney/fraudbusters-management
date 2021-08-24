@@ -5,7 +5,6 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetMod
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
 import com.rbkmoney.mapper.RecordRowMapper;
-import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
@@ -24,6 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.rbkmoney.fraudbusters.management.domain.Tables.*;
+import static org.jooq.impl.DSL.select;
 
 @Component
 public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements TestDataSetCheckingResultDao {
@@ -66,13 +66,13 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
     @Override
     public TestCheckedDataSetModel getById(Long id) {
         var dslContext = getDslContext();
-        Field<Long> maxId = DSL.max(TEST_DATA_SET_CHECKING_RESULT.ID);
-
         Query query = dslContext
                 .selectFrom(TEST_DATA_SET_CHECKING_RESULT)
-                .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id))
-                .groupBy(TEST_DATA_SET_CHECKING_RESULT.ID)
-                .having(TEST_DATA_SET_CHECKING_RESULT.ID.eq(maxId));
+                .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id)
+                        .and(TEST_DATA_SET_CHECKING_RESULT.ID.eq(select(DSL.max(TEST_DATA_SET_CHECKING_RESULT.ID))
+                                .from(TEST_DATA_SET_CHECKING_RESULT)
+                                .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id))))
+                );
 
         TestCheckedDataSetModel testCheckedPaymentModel = fetchOne(query, listRecordRowMapper);
         SelectConditionStep<Record> where = dslContext.select(TEST_PAYMENT.fields())
