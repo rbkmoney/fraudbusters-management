@@ -22,7 +22,7 @@ public class TestCheckedPaymentModelToCheckedDataSetRowConverter
         return new CheckedDataSetRow()
                 .id(String.valueOf(testDataSetModel.getTestDataSetCheckingResultId()))
                 .payment(new Payment()
-                        .id(String.valueOf(testDataSetModel.getTestPaymentId()))
+                        .id(String.valueOf(testPaymentModel.getId()))
                         .paymentId(testPaymentModel.getPaymentId())
                         .eventTime(
                                 LocalDateTime.parse(testPaymentModel.getEventTime(), DateTimeUtils.DATE_TIME_FORMATTER))
