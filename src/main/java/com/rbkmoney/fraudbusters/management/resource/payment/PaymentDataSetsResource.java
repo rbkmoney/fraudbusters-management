@@ -1,10 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
-import com.rbkmoney.fraudbusters.management.converter.payment.ApplyRuleOnHistoricalRequestToEmulationRuleApplyRequestConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.DataSetToTestDataSetModelConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.HistoricalDataSetCheckResultToTestCheckedDataSetModelConverter;
-import com.rbkmoney.fraudbusters.management.converter.payment.TestDataSetModelToDataSetApiConverter;
+import com.rbkmoney.fraudbusters.management.converter.payment.*;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
@@ -12,10 +9,7 @@ import com.rbkmoney.fraudbusters.management.service.payment.PaymentsDataSetServi
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.api.PaymentsDataSetApi;
-import com.rbkmoney.swag.fraudbusters.management.model.ApplyRuleOnHistoricalDataSetRequest;
-import com.rbkmoney.swag.fraudbusters.management.model.DataSet;
-import com.rbkmoney.swag.fraudbusters.management.model.DataSetsResponse;
-import com.rbkmoney.swag.fraudbusters.management.model.PaymentReference;
+import com.rbkmoney.swag.fraudbusters.management.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -36,10 +30,20 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
     private final UserInfoService userInfoService;
     private final PaymentsDataSetService paymentsDataSetService;
     private final TestDataSetModelToDataSetApiConverter testDataSetModelToDataSetApiConverter;
+    private final TestCheckedDataSetModelToCheckedDataSetApiConverter checkedDataSetModelToCheckedDataSetApiConverter;
     private final DataSetToTestDataSetModelConverter dataSetToTestDataSetModelConverter;
     private final HistoricalDataServiceSrv.Iface historicalDataServiceSrv;
     private final ApplyRuleOnHistoricalRequestToEmulationRuleApplyRequestConverter applyConverter;
     private final HistoricalDataSetCheckResultToTestCheckedDataSetModelConverter dataSetCheckResultToDaoModelConverter;
+
+    @Override
+    public ResponseEntity<CheckedDataSet> getCheckedDataSet(String id) {
+        String userName = userInfoService.getUserName();
+        log.info("getCheckedDataSet initiator: {} id: {}", userName, id);
+        var dataSet = paymentsDataSetService.getCheckedDataSet(id);
+        log.info("getCheckedDataSet succeeded checkedDataSet: {}", dataSet);
+        return ResponseEntity.ok(checkedDataSetModelToCheckedDataSetApiConverter.convert(dataSet));
+    }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
@@ -107,9 +111,9 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<DataSet> getDataSet(String setId) {
         String userName = userInfoService.getUserName();
-        log.info("insertDataSet initiator: {} id: {}", userName, setId);
+        log.info("getDataSet initiator: {} id: {}", userName, setId);
         var dataSet = paymentsDataSetService.getDataSet(setId);
-        log.info("getDataSet succeeded insertDataSet: {}", dataSet);
+        log.info("getDataSet succeeded dataSet: {}", dataSet);
         return ResponseEntity.ok(testDataSetModelToDataSetApiConverter.convert(dataSet));
     }
 

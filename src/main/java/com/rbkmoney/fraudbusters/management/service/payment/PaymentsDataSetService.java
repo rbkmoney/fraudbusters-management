@@ -45,6 +45,11 @@ public class PaymentsDataSetService {
         return testDataSetModel;
     }
 
+    public TestCheckedDataSetModel getCheckedDataSet(String id) {
+        var idDataSet = Long.valueOf(id);
+        return testDataSetCheckingResultDao.getById(idDataSet);
+    }
+
     @Transactional
     public Long insertDataSet(TestDataSetModel dataSetModel, String initiator) {
         dataSetModel.setLastModificationInitiator(initiator);

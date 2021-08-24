@@ -5,9 +5,11 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetMod
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
 import com.rbkmoney.mapper.RecordRowMapper;
+import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
+import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -63,17 +65,23 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
 
     @Override
     public TestCheckedDataSetModel getById(Long id) {
-        Query query = getDslContext()
+        var dslContext = getDslContext();
+        Field<Long> maxId = DSL.max(TEST_DATA_SET_CHECKING_RESULT.ID);
+
+        Query query = dslContext
                 .selectFrom(TEST_DATA_SET_CHECKING_RESULT)
-                .where(TEST_DATA_SET_CHECKING_RESULT.ID.eq(id));
+                .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id))
+                .groupBy(TEST_DATA_SET_CHECKING_RESULT.ID)
+                .having(TEST_DATA_SET_CHECKING_RESULT.ID.eq(maxId));
 
         TestCheckedDataSetModel testCheckedPaymentModel = fetchOne(query, listRecordRowMapper);
-        SelectConditionStep<Record> where = getDslContext().select(TEST_PAYMENT.fields())
+        SelectConditionStep<Record> where = dslContext.select(TEST_PAYMENT.fields())
                 .select(TEST_PAYMENT_CHECKING_RESULT.fields())
                 .from(TEST_PAYMENT)
                 .leftJoin(TEST_PAYMENT_CHECKING_RESULT)
                 .on(TEST_PAYMENT.ID.eq(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID))
-                .where(TEST_PAYMENT_CHECKING_RESULT.TEST_DATA_SET_CHECKING_RESULT_ID.equal(id));
+                .where(TEST_PAYMENT_CHECKING_RESULT.TEST_DATA_SET_CHECKING_RESULT_ID
+                        .equal(testCheckedPaymentModel.getId()));
 
         List<TestCheckedPaymentModel> testCheckedPaymentModels =
                 fetch(where, (r, i) -> TestCheckedPaymentModel.builder()
