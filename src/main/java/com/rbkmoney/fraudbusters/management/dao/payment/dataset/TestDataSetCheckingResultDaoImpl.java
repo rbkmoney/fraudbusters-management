@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -30,17 +31,15 @@ import static org.jooq.impl.DSL.select;
 public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements TestDataSetCheckingResultDao {
 
     public static final String TEST_DATA_SET_ID_JOIN = "test_data_set_id_join";
-    private final RowMapper<TestCheckedDataSetModel> listRecordRowMapper;
 
     public TestDataSetCheckingResultDaoImpl(DataSource dataSource) {
         super(dataSource);
-        listRecordRowMapper = new RecordRowMapper<>(TEST_DATA_SET_CHECKING_RESULT, TestCheckedDataSetModel.class);
     }
 
     @Override
     @Transactional
     public Optional<Long> insert(TestCheckedDataSetModel dataSetModel) {
-        dataSetModel.setCreatedAt(Instant.now().toString());
+        dataSetModel.setCreatedAt(LocalDateTime.now());
         Query query = getDslContext().insertInto(TEST_DATA_SET_CHECKING_RESULT)
                 .set(getDslContext().newRecord(TEST_DATA_SET_CHECKING_RESULT, dataSetModel))
                 .onConflict(TEST_DATA_SET_CHECKING_RESULT.ID)
@@ -124,12 +123,13 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
                         .email(r.getString(TEST_PAYMENT.EMAIL.getName()))
                         .errorCode(r.getString(TEST_PAYMENT.ERROR_CODE.getName()))
                         .errorReason(r.getString(TEST_PAYMENT.ERROR_REASON.getName()))
-                        .eventTime(r.getString(TEST_PAYMENT.EVENT_TIME.getName()))
+                        .eventTime(r.getObject(TEST_PAYMENT.EVENT_TIME.getName(), LocalDateTime.class))
                         .fingerprint(r.getString(TEST_PAYMENT.FINGERPRINT.getName()))
                         .id(r.getLong(TEST_PAYMENT.ID.getName()))
                         .paymentTool(r.getString(TEST_PAYMENT.PAYMENT_TOOL.getName()))
                         .ip(r.getString(TEST_PAYMENT.IP.getName()))
-                        .lastModificationDate(r.getString(TEST_PAYMENT.LAST_MODIFICATION_TIME.getName()))
+                        .lastModificationDate(
+                                r.getObject(TEST_PAYMENT.LAST_MODIFICATION_TIME.getName(), LocalDateTime.class))
                         .lastModificationInitiator(
                                 r.getString(TEST_PAYMENT.LAST_MODIFICATION_INITIATOR.getName()))
                         .mobile(r.getBoolean(TEST_PAYMENT.MOBILE.getName()))
@@ -151,8 +151,9 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
     private RowMapper<TestCheckedDataSetModel> createDataSetRowMapper() {
         return (r, i) -> TestCheckedDataSetModel.builder()
                 .template(r.getString(TEST_DATA_SET_CHECKING_RESULT.TEMPLATE.getName()))
-                .checkingTimestamp(r.getString(TEST_DATA_SET_CHECKING_RESULT.CHECKING_TIMESTAMP.getName()))
-                .createdAt(r.getString(TEST_DATA_SET_CHECKING_RESULT.CREATED_AT.getName()))
+                .checkingTimestamp(
+                        r.getObject(TEST_DATA_SET_CHECKING_RESULT.CHECKING_TIMESTAMP.getName(), LocalDateTime.class))
+                .createdAt(r.getObject(TEST_DATA_SET_CHECKING_RESULT.CREATED_AT.getName(), LocalDateTime.class))
                 .partyId(r.getString(TEST_DATA_SET_CHECKING_RESULT.PARTY_ID.getName()))
                 .shopId(r.getString(TEST_DATA_SET_CHECKING_RESULT.SHOP_ID.getName()))
                 .testDataSetId(r.getLong(TEST_DATA_SET.ID.getName()))

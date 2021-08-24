@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -15,13 +16,13 @@ public class TestCheckedDataSetModel {
 
     private Long id;
     private Long testDataSetId;
-    private String createdAt;
+    private LocalDateTime createdAt;
     private String initiator;
     private String template;
 
     private String partyId;
     private String shopId;
-    private String checkingTimestamp;
+    private LocalDateTime checkingTimestamp;
 
     private List<TestCheckedPaymentModel> testCheckedPaymentModels;
 

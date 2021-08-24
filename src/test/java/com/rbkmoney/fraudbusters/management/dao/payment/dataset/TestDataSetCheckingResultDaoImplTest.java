@@ -84,7 +84,7 @@ public class TestDataSetCheckingResultDaoImplTest extends AbstractPostgresIntegr
                 .shopId(TEST)
                 .status(TEST)
                 .lastModificationInitiator(TEST)
-                .eventTime(Instant.now().toString())
+                .eventTime(LocalDateTime.now())
                 .currency("RUB")
                 .build();
     }

@@ -19,7 +19,7 @@ public class DataSetRowToTestPaymentModelConverter implements Converter<DataSetR
         var merchantInfo = payment.getMerchantInfo();
         return TestPaymentModel.builder()
                 .id(dataSetRow.getId() != null ? Long.valueOf(dataSetRow.getId()) : null)
-                .eventTime(payment.getEventTime().toString())
+                .eventTime(payment.getEventTime())
                 .amount(payment.getAmount())
                 .currency(payment.getCurrency())
                 .cardToken(payment.getCardToken())

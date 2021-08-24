@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.service.payment.DataSetModelUtils.TEST_INITIATOR;
@@ -26,7 +28,7 @@ public class PaymentsDataSetServiceTest extends AbstractPostgresIntegrationTest 
     @Test
     @SuppressWarnings("VariableDeclarationUsageDistance")
     public void filterDataSets() {
-        String lastModificationDate = Instant.now().toString();
+        LocalDateTime lastModificationDate = LocalDateTime.now();
         TestDataSetModel testDataSetModel = DataSetModelUtils.initTestDataSetModel(lastModificationDate);
         Long idFirst = paymentsDataSetService
                 .insertDataSet(testDataSetModel,
@@ -60,9 +62,8 @@ public class PaymentsDataSetServiceTest extends AbstractPostgresIntegrationTest 
 
     @Test
     public void insertDataSet() {
-        String lastModificationDate = Instant.now().toString();
-        Long id = paymentsDataSetService
-                .insertDataSet(DataSetModelUtils.initTestDataSetModel(lastModificationDate),
+        LocalDateTime lastModificationDate = LocalDateTime.now();
+        Long id = paymentsDataSetService.insertDataSet(DataSetModelUtils.initTestDataSetModel(lastModificationDate),
                         TEST_INITIATOR);
 
         TestDataSetModel dataSet = paymentsDataSetService.getDataSet(String.valueOf(id));

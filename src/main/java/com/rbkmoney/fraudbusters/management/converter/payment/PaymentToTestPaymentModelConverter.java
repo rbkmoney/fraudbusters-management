@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
+import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
@@ -49,7 +50,7 @@ public class PaymentToTestPaymentModelConverter
         return builder
                 .currency(payment.getCost().getCurrency().getSymbolicCode())
                 .amount(payment.getCost().getAmount())
-                .eventTime(payment.getEventTime())
+                .eventTime(DateTimeUtils.toDate(payment.getEventTime()))
                 .paymentId(payment.getId())
                 .status(payment.getStatus().name())
                 .paymentTool(payment.getPaymentTool().getFieldValue().toString())

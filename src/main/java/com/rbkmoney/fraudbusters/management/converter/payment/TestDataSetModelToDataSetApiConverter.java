@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
-import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import com.rbkmoney.swag.fraudbusters.management.model.DataSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
@@ -22,7 +21,7 @@ public class TestDataSetModelToDataSetApiConverter implements Converter<TestData
         return new DataSet()
                 .id(testDataSetModel.getId())
                 .name(testDataSetModel.getName())
-                .lastModificationAt(DateTimeUtils.toDate(testDataSetModel.getLastModificationTime()))
+                .lastModificationAt(testDataSetModel.getLastModificationTime())
                 .lastModificationInitiator(testDataSetModel.getLastModificationInitiator())
                 .rows(CollectionUtils.isEmpty(testDataSetModel.getTestPaymentModelList())
                         ? List.of()

@@ -24,8 +24,7 @@ public class TestCheckedPaymentModelToCheckedDataSetRowConverter
                 .payment(new Payment()
                         .id(String.valueOf(testPaymentModel.getId()))
                         .paymentId(testPaymentModel.getPaymentId())
-                        .eventTime(
-                                LocalDateTime.parse(testPaymentModel.getEventTime(), DateTimeUtils.DATE_TIME_FORMATTER))
+                        .eventTime(testPaymentModel.getEventTime())
                         .amount(testPaymentModel.getAmount())
                         .currency(testPaymentModel.getCurrency())
                         .cardToken(testPaymentModel.getCardToken())

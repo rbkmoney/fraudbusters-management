@@ -10,8 +10,7 @@ CREATE TABLE af.test_data_set_checking_result
     shop_id            CHARACTER VARYING,
     checking_timestamp TIMESTAMP WITHOUT TIME ZONE,
 
-    CONSTRAINT test_data_set_checking_result_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_test_data_set FOREIGN KEY (test_data_set_id) REFERENCES af.test_data_set (id)
+    CONSTRAINT test_data_set_checking_result_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE af.test_payment_checking_result
@@ -26,6 +25,5 @@ CREATE TABLE af.test_payment_checking_result
     notifications_rule               TEXT[],
 
     CONSTRAINT test_payment_checking_result_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_test_data_set_checking_result FOREIGN KEY (test_data_set_checking_result_id) REFERENCES af.test_data_set_checking_result (id),
-    CONSTRAINT fk_test_payment_id FOREIGN KEY (test_payment_id) REFERENCES af.test_payment (id)
+    CONSTRAINT fk_test_data_set_checking_result FOREIGN KEY (test_data_set_checking_result_id) REFERENCES af.test_data_set_checking_result (id)
 );

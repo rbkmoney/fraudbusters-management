@@ -22,9 +22,7 @@ public class DataSetToTestDataSetModelConverter implements Converter<DataSet, Te
                 .id(dataSet.getId() != null ? dataSet.getId() : null)
                 .name(dataSet.getName())
                 .lastModificationInitiator(dataSet.getLastModificationInitiator())
-                .lastModificationTime(dataSet.getLastModificationAt() != null
-                        ? dataSet.getLastModificationAt().toString()
-                        : null)
+                .lastModificationTime(dataSet.getLastModificationAt())
                 .testPaymentModelList(CollectionUtils.isEmpty(dataSet.getRows())
                         ? null
                         : dataSet.getRows().stream()

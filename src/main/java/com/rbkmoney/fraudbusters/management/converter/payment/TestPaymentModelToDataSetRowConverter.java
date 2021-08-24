@@ -20,7 +20,7 @@ public class TestPaymentModelToDataSetRowConverter implements Converter<TestPaym
                 .payment(new Payment()
                         .id(String.valueOf(testDataSetModel.getId()))
                         .paymentId(testDataSetModel.getPaymentId())
-                        .eventTime(DateTimeUtils.toDate(testDataSetModel.getEventTime()))
+                        .eventTime(testDataSetModel.getEventTime())
                         .amount(testDataSetModel.getAmount())
                         .currency(testDataSetModel.getCurrency())
                         .cardToken(testDataSetModel.getCardToken())

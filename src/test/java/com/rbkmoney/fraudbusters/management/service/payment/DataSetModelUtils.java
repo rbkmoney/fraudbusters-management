@@ -4,6 +4,7 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
 import com.rbkmoney.swag.fraudbusters.management.model.Payment;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class DataSetModelUtils {
@@ -15,7 +16,7 @@ public class DataSetModelUtils {
     public static final String PARTY_ID = "partyId";
     public static final String SHOP_ID = "shopId";
 
-    public static TestDataSetModel initTestDataSetModel(String lastModificationDate) {
+    public static TestDataSetModel initTestDataSetModel(LocalDateTime lastModificationDate) {
         return TestDataSetModel.builder()
                 .lastModificationInitiator(TEST_INITIATOR)
                 .lastModificationTime(lastModificationDate)
@@ -24,7 +25,7 @@ public class DataSetModelUtils {
                 .build();
     }
 
-    public static TestPaymentModel initTestPaymentModel(String lastModificationDate) {
+    public static TestPaymentModel initTestPaymentModel(LocalDateTime lastModificationDate) {
         return TestPaymentModel.builder()
                 .lastModificationDate(lastModificationDate)
                 .status(Payment.StatusEnum.CAPTURED.name())

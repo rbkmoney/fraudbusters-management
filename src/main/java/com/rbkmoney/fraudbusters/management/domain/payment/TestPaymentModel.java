@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,11 +16,11 @@ public class TestPaymentModel {
     private Long id;
     private Long testDataSetId;
 
-    private String lastModificationDate;
+    private LocalDateTime lastModificationDate;
     private String lastModificationInitiator;
 
     private String paymentId;
-    private String eventTime;
+    private LocalDateTime eventTime;
 
     private Long amount;
     private String currency;
