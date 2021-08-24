@@ -9,6 +9,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public class TestCheckedDataSetModelToCheckedDataSetApiConverter
         return new CheckedDataSet()
                 .id(String.valueOf(testDataSetModel.getId()))
                 .checkingTimestamp(DateTimeUtils.toDate(testDataSetModel.getCheckingTimestamp()))
-                .createdAt(DateTimeUtils.toDate(testDataSetModel.getCreatedAt()))
+                .createdAt(LocalDateTime.parse(testDataSetModel.getCreatedAt(), DateTimeUtils.DATE_TIME_FORMATTER))
                 .testDataSetId(String.valueOf(testDataSetModel.getTestDataSetId()))
                 .initiator(testDataSetModel.getInitiator())
                 .merchantInfo(new MerchantInfo()
