@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
     @Override
     @Transactional
     public Optional<Long> insert(TestCheckedDataSetModel dataSetModel) {
-        dataSetModel.setCreatedAt(null);
+        dataSetModel.setCreatedAt(Instant.now().toString());
         Query query = getDslContext().insertInto(TEST_DATA_SET_CHECKING_RESULT)
                 .set(getDslContext().newRecord(TEST_DATA_SET_CHECKING_RESULT, dataSetModel))
                 .onConflict(TEST_DATA_SET_CHECKING_RESULT.ID)
