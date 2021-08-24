@@ -28,6 +28,7 @@ import static org.jooq.impl.DSL.select;
 @Component
 public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements TestDataSetCheckingResultDao {
 
+    public static final String TEST_DATA_SET_ID_JOIN = "test_data_set_id_join";
     private final RowMapper<TestCheckedDataSetModel> listRecordRowMapper;
 
     public TestDataSetCheckingResultDaoImpl(DataSource dataSource) {
@@ -68,28 +69,39 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
         var dslContext = getDslContext();
         Query query = dslContext.select(TEST_DATA_SET.fields())
                 .select(TEST_DATA_SET_CHECKING_RESULT.fields())
+                .select(TEST_DATA_SET_CHECKING_RESULT.ID.as(TEST_DATA_SET_ID_JOIN))
                 .from(TEST_DATA_SET)
                 .leftJoin(TEST_DATA_SET_CHECKING_RESULT)
                 .on(TEST_DATA_SET.ID.eq(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID))
-                .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id)
-                        .and(TEST_DATA_SET_CHECKING_RESULT.ID
-                                .eq(select(DSL.max(TEST_DATA_SET_CHECKING_RESULT.ID))
+                .where(TEST_DATA_SET.ID.eq(id)
+                        .and(TEST_DATA_SET_CHECKING_RESULT.ID.eq(
+                                select(DSL.max(TEST_DATA_SET_CHECKING_RESULT.ID))
                                         .from(TEST_DATA_SET_CHECKING_RESULT)
-                                        .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id)))));
+                                        .where(TEST_DATA_SET_CHECKING_RESULT.TEST_DATA_SET_ID.eq(id)))
+                                .or(TEST_DATA_SET_CHECKING_RESULT.ID.isNull()))
+                );
 
         TestCheckedDataSetModel testCheckedPaymentModel = fetchOne(query, createDataSetRowMapper());
-        SelectConditionStep<Record> where = dslContext.select(TEST_PAYMENT.fields())
-                .select(TEST_PAYMENT_CHECKING_RESULT.fields())
-                .from(TEST_PAYMENT)
-                .leftJoin(TEST_PAYMENT_CHECKING_RESULT)
-                .on(TEST_PAYMENT.ID.eq(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID))
-                .where(TEST_PAYMENT_CHECKING_RESULT.TEST_DATA_SET_CHECKING_RESULT_ID
-                        .equal(testCheckedPaymentModel.getId()));
+        SelectConditionStep<Record> where = null;
+        if (testCheckedPaymentModel.getId() != null && testCheckedPaymentModel.getId() != 0) {
+            where = dslContext.select(TEST_PAYMENT.fields())
+                    .select(TEST_PAYMENT_CHECKING_RESULT.fields())
+                    .from(TEST_PAYMENT)
+                    .leftJoin(TEST_PAYMENT_CHECKING_RESULT)
+                    .on(TEST_PAYMENT.ID.eq(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID))
+                    .where(TEST_PAYMENT_CHECKING_RESULT.TEST_DATA_SET_CHECKING_RESULT_ID
+                            .equal(testCheckedPaymentModel.getId()));
+        } else {
+            where = dslContext.select(TEST_PAYMENT.fields())
+                    .select(TEST_PAYMENT_CHECKING_RESULT.fields())
+                    .from(TEST_PAYMENT)
+                    .leftJoin(TEST_PAYMENT_CHECKING_RESULT)
+                    .on(TEST_PAYMENT.ID.eq(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID))
+                    .where(TEST_PAYMENT.TEST_DATA_SET_ID.equal(testCheckedPaymentModel.getTestDataSetId()));
+        }
 
-        List<TestCheckedPaymentModel> testCheckedPaymentModels =
-                fetch(where, createCheckedPaymentRowMapper());
+        List<TestCheckedPaymentModel> testCheckedPaymentModels = fetch(where, createCheckedPaymentRowMapper());
         testCheckedPaymentModel.setTestCheckedPaymentModels(testCheckedPaymentModels);
-
         return testCheckedPaymentModel;
     }
 
@@ -141,7 +153,7 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractDao implements Tes
                 .partyId(r.getString(TEST_DATA_SET_CHECKING_RESULT.PARTY_ID.getName()))
                 .shopId(r.getString(TEST_DATA_SET_CHECKING_RESULT.SHOP_ID.getName()))
                 .testDataSetId(r.getLong(TEST_DATA_SET.ID.getName()))
-                .id(r.getLong(TEST_DATA_SET_CHECKING_RESULT.ID.getName()))
+                .id(r.getLong(TEST_DATA_SET_ID_JOIN))
                 .initiator(r.getString(TEST_DATA_SET_CHECKING_RESULT.INITIATOR.getName()))
                 .build();
     }

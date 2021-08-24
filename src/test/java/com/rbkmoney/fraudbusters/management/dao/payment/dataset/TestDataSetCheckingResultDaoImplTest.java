@@ -34,17 +34,20 @@ public class TestDataSetCheckingResultDaoImplTest extends AbstractPostgresIntegr
         Optional<Long> dataSetId = testDataSetDao.insert(createDataSet(testPaymentModel));
         Long testDataSetId = dataSetId.get();
         testPaymentModel.setTestDataSetId(testDataSetId);
-
         testPaymentDao.insert(testPaymentModel);
+
+        TestCheckedDataSetModel byId = testDataSetCheckingResultDao.getById(testDataSetId);
+        assertEquals(testDataSetId, byId.getTestDataSetId());
+        assertEquals(Long.valueOf(1L), byId.getTestCheckedPaymentModels().get(0).getTestPaymentModel().getId());
+
         Optional<Long> insert = testDataSetCheckingResultDao.insert(createCheckedDataSet(testDataSetId, 1L));
 
         assertTrue(insert.isPresent());
 
-        TestCheckedDataSetModel byId = testDataSetCheckingResultDao.getById(testDataSetId);
-        System.out.println(byId);
+        byId = testDataSetCheckingResultDao.getById(testDataSetId);
+
         assertEquals(TEST, byId.getTemplate());
         assertFalse(byId.getTestCheckedPaymentModels().isEmpty());
-
         assertEquals(Long.valueOf(1L), byId.getTestCheckedPaymentModels().get(0).getTestPaymentId());
     }
 
