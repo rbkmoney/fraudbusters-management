@@ -27,9 +27,8 @@ public class HistoricalDataSetCheckResultToTestCheckedDataSetModelConverter
                 .map(historicalTransactionCheck -> TestCheckedPaymentModel.builder()
                         .testPaymentId(Long.valueOf(historicalTransactionCheck.getTransaction().getId()))
                         .checkedTemplate(historicalTransactionCheck.getCheckResult().getCheckedTemplate())
-                        .resultStatus(
-                                historicalTransactionCheck.getCheckResult().getConcreteCheckResult().getResultStatus()
-                                        .toString())
+                        .resultStatus(historicalTransactionCheck.getCheckResult().getConcreteCheckResult().getResultStatus().getSetField()
+                                        .getFieldName())
                         .ruleChecked(
                                 historicalTransactionCheck.getCheckResult().getConcreteCheckResult().getRuleChecked())
                         .notificationRule(historicalTransactionCheck.getCheckResult().getConcreteCheckResult()
