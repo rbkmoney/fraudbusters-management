@@ -30,7 +30,9 @@ public class ApplyRuleOnHistoricalRequestToEmulationRuleApplyRequestConverter
                     .setTemplate(new com.rbkmoney.damsel.fraudbusters.Template()
                             .setId(EMULATION_TEMPLATE)
                             .setTemplate(request.getTemplate().getBytes()))
-                    .setRuleSetTimestamp(request.getRuleSetTimestamp().toString()));
+                    .setRuleSetTimestamp(request.getRuleSetTimestamp() != null
+                            ? request.getRuleSetTimestamp().toString()
+                            : null));
         } else {
             emulationRule.setTemplateEmulation(new OnlyTemplateEmulation()
                     .setTemplate(new com.rbkmoney.damsel.fraudbusters.Template()
