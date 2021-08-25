@@ -1,7 +1,5 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
-import com.rbkmoney.damsel.fraudbusters.WithdrawalStatus;
-import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.swag.fraudbusters.management.model.InspectResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;

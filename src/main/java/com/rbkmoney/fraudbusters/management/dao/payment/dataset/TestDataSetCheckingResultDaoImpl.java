@@ -4,7 +4,6 @@ import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
-import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 
 import java.sql.SQLException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;

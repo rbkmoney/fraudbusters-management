@@ -90,7 +90,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
                 PagingDataUtils.getSortOrder(sortOrder));
         String userName = userInfoService.getUserName();
         log.info("filterDataSets initiator: {} filterRequest: {}", userName, filterRequest);
-        List<TestDataSetModel> testDataSetModels = paymentsDataSetService.filterDataSets(filterRequest);
+        List<TestDataSetModel> testDataSetModels = paymentsDataSetService.filterDataSets(from, to, filterRequest);
         return ResponseEntity.ok(new DataSetsResponse()
                 .continuationId(buildContinuationId(size, testDataSetModels))
                 .result(testDataSetModels.stream()

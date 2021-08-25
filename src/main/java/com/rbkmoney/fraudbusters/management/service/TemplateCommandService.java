@@ -5,7 +5,6 @@ import com.rbkmoney.fraudbusters.management.converter.p2p.TemplateModelToCommand
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @RequiredArgsConstructor

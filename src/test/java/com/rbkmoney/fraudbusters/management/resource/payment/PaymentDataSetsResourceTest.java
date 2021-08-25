@@ -43,7 +43,7 @@ class PaymentDataSetsResourceTest {
 
     @Test
     void filterDataSets() throws Exception {
-        when(paymentsDataSetService.filterDataSets(any())).thenReturn(List.of(new TestDataSetModel()));
+        when(paymentsDataSetService.filterDataSets(any(), any(), any())).thenReturn(List.of(new TestDataSetModel()));
         LinkedMultiValueMap<String, String> params = createParams();
         this.mockMvc.perform(get("/payments-data-set/data-sets/filter")
                 .queryParams(params))

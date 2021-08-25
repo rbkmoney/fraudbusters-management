@@ -7,7 +7,6 @@ import com.rbkmoney.fraudbusters.management.domain.tables.records.TestDataSetRec
 import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import com.rbkmoney.mapper.RecordRowMapper;
 import org.jooq.*;
-import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -62,14 +61,15 @@ public class TestDataSetDaoImpl extends AbstractDao implements TestDataSetDao {
     }
 
     @Override
-    public List<TestDataSetModel> filter(FilterRequest filterRequest) {
-        SelectWhereStep<TestDataSetRecord> from = getDslContext()
+    public List<TestDataSetModel> filter(LocalDateTime from, LocalDateTime to, FilterRequest filterRequest) {
+        SelectWhereStep<TestDataSetRecord> where = getDslContext()
                 .selectFrom(TEST_DATA_SET);
 
         SelectConditionStep<TestDataSetRecord> whereQuery =
                 !StringUtils.hasLength(filterRequest.getSearchValue())
-                        ? from.where(DSL.trueCondition())
-                        : from.where(TEST_DATA_SET.NAME.like(filterRequest.getSearchValue()));
+                        ? where.where(TEST_DATA_SET.LAST_MODIFICATION_TIME.between(from, to))
+                        : where.where(TEST_DATA_SET.NAME.like(filterRequest.getSearchValue())
+                        .and(TEST_DATA_SET.LAST_MODIFICATION_TIME.between(from, to)));
 
         SelectSeekStep2<TestDataSetRecord, LocalDateTime, Long> queryOrdered =
                 addSortCondition(TEST_DATA_SET.ID, TEST_DATA_SET.LAST_MODIFICATION_TIME, filterRequest.getSortOrder(),

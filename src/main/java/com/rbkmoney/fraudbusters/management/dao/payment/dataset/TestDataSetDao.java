@@ -3,6 +3,7 @@ package com.rbkmoney.fraudbusters.management.dao.payment.dataset;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,6 @@ public interface TestDataSetDao {
 
     TestDataSetModel getById(Long id);
 
-    List<TestDataSetModel> filter(FilterRequest filterRequest);
+    List<TestDataSetModel> filter(LocalDateTime from, LocalDateTime to, FilterRequest filterRequest);
 
 }

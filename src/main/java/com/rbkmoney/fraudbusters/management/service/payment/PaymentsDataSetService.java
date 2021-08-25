@@ -7,12 +7,14 @@ import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetMod
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
 import com.rbkmoney.fraudbusters.management.utils.FilterRequestUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,9 +27,11 @@ public class PaymentsDataSetService {
     private final TestDataSetCheckingResultDao testDataSetCheckingResultDao;
     private final TestPaymentDao testPaymentDao;
 
-    public List<TestDataSetModel> filterDataSets(FilterRequest filterRequest) {
+    public List<TestDataSetModel> filterDataSets(String from, String to, FilterRequest filterRequest) {
+        var fromDate = LocalDateTime.parse(from, DateTimeUtils.DATE_TIME_FORMATTER);
+        var toDate = LocalDateTime.parse(to, DateTimeUtils.DATE_TIME_FORMATTER);
         filterRequest.setSearchValue(FilterRequestUtils.prepareSearchValue(filterRequest.getSearchValue()));
-        return testDataSetDao.filter(filterRequest);
+        return testDataSetDao.filter(fromDate, toDate, filterRequest);
     }
 
     @Transactional
