@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,8 +28,8 @@ public class PaymentsDataSetService {
     private final TestPaymentDao testPaymentDao;
 
     public List<TestDataSetModel> filterDataSets(String from, String to, FilterRequest filterRequest) {
-        var fromDate = LocalDateTime.parse(from, DateTimeFormatter.ISO_INSTANT);
-        var toDate = LocalDateTime.parse(to, DateTimeFormatter.ISO_INSTANT);
+        var fromDate = LocalDateTime.parse(from, DateTimeUtils.DATE_TIME_FORMATTER);
+        var toDate = LocalDateTime.parse(to, DateTimeUtils.DATE_TIME_FORMATTER);
         filterRequest.setSearchValue(FilterRequestUtils.prepareSearchValue(filterRequest.getSearchValue()));
         return testDataSetDao.filter(fromDate, toDate, filterRequest);
     }
