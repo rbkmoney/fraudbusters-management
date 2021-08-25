@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.rbkmoney.fraudbusters.management.service.payment.DataSetModelUtils.TEST_INITIATOR;
@@ -38,8 +39,8 @@ public class PaymentsDataSetServiceTest extends AbstractPostgresIntegrationTest 
         Long idSecond = paymentsDataSetService
                 .insertDataSet(testDataSetModel, TEST_INITIATOR);
 
-        String from = lastModificationDate.minusDays(1L).format(DateTimeUtils.DATE_TIME_FORMATTER);
-        String to = lastModificationDate.format(DateTimeUtils.DATE_TIME_FORMATTER);
+        String from = lastModificationDate.minusDays(1L).format(DateTimeFormatter.ISO_INSTANT);
+        String to = lastModificationDate.format(DateTimeFormatter.ISO_INSTANT);
         List<TestDataSetModel> testDataSetModels = paymentsDataSetService.filterDataSets(
                 from,
                 to,
