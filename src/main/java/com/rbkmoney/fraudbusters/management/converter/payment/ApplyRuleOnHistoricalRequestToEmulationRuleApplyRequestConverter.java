@@ -2,6 +2,7 @@ package com.rbkmoney.fraudbusters.management.converter.payment;
 
 import com.rbkmoney.damsel.fraudbusters.*;
 import com.rbkmoney.swag.fraudbusters.management.model.ApplyRuleOnHistoricalDataSetRequest;
+import com.rbkmoney.swag.fraudbusters.management.model.PaymentReference;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
@@ -23,11 +24,12 @@ public class ApplyRuleOnHistoricalRequestToEmulationRuleApplyRequestConverter
     @Override
     public EmulationRuleApplyRequest convert(ApplyRuleOnHistoricalDataSetRequest request) {
         var emulationRule = new EmulationRule();
-        if (request.getReference() != null && StringUtils.hasText(request.getReference().getPartyId())) {
+        PaymentReference reference = request.getReference();
+        if (reference != null && StringUtils.hasText(reference.getPartyId())) {
             emulationRule.setCascadingEmulation(new CascasdingTemplateEmulation()
                     .setRef(new TemplateReference()
-                            .setPartyId(request.getReference().getPartyId())
-                            .setShopId(request.getReference().getShopId())
+                            .setPartyId(reference.getPartyId())
+                            .setShopId(reference.getShopId())
                             .setTemplateId(EMULATION_TEMPLATE))
                     .setTemplate(new com.rbkmoney.damsel.fraudbusters.Template()
                             .setId(EMULATION_TEMPLATE)

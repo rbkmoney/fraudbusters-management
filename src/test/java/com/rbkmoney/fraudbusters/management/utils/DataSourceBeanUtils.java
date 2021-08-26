@@ -25,15 +25,7 @@ public class DataSourceBeanUtils {
                                         .setResultStatus(ResultStatus.accept(new Accept()))
                                         .setRuleChecked("test"))
                                 .setCheckedTemplate("test"))
-                        .setTransaction(new com.rbkmoney.damsel.fraudbusters.Payment()
-                                .setId("1")
-                                .setCost(new Cash()
-                                        .setCurrency(new CurrencyRef()
-                                                .setSymbolicCode("RUB"))
-                                        .setAmount(100L))
-                                .setPayerType(PayerType.payment_resource)
-                                .setStatus(PaymentStatus.captured)
-                                .setPaymentTool(PaymentTool.bank_card(new BankCard())))));
+                        .setTransaction(createDamselPayment())));
     }
 
     public static com.rbkmoney.swag.fraudbusters.management.model.Payment createPayment() {
@@ -47,6 +39,18 @@ public class DataSourceBeanUtils {
                 .merchantInfo(new com.rbkmoney.swag.fraudbusters.management.model.MerchantInfo()
                         .partyId(PARTY_ID)
                         .shopId(SHOP_ID));
+    }
+
+    public static Payment createDamselPayment() {
+        return new Payment()
+                .setId("1")
+                .setPaymentTool(PaymentTool.bank_card(new BankCard()))
+                .setCost(new Cash()
+                        .setAmount(12L)
+                        .setCurrency(new CurrencyRef()
+                                .setSymbolicCode("RUB")))
+                .setStatus(PaymentStatus.captured)
+                .setPayerType(PayerType.payment_resource);
     }
 
     public static ApplyRuleOnHistoricalDataSetRequest createApplyRequst(

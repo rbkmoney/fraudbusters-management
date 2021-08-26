@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
+import com.rbkmoney.fraudbusters.management.exception.UnknownPaymentException;
 import com.rbkmoney.swag.fraudbusters.management.model.DataSetRow;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ public class DataSetRowToTestPaymentModelConverter implements Converter<DataSetR
     public TestPaymentModel convert(DataSetRow dataSetRow) {
         var payment = dataSetRow.getPayment();
         if (payment == null) {
-            throw new RuntimeException("Unknown payment");
+            throw new UnknownPaymentException();
         }
         var clientInfo = payment.getClientInfo();
         var error = payment.getError();

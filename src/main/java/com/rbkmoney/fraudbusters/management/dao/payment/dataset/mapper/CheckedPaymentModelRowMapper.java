@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.dao.payment.dataset;
+package com.rbkmoney.fraudbusters.management.dao.payment.dataset.mapper;
 
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
