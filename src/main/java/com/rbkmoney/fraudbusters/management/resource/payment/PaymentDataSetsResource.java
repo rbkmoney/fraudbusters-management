@@ -76,6 +76,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
             dataSetModel.setPartyId(reference.getPartyId());
             dataSetModel.setShopId(reference.getShopId());
         }
+        dataSetModel.setCheckingTimestamp(request.getRuleSetTimestamp());
         dataSetModel.setTestDataSetId(request.getDataSetId());
         dataSetModel.setTemplate(request.getTemplate());
         return dataSetModel;
