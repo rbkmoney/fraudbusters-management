@@ -1,6 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
+import com.rbkmoney.damsel.fraudbusters.HistoricalDataSetCheckResult;
 import com.rbkmoney.fraudbusters.management.converter.payment.*;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
@@ -37,6 +38,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
     private final HistoricalDataSetCheckResultToTestCheckedDataSetModelConverter dataSetCheckResultToDaoModelConverter;
 
     @Override
+    @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<CheckedDataSet> getCheckedDataSet(String id) {
         String userName = userInfoService.getUserName();
         log.info("getCheckedDataSet initiator: {} id: {}", userName, id);
@@ -47,8 +49,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<String> applyRuleOnHistoricalDataSet(
-            @Valid ApplyRuleOnHistoricalDataSetRequest request) {
+    public ResponseEntity<String> applyRuleOnHistoricalDataSet(@Valid ApplyRuleOnHistoricalDataSetRequest request) {
         String userName = userInfoService.getUserName();
         log.info("applyRuleOnHistoricalDataSet initiator: {} request: {}", userName, request);
         try {
@@ -62,24 +63,6 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
         } catch (TException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private TestCheckedDataSetModel createCheckedDataSet(ApplyRuleOnHistoricalDataSetRequest request,
-                                                         String userName,
-                                                         com.rbkmoney.damsel.fraudbusters.HistoricalDataSetCheckResult
-                                                                 historicalDataSetCheckResult) {
-        TestCheckedDataSetModel dataSetModel =
-                dataSetCheckResultToDaoModelConverter.convert(historicalDataSetCheckResult);
-        dataSetModel.setInitiator(userName);
-        PaymentReference reference = request.getReference();
-        if (reference != null) {
-            dataSetModel.setPartyId(reference.getPartyId());
-            dataSetModel.setShopId(reference.getShopId());
-        }
-        dataSetModel.setCheckingTimestamp(request.getRuleSetTimestamp());
-        dataSetModel.setTestDataSetId(request.getDataSetId());
-        dataSetModel.setTemplate(request.getTemplate());
-        return dataSetModel;
     }
 
     @Override
@@ -98,14 +81,6 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
                         .map(testDataSetModelToDataSetApiConverter::convert)
                         .collect(Collectors.toList())
                 ));
-    }
-
-    private String buildContinuationId(Integer filterSize, List<TestDataSetModel> dataSetModels) {
-        if (dataSetModels.size() == filterSize) {
-            var lastDataSet = dataSetModels.get(dataSetModels.size() - 1);
-            return lastDataSet.getId();
-        }
-        return null;
     }
 
     @Override
@@ -136,6 +111,31 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
         paymentsDataSetService.removeDataSet(id, userName);
         log.info("removeDataSet succeeded id: {}", id);
         return ResponseEntity.ok(id);
+    }
+
+    private TestCheckedDataSetModel createCheckedDataSet(ApplyRuleOnHistoricalDataSetRequest request,
+                                                         String userName,
+                                                         HistoricalDataSetCheckResult historicalDataSetCheckResult) {
+        TestCheckedDataSetModel dataSetModel =
+                dataSetCheckResultToDaoModelConverter.convert(historicalDataSetCheckResult);
+        dataSetModel.setInitiator(userName);
+        PaymentReference reference = request.getReference();
+        if (reference != null) {
+            dataSetModel.setPartyId(reference.getPartyId());
+            dataSetModel.setShopId(reference.getShopId());
+        }
+        dataSetModel.setCheckingTimestamp(request.getRuleSetTimestamp());
+        dataSetModel.setTestDataSetId(request.getDataSetId());
+        dataSetModel.setTemplate(request.getTemplate());
+        return dataSetModel;
+    }
+
+    private String buildContinuationId(Integer filterSize, List<TestDataSetModel> dataSetModels) {
+        if (dataSetModels.size() == filterSize) {
+            var lastDataSet = dataSetModels.get(dataSetModels.size() - 1);
+            return lastDataSet.getId();
+        }
+        return null;
     }
 
 }

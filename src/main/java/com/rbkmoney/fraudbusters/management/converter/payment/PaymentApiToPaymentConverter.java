@@ -30,7 +30,9 @@ public class PaymentApiToPaymentConverter
                                 .setSymbolicCode(payment.getCurrency())))
                 .setStatus(PaymentStatus.valueOf(payment.getStatus().getValue()))
                 .setError(createError(payment))
-                .setEventTime(payment.getEventTime().toString())
+                .setEventTime(payment.getEventTime() != null
+                        ? payment.getEventTime().toString()
+                        : null)
                 .setMobile(Optional.ofNullable(payment.getMobile()).orElse(false))
                 .setRecurrent(Optional.ofNullable(payment.getRecurrent()).orElse(false))
                 .setPayerType(payment.getPayerType() != null

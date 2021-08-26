@@ -50,9 +50,13 @@ public class PaymentToTestPaymentModelConverter
         return builder
                 .currency(payment.getCost().getCurrency().getSymbolicCode())
                 .amount(payment.getCost().getAmount())
-                .eventTime(DateTimeUtils.toDate(payment.getEventTime()))
+                .eventTime(payment.getEventTime() != null
+                        ? DateTimeUtils.toDate(payment.getEventTime())
+                        : null)
                 .paymentId(payment.getId())
-                .status(payment.getStatus().name())
+                .status(payment.getStatus() != null
+                        ? payment.getStatus().name()
+                        : null)
                 .paymentTool(payment.getPaymentTool().getFieldValue().toString())
                 .payerType(payment.getPayerType().name())
                 .build();
