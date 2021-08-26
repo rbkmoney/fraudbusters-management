@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class ApplyRuleOnHistoricalRequestToEmulationRuleApplyRequestConverter
     @Override
     public EmulationRuleApplyRequest convert(ApplyRuleOnHistoricalDataSetRequest request) {
         var emulationRule = new EmulationRule();
-        if (request.getReference() != null) {
+        if (request.getReference() != null && StringUtils.hasText(request.getReference().getPartyId())) {
             emulationRule.setCascadingEmulation(new CascasdingTemplateEmulation()
                     .setRef(new TemplateReference()
                             .setPartyId(request.getReference().getPartyId())
