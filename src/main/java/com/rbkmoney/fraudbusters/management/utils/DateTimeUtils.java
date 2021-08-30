@@ -18,4 +18,8 @@ public class DateTimeUtils {
                 : null;
     }
 
+    public static LocalDateTime parse(@RequestParam @Validated String date) {
+        return LocalDateTime.parse(date, DateTimeUtils.DATE_TIME_FORMATTER);
+    }
+
 }

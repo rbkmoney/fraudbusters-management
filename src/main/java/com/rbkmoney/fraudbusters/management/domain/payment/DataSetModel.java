@@ -12,13 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TestDataSetModel {
+public class DataSetModel {
 
     private String id;
     private String name;
     private String template;
     private LocalDateTime lastModificationTime;
     private String lastModificationInitiator;
-    private List<TestPaymentModel> testPaymentModelList;
+    private List<PaymentModel> paymentModelList;
 
 }

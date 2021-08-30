@@ -3,8 +3,8 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataSetCheckResult;
 import com.rbkmoney.fraudbusters.management.converter.payment.*;
-import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.CheckedDataSetModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.DataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentsDataSetService;
 import com.rbkmoney.fraudbusters.management.utils.PagingDataUtils;
@@ -30,8 +30,8 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
 
     private final UserInfoService userInfoService;
     private final PaymentsDataSetService paymentsDataSetService;
-    private final TestDataSetModelToDataSetApiConverter testDataSetModelToDataSetApiConverter;
-    private final TestCheckedDataSetModelToCheckedDataSetApiConverter checkedDataSetModelToCheckedDataSetApiConverter;
+    private final DataSetModelToDataSetApiConverter dataSetModelToDataSetApiConverter;
+    private final CheckedDataSetModelToCheckedDataSetApiConverter checkedDataSetModelToCheckedDataSetApiConverter;
     private final DataSetToTestDataSetModelConverter dataSetToTestDataSetModelConverter;
     private final HistoricalDataServiceSrv.Iface historicalDataServiceSrv;
     private final ApplyRuleOnHistoricalRequestToEmulationRuleApplyRequestConverter applyConverter;
@@ -55,7 +55,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
         try {
             var historicalDataSetCheckResult = historicalDataServiceSrv
                     .applyRuleOnHistoricalDataSet(applyConverter.convert(request));
-            TestCheckedDataSetModel dataSetModel =
+            CheckedDataSetModel dataSetModel =
                     createCheckedDataSet(request, userName, historicalDataSetCheckResult);
             Long resultId = paymentsDataSetService.insertCheckedDataSet(dataSetModel, userName);
             log.info("applyRuleOnHistoricalDataSet resultId: {}", resultId);
@@ -74,11 +74,11 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
                 PagingDataUtils.getSortOrder(sortOrder));
         String userName = userInfoService.getUserName();
         log.info("filterDataSets initiator: {} filterRequest: {}", userName, filterRequest);
-        List<TestDataSetModel> testDataSetModels = paymentsDataSetService.filterDataSets(from, to, filterRequest);
+        List<DataSetModel> dataSetModels = paymentsDataSetService.filterDataSets(from, to, filterRequest);
         return ResponseEntity.ok(new DataSetsResponse()
-                .continuationId(buildContinuationId(size, testDataSetModels))
-                .result(testDataSetModels.stream()
-                        .map(testDataSetModelToDataSetApiConverter::convert)
+                .continuationId(buildContinuationId(size, dataSetModels))
+                .result(dataSetModels.stream()
+                        .map(dataSetModelToDataSetApiConverter::convert)
                         .collect(Collectors.toList())
                 ));
     }
@@ -90,7 +90,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
         log.info("getDataSet initiator: {} id: {}", userName, setId);
         var dataSet = paymentsDataSetService.getDataSet(setId);
         log.info("getDataSet succeeded dataSet: {}", dataSet);
-        return ResponseEntity.ok(testDataSetModelToDataSetApiConverter.convert(dataSet));
+        return ResponseEntity.ok(dataSetModelToDataSetApiConverter.convert(dataSet));
     }
 
     @Override
@@ -98,8 +98,10 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
     public ResponseEntity<String> insertDataSet(@Valid DataSet dataSet) {
         String userName = userInfoService.getUserName();
         log.info("insertDataSet initiator: {} dataSet: {}", userName, dataSet);
-        Long id = paymentsDataSetService.insertDataSet(dataSetToTestDataSetModelConverter.convert(dataSet), userName);
-        log.info("insertDataSet succeeded name: {}", dataSet);
+        DataSetModel dataSetModel = dataSetToTestDataSetModelConverter.convert(dataSet);
+        dataSetModel.setLastModificationInitiator(userName);
+        Long id = paymentsDataSetService.insertDataSet(dataSetModel);
+        log.info("insertDataSet succeeded dataSet: {}", dataSet);
         return ResponseEntity.ok(String.valueOf(id));
     }
 
@@ -113,10 +115,10 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
         return ResponseEntity.ok(id);
     }
 
-    private TestCheckedDataSetModel createCheckedDataSet(ApplyRuleOnHistoricalDataSetRequest request,
-                                                         String userName,
-                                                         HistoricalDataSetCheckResult historicalDataSetCheckResult) {
-        TestCheckedDataSetModel dataSetModel =
+    private CheckedDataSetModel createCheckedDataSet(ApplyRuleOnHistoricalDataSetRequest request,
+                                                     String userName,
+                                                     HistoricalDataSetCheckResult historicalDataSetCheckResult) {
+        CheckedDataSetModel dataSetModel =
                 dataSetCheckResultToDaoModelConverter.convert(historicalDataSetCheckResult);
         dataSetModel.setInitiator(userName);
         PaymentReference reference = request.getReference();
@@ -130,7 +132,7 @@ public class PaymentDataSetsResource implements PaymentsDataSetApi {
         return dataSetModel;
     }
 
-    private String buildContinuationId(Integer filterSize, List<TestDataSetModel> dataSetModels) {
+    private String buildContinuationId(Integer filterSize, List<DataSetModel> dataSetModels) {
         if (dataSetModels.size() == filterSize) {
             var lastDataSet = dataSetModels.get(dataSetModels.size() - 1);
             return lastDataSet.getId();

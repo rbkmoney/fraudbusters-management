@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.dataset.mapper;
 
-import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedPaymentModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.TestPaymentModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.CheckedPaymentModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.PaymentModel;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -13,16 +13,16 @@ import java.util.List;
 import static com.rbkmoney.fraudbusters.management.domain.Tables.TEST_PAYMENT;
 import static com.rbkmoney.fraudbusters.management.domain.Tables.TEST_PAYMENT_CHECKING_RESULT;
 
-public class CheckedPaymentModelRowMapper implements RowMapper<TestCheckedPaymentModel> {
+public class CheckedPaymentModelRowMapper implements RowMapper<CheckedPaymentModel> {
 
     @Override
-    public TestCheckedPaymentModel mapRow(ResultSet resultSet, int i) throws SQLException {
-        return TestCheckedPaymentModel.builder()
+    public CheckedPaymentModel mapRow(ResultSet resultSet, int i) throws SQLException {
+        return CheckedPaymentModel.builder()
                 .resultStatus(resultSet.getString(TEST_PAYMENT_CHECKING_RESULT.RESULT_STATUS.getName()))
                 .checkedTemplate(resultSet.getString(TEST_PAYMENT_CHECKING_RESULT.CHECKED_TEMPLATE.getName()))
                 .ruleChecked(resultSet.getString(TEST_PAYMENT_CHECKING_RESULT.RULE_CHECKED.getName()))
                 .testPaymentId(resultSet.getLong(TEST_PAYMENT_CHECKING_RESULT.TEST_PAYMENT_ID.getName()))
-                .testPaymentModel(TestPaymentModel.builder()
+                .paymentModel(PaymentModel.builder()
                         .paymentCountry(resultSet.getString(TEST_PAYMENT.PAYMENT_COUNTRY.getName()))
                         .paymentId(resultSet.getString(TEST_PAYMENT.PAYMENT_ID.getName()))
                         .testDataSetId(resultSet.getLong(TEST_PAYMENT.TEST_DATA_SET_ID.getName()))

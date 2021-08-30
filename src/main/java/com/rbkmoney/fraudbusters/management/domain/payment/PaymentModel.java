@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TestPaymentModel {
+public class PaymentModel {
 
     private Long id;
     private Long testDataSetId;

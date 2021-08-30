@@ -1,7 +1,7 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.dataset;
 
 import com.rbkmoney.fraudbusters.management.dao.AbstractDao;
-import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.DataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.TestDataSetRecord;
 import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
@@ -21,17 +21,17 @@ import java.util.Optional;
 import static com.rbkmoney.fraudbusters.management.domain.Tables.TEST_DATA_SET;
 
 @Component
-public class TestDataSetDaoImpl extends AbstractDao implements TestDataSetDao {
+public class DataSetDaoImpl extends AbstractDao implements DataSetDao {
 
-    private final RowMapper<TestDataSetModel> listRecordRowMapper;
+    private final RowMapper<DataSetModel> listRecordRowMapper;
 
-    public TestDataSetDaoImpl(DataSource dataSource) {
+    public DataSetDaoImpl(DataSource dataSource) {
         super(dataSource);
-        listRecordRowMapper = new RecordRowMapper<>(TEST_DATA_SET, TestDataSetModel.class);
+        listRecordRowMapper = new RecordRowMapper<>(TEST_DATA_SET, DataSetModel.class);
     }
 
     @Override
-    public Optional<Long> insert(TestDataSetModel dataSetModel) {
+    public Optional<Long> insert(DataSetModel dataSetModel) {
         dataSetModel.setLastModificationTime(null);
         Query query = getDslContext().insertInto(TEST_DATA_SET)
                 .set(getDslContext().newRecord(TEST_DATA_SET, dataSetModel))
@@ -53,7 +53,7 @@ public class TestDataSetDaoImpl extends AbstractDao implements TestDataSetDao {
     }
 
     @Override
-    public TestDataSetModel getById(Long id) {
+    public DataSetModel getById(Long id) {
         Query query = getDslContext()
                 .selectFrom(TEST_DATA_SET)
                 .where(TEST_DATA_SET.ID.eq(id));
@@ -61,7 +61,7 @@ public class TestDataSetDaoImpl extends AbstractDao implements TestDataSetDao {
     }
 
     @Override
-    public List<TestDataSetModel> filter(LocalDateTime from, LocalDateTime to, FilterRequest filterRequest) {
+    public List<DataSetModel> filter(LocalDateTime from, LocalDateTime to, FilterRequest filterRequest) {
         SelectWhereStep<TestDataSetRecord> where = getDslContext()
                 .selectFrom(TEST_DATA_SET);
 

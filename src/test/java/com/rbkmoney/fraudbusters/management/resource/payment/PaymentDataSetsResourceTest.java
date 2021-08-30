@@ -2,8 +2,8 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
-import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetModel;
-import com.rbkmoney.fraudbusters.management.domain.payment.TestDataSetModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.CheckedDataSetModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.DataSetModel;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentsDataSetService;
 import com.rbkmoney.fraudbusters.management.utils.DataSourceBeanUtils;
 import com.rbkmoney.swag.fraudbusters.management.model.DataSet;
@@ -47,7 +47,7 @@ class PaymentDataSetsResourceTest {
 
     @Test
     void getCheckedDataSet() throws Exception {
-        when(paymentsDataSetService.getCheckedDataSet(any())).thenReturn(new TestCheckedDataSetModel());
+        when(paymentsDataSetService.getCheckedDataSet(any())).thenReturn(new CheckedDataSetModel());
         String id = "id";
         this.mockMvc.perform(get(String.format("/payments-data-set/checked-data-sets/%s", id)))
                 .andDo(print())
@@ -62,7 +62,7 @@ class PaymentDataSetsResourceTest {
 
     @Test
     void filterDataSets() throws Exception {
-        when(paymentsDataSetService.filterDataSets(any(), any(), any())).thenReturn(List.of(new TestDataSetModel()));
+        when(paymentsDataSetService.filterDataSets(any(), any(), any())).thenReturn(List.of(new DataSetModel()));
         this.mockMvc.perform(get("/payments-data-set/data-sets/filter")
                 .queryParams(DataSourceBeanUtils.createParams()))
                 .andDo(print())
@@ -77,7 +77,7 @@ class PaymentDataSetsResourceTest {
 
     @Test
     void getDataSet() throws Exception {
-        when(paymentsDataSetService.getDataSet(any())).thenReturn(new TestDataSetModel());
+        when(paymentsDataSetService.getDataSet(any())).thenReturn(new DataSetModel());
         String id = "id";
         this.mockMvc.perform(get(String.format("/payments-data-set/data-sets/%s", id)))
                 .andDo(print())
@@ -91,7 +91,7 @@ class PaymentDataSetsResourceTest {
 
     @Test
     void insertDataSet() throws Exception {
-        when(paymentsDataSetService.insertDataSet(any(), any())).thenReturn(1L);
+        when(paymentsDataSetService.insertDataSet(any())).thenReturn(1L);
         this.mockMvc.perform(post("/payments-data-set/data-sets")
                 .content(objectMapper.writeValueAsString(new DataSet()))
                 .contentType(MediaType.APPLICATION_JSON))

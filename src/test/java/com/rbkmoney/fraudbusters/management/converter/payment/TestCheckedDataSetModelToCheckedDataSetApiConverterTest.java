@@ -1,6 +1,6 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
-import com.rbkmoney.fraudbusters.management.domain.payment.TestCheckedDataSetModel;
+import com.rbkmoney.fraudbusters.management.domain.payment.CheckedDataSetModel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,20 +13,21 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {TestCheckedPaymentModelToCheckedDataSetRowConverter.class,
-        TestCheckedDataSetModelToCheckedDataSetApiConverter.class,
-        TestPaymentModelToPaymentApiConverter.class})
+@ContextConfiguration(classes = {CheckedDataSetModelToCheckedDataSetApiConverter.class,
+        CheckedPaymentModelToCheckedDataSetRowConverter.class,
+        PaymentModelToPaymentApiConverter.class})
 public class TestCheckedDataSetModelToCheckedDataSetApiConverterTest {
 
     public static final String TEST = "TEST";
     public static final String TEST_TEMPLATE = "test_template";
     public static final String TEST_DATA_SET_ID = "1";
+
     @Autowired
-    TestCheckedDataSetModelToCheckedDataSetApiConverter testCheckedDataSetModelToCheckedDataSetApiConverter;
+    CheckedDataSetModelToCheckedDataSetApiConverter checkedDataSetModelToCheckedDataSetApiConverter;
 
     @Test
     public void testConvert() {
-        TestCheckedDataSetModel testDataSetModel = TestCheckedDataSetModel.builder()
+        CheckedDataSetModel testDataSetModel = CheckedDataSetModel.builder()
                 .initiator(TEST)
                 .testDataSetId(1L)
                 .shopId(TEST)
@@ -34,9 +35,9 @@ public class TestCheckedDataSetModelToCheckedDataSetApiConverterTest {
                 .id(2L)
                 .createdAt(LocalDateTime.now())
                 .template(TEST_TEMPLATE)
-                .testCheckedPaymentModels(List.of())
+                .checkedPaymentModels(List.of())
                 .build();
-        var checkedDataSet = testCheckedDataSetModelToCheckedDataSetApiConverter.convert(testDataSetModel);
+        var checkedDataSet = checkedDataSetModelToCheckedDataSetApiConverter.convert(testDataSetModel);
 
         assertNotNull(checkedDataSet);
         assertEquals(TEST_DATA_SET_ID, checkedDataSet.getTestDataSetId());

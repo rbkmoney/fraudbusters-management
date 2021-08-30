@@ -24,10 +24,7 @@ public class PaymentApiToPaymentConverter
         return new com.rbkmoney.damsel.fraudbusters.Payment()
                 .setId(payment.getId())
                 .setClientInfo(createClientInfo(payment))
-                .setCost(new Cash()
-                        .setAmount(payment.getAmount())
-                        .setCurrency(new CurrencyRef()
-                                .setSymbolicCode(payment.getCurrency())))
+                .setCost(createCash(payment))
                 .setStatus(PaymentStatus.valueOf(payment.getStatus().getValue()))
                 .setError(createError(payment))
                 .setEventTime(payment.getEventTime() != null
@@ -38,19 +35,38 @@ public class PaymentApiToPaymentConverter
                 .setPayerType(payment.getPayerType() != null
                         ? PayerType.valueOf(payment.getPayerType())
                         : PayerType.payment_resource)
-                .setPaymentTool(PaymentTool.bank_card(new BankCard()
-                        .setBin(payment.getBin())
-                        .setLastDigits(payment.getLastDigits())
-                        .setToken(payment.getCardToken())))
-                .setProviderInfo(payment.getProvider() != null
-                        ? new ProviderInfo()
-                        .setTerminalId(payment.getProvider().getProviderId())
-                        .setCountry(payment.getProvider().getCountry())
-                        .setProviderId(payment.getProvider().getProviderId())
-                        : new ProviderInfo())
-                .setReferenceInfo(ReferenceInfo.merchant_info(new MerchantInfo()
-                        .setShopId(payment.getMerchantInfo().getShopId())
-                        .setPartyId(payment.getMerchantInfo().getPartyId())));
+                .setPaymentTool(createPaymentTool(payment))
+                .setProviderInfo(createProviderInfo(payment))
+                .setReferenceInfo(ReferenceInfo.merchant_info(createMerchantInfo(payment)));
+    }
+
+    private Cash createCash(Payment payment) {
+        return new Cash()
+                .setAmount(payment.getAmount())
+                .setCurrency(new CurrencyRef()
+                        .setSymbolicCode(payment.getCurrency()));
+    }
+
+    private PaymentTool createPaymentTool(Payment payment) {
+        return PaymentTool.bank_card(new BankCard()
+                .setBin(payment.getBin())
+                .setLastDigits(payment.getLastDigits())
+                .setToken(payment.getCardToken()));
+    }
+
+    private ProviderInfo createProviderInfo(Payment payment) {
+        return payment.getProvider() != null
+                ? new ProviderInfo()
+                .setTerminalId(payment.getProvider().getProviderId())
+                .setCountry(payment.getProvider().getCountry())
+                .setProviderId(payment.getProvider().getProviderId())
+                : new ProviderInfo();
+    }
+
+    private MerchantInfo createMerchantInfo(Payment payment) {
+        return new MerchantInfo()
+                .setShopId(payment.getMerchantInfo().getShopId())
+                .setPartyId(payment.getMerchantInfo().getPartyId());
     }
 
     private Error createError(com.rbkmoney.swag.fraudbusters.management.model.Payment payment) {
