@@ -17,50 +17,50 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ClickhouseNotificatorProxyFacade implements NotificationsApi {
+public class NotificationProxyFacade implements NotificationsApi {
 
     private final RestTemplate restTemplate;
 
-    @Value("${ch.notificator.url}")
+    @Value("${service.fb-notificator.url}")
     private String baseUrl;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<com.rbkmoney.swag.fraudbusters.management.model.Channel> createChannel(
             com.rbkmoney.swag.fraudbusters.management.model.@Valid Channel channel) {
-        return restTemplate.postForEntity(baseUrl + "/channel", channel, Channel.class);
+        return restTemplate.postForEntity(baseUrl + "/channels", channel, Channel.class);
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Notification> createOrUpdateNotification(@Valid Notification notification) {
         ResponseEntity<Notification> notificationResponseEntity =
-                restTemplate.postForEntity(baseUrl + "/notification", notification, Notification.class);
-        log.info("ClickhouseNotificatorFacade created notification: {}", notification);
+                restTemplate.postForEntity(baseUrl + "/notifications", notification, Notification.class);
+        log.info("NotificationProxyFacade create notification: {}", notification);
         return notificationResponseEntity;
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Void> removeChannel(String name) {
-        restTemplate.delete(baseUrl + "/channel/{name}", name);
-        log.info("ClickhouseNotificatorFacade deleted name: {}", name);
-        return ResponseEntity.ok().build();
+        restTemplate.delete(baseUrl + "/channels/{name}", name);
+        log.info("NotificationProxyFacade delete channel with name: {}", name);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<Void> removeNotification(String name) {
-        restTemplate.delete(baseUrl + "/notification/{name}", name);
-        log.info("ClickhouseNotificatorFacade deleted name: {}", name);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> removeNotification(Long id) {
+        restTemplate.delete(baseUrl + "/notifications/{id}", id);
+        log.info("NotificationProxyFacade delete notification with id: {}", id);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<com.rbkmoney.swag.fraudbusters.management.model.ValidationResponse> validateNotification(
             com.rbkmoney.swag.fraudbusters.management.model.@Valid Notification notification) {
-        return restTemplate.postForEntity(baseUrl + "/notification/validate",
+        return restTemplate.postForEntity(baseUrl + "/notifications/validation",
                 notification, ValidationResponse.class);
     }
 
