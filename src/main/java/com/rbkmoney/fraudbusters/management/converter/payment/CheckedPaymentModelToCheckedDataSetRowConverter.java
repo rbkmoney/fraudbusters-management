@@ -14,14 +14,14 @@ public class CheckedPaymentModelToCheckedDataSetRowConverter
     private final PaymentModelToPaymentApiConverter paymentModelToPaymentApiConverter;
 
     @Override
-    public CheckedDataSetRow convert(CheckedPaymentModel testDataSetModel) {
-        var testPaymentModel = testDataSetModel.getPaymentModel();
+    public CheckedDataSetRow convert(CheckedPaymentModel checkedPaymentModel) {
+        var testPaymentModel = checkedPaymentModel.getPaymentModel();
         return new CheckedDataSetRow()
-                .id(String.valueOf(testDataSetModel.getTestDataSetCheckingResultId()))
-                .resultStatus(testDataSetModel.getResultStatus())
-                .ruleChecked(testDataSetModel.getRuleChecked())
-                .checkedTemplate(testDataSetModel.getCheckedTemplate())
-                .notificationRule(testDataSetModel.getNotificationRule())
+                .id(String.valueOf(checkedPaymentModel.getTestDataSetCheckingResultId()))
+                .resultStatus(checkedPaymentModel.getResultStatus())
+                .ruleChecked(checkedPaymentModel.getRuleChecked())
+                .checkedTemplate(checkedPaymentModel.getCheckedTemplate())
+                .notificationRule(checkedPaymentModel.getNotificationRule())
                 .payment(paymentModelToPaymentApiConverter.convert(testPaymentModel));
     }
 
