@@ -6,6 +6,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import static com.rbkmoney.fraudbusters.management.domain.payment.PaymentModel.*;
+
 
 @Component
 public class PaymentToTestPaymentModelConverter
@@ -14,7 +16,7 @@ public class PaymentToTestPaymentModelConverter
     @NonNull
     @Override
     public PaymentModel convert(com.rbkmoney.damsel.fraudbusters.Payment payment) {
-        PaymentModel.PaymentModelBuilder builder = PaymentModel.builder();
+        PaymentModelBuilder builder = builder();
         if (payment.isSetReferenceInfo()) {
             updateReferenceInfo(builder, payment.getReferenceInfo());
         }
@@ -45,26 +47,26 @@ public class PaymentToTestPaymentModelConverter
                 .build();
     }
 
-    private void updateError(PaymentModel.PaymentModelBuilder builder, com.rbkmoney.damsel.fraudbusters.Error error) {
+    private void updateError(PaymentModelBuilder builder, com.rbkmoney.damsel.fraudbusters.Error error) {
         builder.errorCode(error.getErrorCode())
                 .errorReason(error.getErrorReason());
     }
 
-    private void updateClientInfo(PaymentModel.PaymentModelBuilder builder,
+    private void updateClientInfo(PaymentModelBuilder builder,
                                   com.rbkmoney.damsel.fraudbusters.ClientInfo clientInfo) {
         builder.ip(clientInfo.getIp())
                 .fingerprint(clientInfo.getFingerprint())
                 .email(clientInfo.getEmail());
     }
 
-    private void updateProviderInfo(PaymentModel.PaymentModelBuilder builder,
+    private void updateProviderInfo(PaymentModelBuilder builder,
                                     com.rbkmoney.damsel.fraudbusters.ProviderInfo providerInfo) {
         builder.terminalId(providerInfo.getTerminalId())
                 .providerId(providerInfo.getProviderId())
                 .country(providerInfo.getCountry());
     }
 
-    private void updateBankCardData(PaymentModel.PaymentModelBuilder builder,
+    private void updateBankCardData(PaymentModelBuilder builder,
                                     com.rbkmoney.damsel.domain.BankCard bankCard) {
         builder.paymentSystem(bankCard.isSetPaymentSystem() ? bankCard.getPaymentSystem().getId() : null)
                 .paymentCountry(bankCard.isSetIssuerCountry() ? bankCard.getIssuerCountry().name() : null)
@@ -73,7 +75,7 @@ public class PaymentToTestPaymentModelConverter
                 .lastDigits(bankCard.getLastDigits());
     }
 
-    private void updateReferenceInfo(PaymentModel.PaymentModelBuilder builder,
+    private void updateReferenceInfo(PaymentModelBuilder builder,
                                      com.rbkmoney.damsel.fraudbusters.ReferenceInfo referenceInfo) {
         builder.partyId(referenceInfo.getMerchantInfo().getPartyId())
                 .shopId(referenceInfo.getMerchantInfo().getShopId());
