@@ -54,6 +54,7 @@ public class PaymentModel {
     private String terminalId;
     private String country;
 
+    //TODO выпилить когда починят JavaDoc plugin
     public static class PaymentModelBuilder {
     }
 }
