@@ -3,7 +3,6 @@ package com.rbkmoney.fraudbusters.management.resource.payment;
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataResponse;
 import com.rbkmoney.damsel.fraudbusters.HistoricalDataServiceSrv;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -147,7 +146,6 @@ public class PaymentHistoricalDataResourceTest {
                                 "\"payerType\":null}]}"));
     }
 
-    @NotNull
     private LinkedMultiValueMap<String, String> createParams() {
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("paymentId", "test");

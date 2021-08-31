@@ -5,14 +5,11 @@ import com.rbkmoney.fraudbusters.management.converter.payment.PaymentReferenceMo
 import com.rbkmoney.fraudbusters.management.converter.payment.ReferenceToCommandConverter;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
-import com.rbkmoney.fraudbusters.management.filter.UnknownPaymentTemplateInReferenceFilter;
 import com.rbkmoney.fraudbusters.management.utils.CommandMapper;
-import com.rbkmoney.fraudbusters.management.utils.PaymentUnknownTemplateFinder;
 import com.rbkmoney.swag.fraudbusters.management.model.PaymentReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
