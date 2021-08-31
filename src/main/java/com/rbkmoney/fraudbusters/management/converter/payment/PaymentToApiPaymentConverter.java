@@ -46,6 +46,8 @@ public class PaymentToApiPaymentConverter
                 .paymentCountry(bankCard.isSetIssuerCountry() ? bankCard.getIssuerCountry().name() : null)
                 .paymentSystem(bankCard.isSetPaymentSystem() ? bankCard.getPaymentSystem().getId() : null)
                 .paymentTool(paymentTool.getFieldValue().toString())
+                .bin(bankCard.getBin())
+                .lastDigits(bankCard.getLastDigits())
                 .provider(payment.isSetProviderInfo()
                         ? new ProviderInfo().providerId(payment.getProviderInfo().getProviderId())
                         .country(payment.getProviderInfo().getCountry())

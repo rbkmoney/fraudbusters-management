@@ -6,7 +6,6 @@ import com.rbkmoney.swag.fraudbusters.management.model.PaymentReference;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 
 @Component
