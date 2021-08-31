@@ -1,9 +1,7 @@
 package com.rbkmoney.fraudbusters.management.resource.notificator;
 
 import com.rbkmoney.swag.fraudbusters.management.api.NotificationsApi;
-import com.rbkmoney.swag.fraudbusters.management.model.Channel;
-import com.rbkmoney.swag.fraudbusters.management.model.Notification;
-import com.rbkmoney.swag.fraudbusters.management.model.ValidationResponse;
+import com.rbkmoney.swag.fraudbusters.management.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,4 +62,24 @@ public class NotificationProxyFacade implements NotificationsApi {
                 notification, ValidationResponse.class);
     }
 
+    @Override
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<NotificationListResponse> getNotifications() {
+        return restTemplate.getForEntity(baseUrl + "/notifications", NotificationListResponse.class);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<ChannelListResponse> getChannels() {
+        return restTemplate.getForEntity(baseUrl + "/channels", ChannelListResponse.class);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<Void> updateNotificationStatus(Long id,
+                                                         @Valid NotificationStatus notificationStatus) {
+        restTemplate.put(baseUrl + "/notifications/{id}/status", notificationStatus, id);
+        log.info("NotificationProxyFacade update notification status: {}", notificationStatus);
+        return ResponseEntity.noContent().build();
+    }
 }
