@@ -53,4 +53,7 @@ public class PaymentModel {
     private String providerId;
     private String terminalId;
     private String country;
+
+    public static class PaymentModelBuilder {};
+
 }
