@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.rbkmoney</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>1.2.13</version>
+        <version>1.2.14</version>
     </parent>
 
     <artifactId>fraudbusters-management</artifactId>
@@ -38,7 +38,7 @@
         <fraudo.version>0.0.17</fraudo.version>
         <geck.version>0.6.11</geck.version>
         <db.common.lib.version>0.0.3</db.common.lib.version>
-        <swag-fraudbusters-management.version>1.72-173af74-server</swag-fraudbusters-management.version>
+        <swag-fraudbusters-management.version>1.78-2dbc0ef-server</swag-fraudbusters-management.version>
     </properties>
 
     <dependencies>
