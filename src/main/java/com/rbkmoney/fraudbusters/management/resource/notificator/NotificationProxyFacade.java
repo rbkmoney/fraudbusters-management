@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 
+import java.util.Arrays;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -65,13 +67,20 @@ public class NotificationProxyFacade implements NotificationsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<NotificationListResponse> getNotifications() {
-        return restTemplate.getForEntity(baseUrl + "/notifications", NotificationListResponse.class);
+        ResponseEntity<Notification[]> notifications =
+                restTemplate.getForEntity(baseUrl + "/notifications", Notification[].class);
+        NotificationListResponse response = new NotificationListResponse();
+        response.setResult(Arrays.asList(notifications.getBody()));
+        return ResponseEntity.ok(response);
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ChannelListResponse> getChannels() {
-        return restTemplate.getForEntity(baseUrl + "/channels", ChannelListResponse.class);
+        ResponseEntity<Channel[]> channels = restTemplate.getForEntity(baseUrl + "/channels", Channel[].class);
+        ChannelListResponse response = new ChannelListResponse();
+        response.setResult(Arrays.asList(channels.getBody()));
+        return ResponseEntity.ok(response);
     }
 
     @Override
