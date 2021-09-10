@@ -2,7 +2,10 @@ package com.rbkmoney.fraudbusters.management.resource.notificator;
 
 import com.rbkmoney.damsel.fraudbusters_notificator.Filter;
 import com.rbkmoney.damsel.fraudbusters_notificator.Page;
-import com.rbkmoney.fraudbusters.management.converter.BiConverter;
+import com.rbkmoney.fraudbusters.management.resource.notificator.converter.ChannelConverter;
+import com.rbkmoney.fraudbusters.management.resource.notificator.converter.NotificationConverter;
+import com.rbkmoney.fraudbusters.management.resource.notificator.converter.NotificationTemplateConverter;
+import com.rbkmoney.fraudbusters.management.resource.notificator.converter.ValidationConverter;
 import com.rbkmoney.fraudbusters.management.service.iface.ChannelService;
 import com.rbkmoney.fraudbusters.management.service.iface.NotificationService;
 import com.rbkmoney.fraudbusters.management.service.iface.NotificationTemplateService;
@@ -26,19 +29,17 @@ import java.util.stream.Collectors;
 public class NotificationResource implements NotificationsApi {
 
     private final NotificationService notificationService;
-    private final BiConverter<com.rbkmoney.damsel.fraudbusters_notificator.Notification, Notification>
-            notificationConverter;
+    private final NotificationConverter notificationConverter;
     private final NotificationTemplateService notificationTemplateService;
-    private final BiConverter<com.rbkmoney.damsel.fraudbusters_notificator.NotificationTemplate, NotificationTemplate>
-            notificationTemplateConverter;
+    private final NotificationTemplateConverter notificationTemplateConverter;
     private final ChannelService channelService;
-    private final BiConverter<com.rbkmoney.damsel.fraudbusters_notificator.Channel, Channel> channelConverter;
+    private final ChannelConverter channelConverter;
+    private final ValidationConverter validationConverter;
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Channel> createChannel(@Valid Channel channel) {
-        com.rbkmoney.damsel.fraudbusters_notificator.Channel createdChannel =
-                channelService.create(channelConverter.toSource(channel));
+        var createdChannel = channelService.create(channelConverter.toSource(channel));
         log.info("NotificationResource create channel: {}", createdChannel);
         return ResponseEntity.ok(channelConverter.toTarget(createdChannel));
     }
@@ -46,8 +47,7 @@ public class NotificationResource implements NotificationsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Notification> createOrUpdateNotification(@Valid Notification notification) {
-        com.rbkmoney.damsel.fraudbusters_notificator.Notification createdNotification =
-                notificationService.create(notificationConverter.toSource(notification));
+        var createdNotification = notificationService.create(notificationConverter.toSource(notification));
         log.info("NotificationResource create notification: {}", createdNotification);
         return ResponseEntity.ok(notificationConverter.toTarget(createdNotification));
     }
@@ -72,19 +72,8 @@ public class NotificationResource implements NotificationsApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ValidationResponse> validateNotification(
             com.rbkmoney.swag.fraudbusters.management.model.@Valid Notification notification) {
-        com.rbkmoney.damsel.fraudbusters_notificator.ValidationResponse validationResponse =
-                notificationService.validate(notificationConverter.toSource(notification));
-        ValidationResponse response = new ValidationResponse();
-        if (validationResponse.isSetErrors()) {
-            List<String> errors = validationResponse.getErrors();
-            List<ValidationError> validationErrors = errors.stream()
-                    .map(error -> new ValidationError().errorReason(error))
-                    .collect(Collectors.toList());
-            response.setErrors(validationErrors);
-        }
-        if (validationResponse.isSetResult()) {
-            response.setResult(validationResponse.getResult());
-        }
+        var validationResponse = notificationService.validate(notificationConverter.toSource(notification));
+        ValidationResponse response = validationConverter.convert(validationResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -94,13 +83,12 @@ public class NotificationResource implements NotificationsApi {
             @Valid @RequestParam(value = "lastId", required = false) Long lastId,
             @Valid @RequestParam(value = "size", required = false) Integer size,
             @Valid @RequestParam(value = "searchValue", required = false) String searchValue) {
-        com.rbkmoney.damsel.fraudbusters_notificator.NotificationListResponse notificationListResponse =
-                notificationService
-                        .getAll(new Page()
-                                        .setContinuationId(lastId)
-                                        .setSize(size),
-                                new Filter()
-                                        .setSearchField(searchValue));
+        Page page = new Page()
+                .setContinuationId(lastId)
+                .setSize(size);
+        Filter filter = new Filter()
+                .setSearchField(searchValue);
+        var notificationListResponse = notificationService.getAll(page, filter);
         List<Notification> filteredNotifications = notificationListResponse.getNotifications().stream()
                 .map(notificationConverter::toTarget)
                 .collect(Collectors.toList());
@@ -115,12 +103,12 @@ public class NotificationResource implements NotificationsApi {
             @Valid @RequestParam(value = "lastId", required = false) Long lastId,
             @Valid @RequestParam(value = "size", required = false) Integer size,
             @Valid @RequestParam(value = "searchValue", required = false) String searchValue) {
-        com.rbkmoney.damsel.fraudbusters_notificator.ChannelListResponse channelListResponse =
-                channelService.getAll(new Page()
-                                .setContinuationId(lastId)
-                                .setSize(size),
-                        new Filter()
-                                .setSearchField(searchValue));
+        Page page = new Page()
+                .setContinuationId(lastId)
+                .setSize(size);
+        Filter filter = new Filter()
+                .setSearchField(searchValue);
+        var channelListResponse = channelService.getAll(page, filter);
         List<Channel> channels = channelListResponse.getChannels().stream()
                 .map(channelConverter::toTarget)
                 .collect(Collectors.toList());
@@ -133,9 +121,8 @@ public class NotificationResource implements NotificationsApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Void> updateNotificationStatus(Long id,
                                                          @Valid NotificationStatus notificationStatus) {
-        com.rbkmoney.damsel.fraudbusters_notificator.NotificationStatus status =
-                com.rbkmoney.damsel.fraudbusters_notificator.NotificationStatus
-                        .valueOf(notificationStatus.getStatus().getValue());
+        var status = com.rbkmoney.damsel.fraudbusters_notificator.NotificationStatus
+                .valueOf(notificationStatus.getStatus().getValue());
         notificationService.updateStatus(id, status);
         log.info("NotificationResource update notification status: {}", notificationStatus);
         return ResponseEntity.noContent().build();
@@ -144,24 +131,22 @@ public class NotificationResource implements NotificationsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ChannelTypeListResponse> getChannelTypes() {
-        com.rbkmoney.damsel.fraudbusters_notificator.ChannelTypeListResponse channelTypeListResponse =
-                channelService.getAllTypes();
+        var channelTypeListResponse = channelService.getAllTypes();
         List<ChannelType> channelTypes = channelTypeListResponse.getChannelTypes().stream()
                 .map(value -> new ChannelType().type(ChannelType.TypeEnum.fromValue(value)))
                 .collect(Collectors.toList());
         ChannelTypeListResponse response = new ChannelTypeListResponse();
         response.setResult(channelTypes);
-        return null;
+        return ResponseEntity.ok(response);
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<NotificationTemplateListResponse> getTemplates() {
-        com.rbkmoney.damsel.fraudbusters_notificator.NotificationTemplateListResponse notificationTemplateListResponse =
-                notificationTemplateService.getAll();
+        var notificationTemplateListResponse = notificationTemplateService.getAll();
         List<NotificationTemplate> notificationTemplates =
                 notificationTemplateListResponse.getNotificationTemplates().stream()
-                        .map(notificationTemplateConverter::toTarget)
+                        .map(notificationTemplateConverter::convert)
                         .collect(Collectors.toList());
         NotificationTemplateListResponse response = new NotificationTemplateListResponse();
         response.setResult(notificationTemplates);

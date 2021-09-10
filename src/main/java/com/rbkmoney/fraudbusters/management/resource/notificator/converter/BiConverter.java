@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.resource.notificator.converter;
 
 public interface BiConverter<S, T> {
 

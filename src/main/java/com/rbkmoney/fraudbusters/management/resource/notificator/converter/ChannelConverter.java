@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.resource.notificator.converter;
 
 import com.rbkmoney.damsel.fraudbusters_notificator.ChannelType;
 import com.rbkmoney.swag.fraudbusters.management.model.Channel;
@@ -20,8 +20,12 @@ public class ChannelConverter
         Channel result = new Channel();
         result.setName(channel.getName());
         result.setDestination(channel.getDestination());
-        result.setType(Channel.TypeEnum.fromValue(channel.getType().name()));
-        result.setCreatedAt(LocalDateTime.parse(channel.getCreatedAt(), DateTimeFormatter.ISO_DATE_TIME));
+        if (channel.isSetType()) {
+            result.setType(Channel.TypeEnum.fromValue(channel.getType().name()));
+        }
+        if (channel.isSetCreatedAt()) {
+            result.setCreatedAt(LocalDateTime.parse(channel.getCreatedAt(), DateTimeFormatter.ISO_DATE_TIME));
+        }
         return result;
     }
 
@@ -34,8 +38,12 @@ public class ChannelConverter
                 new com.rbkmoney.damsel.fraudbusters_notificator.Channel();
         result.setName(channel.getName());
         result.setDestination(channel.getDestination());
-        result.setType(ChannelType.valueOf(channel.getType().getValue()));
-        result.setCreatedAt(channel.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
+        if (Objects.nonNull(channel.getType())) {
+            result.setType(ChannelType.valueOf(channel.getType().getValue()));
+        }
+        if (Objects.nonNull(channel.getCreatedAt())) {
+            result.setCreatedAt(channel.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
+        }
         return result;
     }
 }

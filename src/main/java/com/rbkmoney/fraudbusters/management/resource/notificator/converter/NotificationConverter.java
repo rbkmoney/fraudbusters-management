@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management.converter;
+package com.rbkmoney.fraudbusters.management.resource.notificator.converter;
 
 import com.rbkmoney.damsel.fraudbusters_notificator.NotificationStatus;
 import com.rbkmoney.swag.fraudbusters.management.model.Notification;
@@ -24,10 +24,16 @@ public class NotificationConverter
         result.setChannel(notification.getChannel());
         result.setFrequency(notification.getFrequency());
         result.setPeriod(notification.getPeriod());
-        result.setStatus(Notification.StatusEnum.fromValue(notification.getStatus().name()));
+        if (notification.isSetStatus()) {
+            result.setStatus(Notification.StatusEnum.fromValue(notification.getStatus().name()));
+        }
         result.setTemplateId(notification.getTemplateId());
-        result.setUpdatedAt(LocalDateTime.parse(notification.getUpdatedAt(), DateTimeFormatter.ISO_DATE_TIME));
-        result.setCreatedAt(LocalDateTime.parse(notification.getCreatedAt(), DateTimeFormatter.ISO_DATE_TIME));
+        if (notification.isSetUpdatedAt()) {
+            result.setUpdatedAt(LocalDateTime.parse(notification.getUpdatedAt(), DateTimeFormatter.ISO_DATE_TIME));
+        }
+        if (notification.isSetCreatedAt()) {
+            result.setCreatedAt(LocalDateTime.parse(notification.getCreatedAt(), DateTimeFormatter.ISO_DATE_TIME));
+        }
         return result;
     }
 
@@ -44,10 +50,16 @@ public class NotificationConverter
         result.setChannel(notification.getChannel());
         result.setFrequency(notification.getFrequency());
         result.setPeriod(notification.getPeriod());
-        result.setStatus(NotificationStatus.valueOf(notification.getStatus().getValue()));
+        if (Objects.nonNull(notification.getStatus())) {
+            result.setStatus(NotificationStatus.valueOf(notification.getStatus().getValue()));
+        }
         result.setTemplateId(notification.getTemplateId());
-        result.setUpdatedAt(notification.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
-        result.setCreatedAt(notification.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
+        if (Objects.nonNull(notification.getUpdatedAt())) {
+            result.setUpdatedAt(notification.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
+        }
+        if (Objects.nonNull(notification.getCreatedAt())) {
+            result.setCreatedAt(notification.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
+        }
         return result;
     }
 }
