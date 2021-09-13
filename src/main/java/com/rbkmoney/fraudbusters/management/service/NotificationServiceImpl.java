@@ -1,13 +1,12 @@
 package com.rbkmoney.fraudbusters.management.service;
 
 import com.rbkmoney.damsel.fraudbusters_notificator.*;
+import com.rbkmoney.fraudbusters.management.exception.NotificatorCallException;
 import com.rbkmoney.fraudbusters.management.service.iface.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 @Slf4j
 @Service
@@ -21,8 +20,8 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             return notificationClient.create(notification);
         } catch (TException e) {
-            log.error("Error call NotificationService create ", e);
-            return null;
+            log.error("Error call notificator create notification ", e);
+            throw new NotificatorCallException("Error call notificator create notification");
         }
     }
 
@@ -31,7 +30,8 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             notificationClient.remove(id);
         } catch (TException e) {
-            log.error("Error call NotificationService remove ", e);
+            log.error("Error call notificator remove notification ", e);
+            throw new NotificatorCallException("Error call notificator remove notification");
         }
 
     }
@@ -41,7 +41,8 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             notificationClient.updateStatus(id, status);
         } catch (TException e) {
-            log.error("Error call NotificationService updateStatus ", e);
+            log.error("Error call notificator update notification status ", e);
+            throw new NotificatorCallException("Error call notificator update notification status");
         }
     }
 
@@ -50,8 +51,8 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             return notificationClient.validate(notification);
         } catch (TException e) {
-            log.error("Error call NotificationService validate ", e);
-            return null;
+            log.error("Error call notificator validate notification ", e);
+            throw new NotificatorCallException("Error call notificator validate notification");
         }
     }
 
@@ -60,9 +61,8 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             return notificationClient.getAll(page, filter);
         } catch (TException e) {
-            log.error("Error call NotificationService getAll ", e);
-            return new NotificationListResponse()
-                    .setNotifications(Collections.emptyList());
+            log.error("Error call notificator getAll notifications ", e);
+            throw new NotificatorCallException("Error call notificator getAll notifications");
         }
     }
 }

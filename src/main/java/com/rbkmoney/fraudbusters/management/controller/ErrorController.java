@@ -4,6 +4,7 @@ import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
+import com.rbkmoney.fraudbusters.management.exception.NotificatorCallException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ public class ErrorController {
     public static final String INVALID_PARAMETERS = "invalidParameters";
     public static final String DATA_BASE_INVOCATION_EXCEPTION = "dataBaseInvocationException";
     public static final String KAFKA_PRODUCE_ERROR = "kafkaProduceError";
+    public static final String NOTIFICATOR_CALL_EXCEPTION = "notificatorCallException";
 
     @ExceptionHandler(HttpClientErrorException.Unauthorized.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -68,6 +70,17 @@ public class ErrorController {
         log.error("KafkaProduceException exception e: ", e);
         return ErrorResponse.builder()
                 .code(KAFKA_PRODUCE_ERROR)
+                .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(NotificatorCallException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ResponseBody
+    public ErrorResponse handleBadRequest(NotificatorCallException e) {
+        log.error("NotificatorCallException exception e: ", e);
+        return ErrorResponse.builder()
+                .code(NOTIFICATOR_CALL_EXCEPTION)
                 .message(e.getMessage())
                 .build();
     }

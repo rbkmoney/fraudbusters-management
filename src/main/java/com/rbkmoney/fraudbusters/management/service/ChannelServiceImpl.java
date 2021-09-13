@@ -1,13 +1,12 @@
 package com.rbkmoney.fraudbusters.management.service;
 
 import com.rbkmoney.damsel.fraudbusters_notificator.*;
+import com.rbkmoney.fraudbusters.management.exception.NotificatorCallException;
 import com.rbkmoney.fraudbusters.management.service.iface.ChannelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 @Slf4j
 @Service
@@ -21,8 +20,8 @@ public class ChannelServiceImpl implements ChannelService {
         try {
             return channelClient.create(channel);
         } catch (TException e) {
-            log.error("Error call ChannelService create ", e);
-            return null;
+            log.error("Error call notificator create channel ", e);
+            throw new NotificatorCallException("Error call notificator create channel");
         }
     }
 
@@ -31,7 +30,8 @@ public class ChannelServiceImpl implements ChannelService {
         try {
             channelClient.remove(name);
         } catch (TException e) {
-            log.error("Error call ChannelService remove ", e);
+            log.error("Error call notificator remove channel ", e);
+            throw new NotificatorCallException("Error call notificator remove channel");
         }
 
     }
@@ -41,9 +41,8 @@ public class ChannelServiceImpl implements ChannelService {
         try {
             return channelClient.getAll(page, filter);
         } catch (TException e) {
-            log.error("Error call ChannelService getAll ", e);
-            return new ChannelListResponse()
-                    .setChannels(Collections.emptyList());
+            log.error("Error call notificator getAll channels ", e);
+            throw new NotificatorCallException("Error call notificator getAll channels");
         }
     }
 
@@ -52,9 +51,8 @@ public class ChannelServiceImpl implements ChannelService {
         try {
             return channelClient.getAllTypes();
         } catch (TException e) {
-            log.error("Error call ChannelService getAllTypes ", e);
-            return new ChannelTypeListResponse()
-                    .setChannelTypes(Collections.emptyList());
+            log.error("Error call notificator getAll channel types ", e);
+            throw new NotificatorCallException("Error call notificator getAll channel types");
         }
     }
 }

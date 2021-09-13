@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.rbkmoney.damsel.fraudbusters_notificator.*;
 import com.rbkmoney.fraudbusters.management.TestObjectFactory;
+import com.rbkmoney.fraudbusters.management.controller.ErrorController;
 import com.rbkmoney.fraudbusters.management.resource.notificator.converter.ChannelConverter;
 import com.rbkmoney.fraudbusters.management.resource.notificator.converter.NotificationConverter;
 import com.rbkmoney.fraudbusters.management.resource.notificator.converter.NotificationTemplateConverter;
@@ -15,6 +16,7 @@ import com.rbkmoney.swag.fraudbusters.management.model.Channel;
 import com.rbkmoney.swag.fraudbusters.management.model.Notification;
 import com.rbkmoney.swag.fraudbusters.management.model.ValidationError;
 import com.rbkmoney.swag.fraudbusters.management.model.ValidationResponse;
+import org.apache.thrift.TException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +31,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.rbkmoney.fraudbusters.management.controller.ErrorController.NOTIFICATOR_CALL_EXCEPTION;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -63,7 +67,21 @@ class NotificationResourceTest {
         var notificationResource =
                 new NotificationResource(notificationService, notificationConverter, notificationTemplateService,
                         notificationTemplateConverter, channelService, channelConverter, validationConverter);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(notificationResource).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(notificationResource, new ErrorController()).build();
+    }
+
+    @Test
+    void createChannelWithErrorCall() throws Exception {
+        Channel channel = TestObjectFactory.testChannel();
+        when(channelClient.create(any(com.rbkmoney.damsel.fraudbusters_notificator.Channel.class)))
+                .thenThrow(new TException());
+
+        mockMvc.perform(post("/notifications/channels")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(channel)))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator create channel")));
     }
 
     @Test
@@ -85,6 +103,20 @@ class NotificationResourceTest {
         assertEquals(convertChannel.getName(), resultChannel.getName());
         assertEquals(convertChannel.getDestination(), resultChannel.getDestination());
         verify(channelClient, times(1)).create(any(com.rbkmoney.damsel.fraudbusters_notificator.Channel.class));
+    }
+
+    @Test
+    void createOrUpdateNotificationWithErrorCall() throws Exception {
+        Notification notification = TestObjectFactory.testNotification();
+        when(notificationClient.create(any(com.rbkmoney.damsel.fraudbusters_notificator.Notification.class)))
+                .thenThrow(new TException());
+
+        mockMvc.perform(post("/notifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(notification)))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator create notification")));
     }
 
     @Test
@@ -113,6 +145,17 @@ class NotificationResourceTest {
     }
 
     @Test
+    void removeChannelWithErrorCall() throws Exception {
+        String channelName = TestObjectFactory.randomString();
+        doThrow(new TException()).when(channelClient).remove(channelName);
+
+        mockMvc.perform(delete("/notifications/channels/{name}", channelName))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator remove channel")));
+    }
+
+    @Test
     void removeChannel() throws Exception {
         String channelName = TestObjectFactory.randomString();
 
@@ -124,6 +167,17 @@ class NotificationResourceTest {
     }
 
     @Test
+    void removeNotificationWithErrorCall() throws Exception {
+        Long notificationId = TestObjectFactory.randomLong();
+        doThrow(new TException()).when(notificationClient).remove(notificationId);
+
+        mockMvc.perform(delete("/notifications/{id}", notificationId))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator remove notification")));
+    }
+
+    @Test
     void removeNotification() throws Exception {
         Long notificationId = TestObjectFactory.randomLong();
 
@@ -132,6 +186,20 @@ class NotificationResourceTest {
                 .andReturn();
 
         verify(notificationClient, times(1)).remove(notificationId);
+    }
+
+    @Test
+    void validateNotificationWithErrorCall() throws Exception {
+        Notification notification = TestObjectFactory.testNotification();
+        when(notificationClient.validate(any(com.rbkmoney.damsel.fraudbusters_notificator.Notification.class)))
+                .thenThrow(new TException());
+
+        mockMvc.perform(post("/notifications/validation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(notification)))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator validate notification")));
     }
 
     @Test
@@ -181,14 +249,32 @@ class NotificationResourceTest {
     }
 
     @Test
+    void getNotificationsWithErrorCall() throws Exception {
+        long lastId = 1L;
+        int size = 10;
+        String searchValue = TestObjectFactory.randomString();
+        when(notificationClient
+                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue)))
+                .thenThrow(new TException());
+
+        mockMvc.perform(get("/notifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("lastId", String.valueOf(lastId))
+                .param("size", String.valueOf(size))
+                .param("searchValue", searchValue))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator getAll notifications")));
+    }
+
+    @Test
     void getNotifications() throws Exception {
         long lastId = 1L;
         int size = 10;
         String searchValue = TestObjectFactory.randomString();
         var notifications = TestObjectFactory.testInternalNotifications(3);
         when(notificationClient
-                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue))
-        )
+                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue)))
                 .thenReturn(new NotificationListResponse().setNotifications(notifications));
 
         mockMvc.perform(get("/notifications")
@@ -198,7 +284,26 @@ class NotificationResourceTest {
                 .param("searchValue", searchValue))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result.[*]", hasSize(notifications.size())));
+    }
 
+    @Test
+    void getChannelsWithErrorCall() throws Exception {
+        long lastId = 1L;
+        int size = 10;
+        String searchValue = TestObjectFactory.randomString();
+        var channels = TestObjectFactory.testInternalChannels(3);
+        when(channelClient
+                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue)))
+                .thenThrow(new TException());
+
+        mockMvc.perform(get("/notifications/channels")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("lastId", String.valueOf(lastId))
+                .param("size", String.valueOf(size))
+                .param("searchValue", searchValue))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator getAll channels")));
     }
 
     @Test
@@ -208,8 +313,7 @@ class NotificationResourceTest {
         String searchValue = TestObjectFactory.randomString();
         var channels = TestObjectFactory.testInternalChannels(3);
         when(channelClient
-                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue))
-        )
+                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue)))
                 .thenReturn(new ChannelListResponse().setChannels(channels));
 
         mockMvc.perform(get("/notifications/channels")
@@ -222,32 +326,68 @@ class NotificationResourceTest {
     }
 
     @Test
+    void updateNotificationStatusWithErrorCall() throws Exception {
+        var status = com.rbkmoney.swag.fraudbusters.management.model.NotificationStatus.ACTIVE.getValue();
+        long id = 1L;
+        doThrow(new TException()).when(notificationClient).updateStatus(id, NotificationStatus.valueOf(status));
+
+        mockMvc.perform(put("/notifications/{id}/status", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(com.rbkmoney.swag.fraudbusters.management.model.NotificationStatus.ACTIVE.getValue()))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator update notification status")));
+
+
+    }
+
+    @Test
     void updateNotificationStatus() throws Exception {
-        var status = new com.rbkmoney.swag.fraudbusters.management.model.NotificationStatus();
-        status.setStatus(com.rbkmoney.swag.fraudbusters.management.model.NotificationStatus.StatusEnum.ACTIVE);
+        var status = com.rbkmoney.swag.fraudbusters.management.model.NotificationStatus.ACTIVE.getValue();
         long id = 1L;
 
         mockMvc.perform(put("/notifications/{id}/status", id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(status)))
+                .content(com.rbkmoney.swag.fraudbusters.management.model.NotificationStatus.ACTIVE.getValue()))
                 .andExpect(status().isNoContent())
                 .andReturn();
 
         verify(notificationClient, times(1))
-                .updateStatus(id, NotificationStatus.valueOf(status.getStatus().getValue()));
+                .updateStatus(id, NotificationStatus.valueOf(status));
+
+    }
+
+    @Test
+    void getChannelTypesWithErrorCall() throws Exception {
+        when(channelClient.getAllTypes()).thenThrow(new TException());
+
+        mockMvc.perform(get("/notifications/channels/types"))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator getAll channel types")));
 
     }
 
     @Test
     void getChannelTypes() throws Exception {
         var channelTypes =
-                List.of(com.rbkmoney.swag.fraudbusters.management.model.ChannelType.TypeEnum.MAIL.getValue());
+                List.of(com.rbkmoney.swag.fraudbusters.management.model.ChannelType.MAIL.getValue());
         when(channelClient.getAllTypes()).thenReturn(new ChannelTypeListResponse().setChannelTypes(channelTypes));
 
         mockMvc.perform(get("/notifications/channels/types"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result.[*]", hasSize(channelTypes.size())));
 
+    }
+
+    @Test
+    void getTemplatesWithErrorCall() throws Exception {
+        when(notificationTemplateClient.getAll()).thenThrow(new TException());
+
+        mockMvc.perform(get("/notifications/templates"))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator getAll templates")));
     }
 
     @Test

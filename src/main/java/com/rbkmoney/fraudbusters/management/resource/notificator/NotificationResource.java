@@ -120,9 +120,9 @@ public class NotificationResource implements NotificationsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Void> updateNotificationStatus(Long id,
-                                                         @Valid NotificationStatus notificationStatus) {
+                                                         @Valid String notificationStatus) {
         var status = com.rbkmoney.damsel.fraudbusters_notificator.NotificationStatus
-                .valueOf(notificationStatus.getStatus().getValue());
+                .valueOf(notificationStatus);
         notificationService.updateStatus(id, status);
         log.info("NotificationResource update notification status: {}", notificationStatus);
         return ResponseEntity.noContent().build();
@@ -133,7 +133,7 @@ public class NotificationResource implements NotificationsApi {
     public ResponseEntity<ChannelTypeListResponse> getChannelTypes() {
         var channelTypeListResponse = channelService.getAllTypes();
         List<ChannelType> channelTypes = channelTypeListResponse.getChannelTypes().stream()
-                .map(value -> new ChannelType().type(ChannelType.TypeEnum.fromValue(value)))
+                .map(ChannelType::fromValue)
                 .collect(Collectors.toList());
         ChannelTypeListResponse response = new ChannelTypeListResponse();
         response.setResult(channelTypes);

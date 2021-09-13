@@ -2,13 +2,12 @@ package com.rbkmoney.fraudbusters.management.service;
 
 import com.rbkmoney.damsel.fraudbusters_notificator.NotificationTemplateListResponse;
 import com.rbkmoney.damsel.fraudbusters_notificator.NotificationTemplateServiceSrv;
+import com.rbkmoney.fraudbusters.management.exception.NotificatorCallException;
 import com.rbkmoney.fraudbusters.management.service.iface.NotificationTemplateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 @Slf4j
 @Service
@@ -22,9 +21,8 @@ public class NotificationTemplateServiceImpl implements NotificationTemplateServ
         try {
             return notificationTemplateClient.getAll();
         } catch (TException e) {
-            log.error("Error call NotificationTemplateService getAll ", e);
-            return new NotificationTemplateListResponse()
-                    .setNotificationTemplates(Collections.emptyList());
+            log.error("Error call notificator getAll templates ", e);
+            throw new NotificatorCallException("Error call notificator getAll templates");
         }
     }
 }

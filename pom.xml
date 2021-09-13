@@ -38,7 +38,7 @@
         <fraudo.version>0.0.17</fraudo.version>
         <geck.version>0.6.11</geck.version>
         <db.common.lib.version>0.0.3</db.common.lib.version>
-        <swag-fraudbusters-management.version>1.85-0ac0610-server</swag-fraudbusters-management.version>
+        <swag-fraudbusters-management.version>1.87-3171c60-server</swag-fraudbusters-management.version>
         <fraudbusters.notificator.proto.version>1.9-742bc9d</fraudbusters.notificator.proto.version>
     </properties>
 
