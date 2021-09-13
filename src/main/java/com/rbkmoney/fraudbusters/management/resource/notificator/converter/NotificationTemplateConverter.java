@@ -32,27 +32,4 @@ public class NotificationTemplateConverter
         }
         return result;
     }
-//
-//    @Override
-//    public com.rbkmoney.damsel.fraudbusters_notificator.NotificationTemplate toSource(
-//            NotificationTemplate notificationTemplate) {
-//        if (Objects.isNull(notificationTemplate)) {
-//            return null;
-//        }
-//        com.rbkmoney.damsel.fraudbusters_notificator.NotificationTemplate result =
-//                new com.rbkmoney.damsel.fraudbusters_notificator.NotificationTemplate();
-//        result.setId(notificationTemplate.getId());
-//        result.setName(notificationTemplate.getName());
-//        result.setBasicParams(notificationTemplate.getBasicParams());
-//        result.setQueryText(notificationTemplate.getQueryText());
-//        result.setSkeleton(notificationTemplate.getSkeleton());
-//        result.setType(notificationTemplate.getType());
-//        if (Objects.nonNull(notificationTemplate.getUpdatedAt())) {
-//            result.setUpdatedAt(notificationTemplate.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
-//        }
-//        if (Objects.nonNull(notificationTemplate.getCreatedAt())) {
-//            result.setCreatedAt(notificationTemplate.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
-//        }
-//        return result;
-//    }
 }
