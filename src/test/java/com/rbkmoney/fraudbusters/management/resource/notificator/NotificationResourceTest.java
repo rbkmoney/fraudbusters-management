@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.rbkmoney.damsel.fraudbusters_notificator.fraudbusters_notificatorConstants.VALIDATION_ERROR;
 import static com.rbkmoney.fraudbusters.management.controller.ErrorController.NOTIFICATOR_CALL_EXCEPTION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -117,6 +118,23 @@ class NotificationResourceTest {
                 .andExpect(status().isBadGateway())
                 .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
                 .andExpect(jsonPath("$.message", is("Error call notificator create notification")));
+    }
+
+    @Test
+    void createOrUpdateNotificationWithValidationErrorCall() throws Exception {
+        Notification notification = TestObjectFactory.testNotification();
+        String reason = "Error call";
+        when(notificationClient.create(any(com.rbkmoney.damsel.fraudbusters_notificator.Notification.class)))
+                .thenThrow(new NotificationServiceException()
+                        .setCode(VALIDATION_ERROR)
+                        .setReason(reason));
+
+        mockMvc.perform(post("/notifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(notification)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is(reason)));
     }
 
     @Test

@@ -19,6 +19,9 @@ public class NotificationServiceImpl implements NotificationService {
     public Notification create(Notification notification) {
         try {
             return notificationClient.create(notification);
+        } catch (NotificationServiceException e) {
+            log.error("Error call notificator create notification ", e);
+            throw new NotificatorCallException(e.getCode(), e.getReason());
         } catch (TException e) {
             log.error("Error call notificator create notification ", e);
             throw new NotificatorCallException("Error call notificator create notification");

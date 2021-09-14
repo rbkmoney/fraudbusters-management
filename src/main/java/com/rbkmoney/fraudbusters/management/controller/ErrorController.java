@@ -8,8 +8,11 @@ import com.rbkmoney.fraudbusters.management.exception.NotificatorCallException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+
+import static com.rbkmoney.damsel.fraudbusters_notificator.fraudbusters_notificatorConstants.VALIDATION_ERROR;
 
 @Slf4j
 @ControllerAdvice
@@ -75,14 +78,21 @@ public class ErrorController {
     }
 
     @ExceptionHandler(NotificatorCallException.class)
-    @ResponseStatus(HttpStatus.BAD_GATEWAY)
-    @ResponseBody
-    public ErrorResponse handleBadRequest(NotificatorCallException e) {
+    public ResponseEntity<ErrorResponse> handleNotificationException(NotificatorCallException e) {
         log.error("NotificatorCallException exception e: ", e);
-        return ErrorResponse.builder()
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(NOTIFICATOR_CALL_EXCEPTION)
                 .message(e.getMessage())
                 .build();
+        HttpStatus status = getStatus(e.getCode());
+        return new ResponseEntity<>(errorResponse, status);
+    }
+
+    private HttpStatus getStatus(int code) {
+        if (code == VALIDATION_ERROR) {
+            return HttpStatus.BAD_REQUEST;
+        }
+        return HttpStatus.BAD_GATEWAY;
     }
 
 }
