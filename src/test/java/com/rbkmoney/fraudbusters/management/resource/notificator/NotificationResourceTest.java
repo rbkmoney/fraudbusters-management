@@ -268,7 +268,7 @@ class NotificationResourceTest {
 
     @Test
     void getNotificationsWithErrorCall() throws Exception {
-        String continuationId = String.valueOf(1l);
+        String continuationId = String.valueOf(1L);
         int size = 10;
         String searchValue = TestObjectFactory.randomString();
         when(notificationClient
@@ -287,7 +287,7 @@ class NotificationResourceTest {
 
     @Test
     void getNotifications() throws Exception {
-        String continuationId = String.valueOf(1l);
+        String continuationId = String.valueOf(1L);
         int size = 10;
         String searchValue = TestObjectFactory.randomString();
         var notifications = TestObjectFactory.testInternalNotifications(3);
@@ -306,7 +306,7 @@ class NotificationResourceTest {
 
     @Test
     void getChannelsWithErrorCall() throws Exception {
-        String continuationId = String.valueOf(1l);
+        String continuationId = String.valueOf(1L);
         int size = 10;
         String searchValue = TestObjectFactory.randomString();
         var channels = TestObjectFactory.testInternalChannels(3);
