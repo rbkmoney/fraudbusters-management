@@ -268,16 +268,16 @@ class NotificationResourceTest {
 
     @Test
     void getNotificationsWithErrorCall() throws Exception {
-        long lastId = 1L;
+        String continuationId = String.valueOf(1l);
         int size = 10;
         String searchValue = TestObjectFactory.randomString();
         when(notificationClient
-                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue)))
+                .getAll(new Page(size).setContinuationId(continuationId), new Filter().setSearchField(searchValue)))
                 .thenThrow(new TException());
 
         mockMvc.perform(get("/notifications")
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("lastId", String.valueOf(lastId))
+                .param("lastId", continuationId)
                 .param("size", String.valueOf(size))
                 .param("searchValue", searchValue))
                 .andExpect(status().isBadGateway())
@@ -287,17 +287,17 @@ class NotificationResourceTest {
 
     @Test
     void getNotifications() throws Exception {
-        long lastId = 1L;
+        String continuationId = String.valueOf(1l);
         int size = 10;
         String searchValue = TestObjectFactory.randomString();
         var notifications = TestObjectFactory.testInternalNotifications(3);
         when(notificationClient
-                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue)))
+                .getAll(new Page(size).setContinuationId(continuationId), new Filter().setSearchField(searchValue)))
                 .thenReturn(new NotificationListResponse().setNotifications(notifications));
 
         mockMvc.perform(get("/notifications")
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("lastId", String.valueOf(lastId))
+                .param("lastId", continuationId)
                 .param("size", String.valueOf(size))
                 .param("searchValue", searchValue))
                 .andExpect(status().isOk())
@@ -306,17 +306,17 @@ class NotificationResourceTest {
 
     @Test
     void getChannelsWithErrorCall() throws Exception {
-        long lastId = 1L;
+        String continuationId = String.valueOf(1l);
         int size = 10;
         String searchValue = TestObjectFactory.randomString();
         var channels = TestObjectFactory.testInternalChannels(3);
         when(channelClient
-                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue)))
+                .getAll(new Page(size).setContinuationId(continuationId), new Filter().setSearchField(searchValue)))
                 .thenThrow(new TException());
 
         mockMvc.perform(get("/notifications/channels")
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("lastId", String.valueOf(lastId))
+                .param("lastId", continuationId)
                 .param("size", String.valueOf(size))
                 .param("searchValue", searchValue))
                 .andExpect(status().isBadGateway())
@@ -326,17 +326,17 @@ class NotificationResourceTest {
 
     @Test
     void getChannels() throws Exception {
-        long lastId = 1L;
+        String continuationId = String.valueOf(1L);
         int size = 10;
         String searchValue = TestObjectFactory.randomString();
         var channels = TestObjectFactory.testInternalChannels(3);
         when(channelClient
-                .getAll(new Page(size).setContinuationId(lastId), new Filter().setSearchField(searchValue)))
+                .getAll(new Page(size).setContinuationId(continuationId), new Filter().setSearchField(searchValue)))
                 .thenReturn(new ChannelListResponse().setChannels(channels));
 
         mockMvc.perform(get("/notifications/channels")
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("lastId", String.valueOf(lastId))
+                .param("lastId", continuationId)
                 .param("size", String.valueOf(size))
                 .param("searchValue", searchValue))
                 .andExpect(status().isOk())

@@ -84,7 +84,7 @@ public class NotificationResource implements NotificationsApi {
             @Valid @RequestParam(value = "size", required = false) Integer size,
             @Valid @RequestParam(value = "searchValue", required = false) String searchValue) {
         Page page = new Page()
-                .setContinuationId(lastId)
+                .setContinuationId(String.valueOf(lastId))
                 .setSize(size);
         Filter filter = new Filter()
                 .setSearchField(searchValue);
@@ -101,7 +101,7 @@ public class NotificationResource implements NotificationsApi {
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<ChannelListResponse> getChannels(
-            @Valid @RequestParam(value = "lastId", required = false) Long lastId,
+            @Valid @RequestParam(value = "lastId", required = false) String lastId,
             @Valid @RequestParam(value = "size", required = false) Integer size,
             @Valid @RequestParam(value = "searchValue", required = false) String searchValue) {
         Page page = new Page()
