@@ -94,6 +94,7 @@ public class NotificationResource implements NotificationsApi {
                 .collect(Collectors.toList());
         NotificationListResponse response = new NotificationListResponse();
         response.setResult(filteredNotifications);
+        response.setContinuationId(notificationListResponse.getContinuationId());
         return ResponseEntity.ok(response);
     }
 
@@ -114,6 +115,7 @@ public class NotificationResource implements NotificationsApi {
                 .collect(Collectors.toList());
         ChannelListResponse response = new ChannelListResponse();
         response.setResult(channels);
+        response.setContinuationId(channelListResponse.getContinuationId());
         return ResponseEntity.ok(response);
     }
 
