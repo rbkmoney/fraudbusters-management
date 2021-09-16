@@ -15,10 +15,9 @@ import java.io.IOException;
 public class NotificatorConfig {
 
     @Bean
-    public NotificationServiceSrv.Iface notificationClient(@Value("${service.notification.url}") Resource resource,
-                                                           @Value("${service.notification.networkTimeout}")
-                                                                   int networkTimeout)
-            throws IOException {
+    public NotificationServiceSrv.Iface notificationClient(
+            @Value("${service.notification.url}") Resource resource,
+            @Value("${service.notification.networkTimeout}") int networkTimeout) throws IOException {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)
                 .withAddress(resource.getURI())
@@ -28,8 +27,7 @@ public class NotificatorConfig {
     @Bean
     public ChannelServiceSrv.Iface notificationChannelClient(
             @Value("${service.notification-channel.url}") Resource resource,
-            @Value("${service.notification-channel.networkTimeout}") int networkTimeout)
-            throws IOException {
+            @Value("${service.notification-channel.networkTimeout}") int networkTimeout) throws IOException {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)
                 .withAddress(resource.getURI())
@@ -39,8 +37,7 @@ public class NotificatorConfig {
     @Bean
     public NotificationTemplateServiceSrv.Iface notificationTemplateClient(
             @Value("${service.notification-template.url}") Resource resource,
-            @Value("${service.notification-template.networkTimeout}") int networkTimeout)
-            throws IOException {
+            @Value("${service.notification-template.networkTimeout}") int networkTimeout) throws IOException {
         return new THSpawnClientBuilder()
                 .withNetworkTimeout(networkTimeout)
                 .withAddress(resource.getURI())

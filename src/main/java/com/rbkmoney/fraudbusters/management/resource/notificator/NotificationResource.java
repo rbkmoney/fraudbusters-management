@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,16 +41,18 @@ public class NotificationResource implements NotificationsApi {
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Channel> createChannel(@Valid Channel channel) {
         var createdChannel = channelService.create(channelConverter.toSource(channel));
-        log.info("NotificationResource create channel: {}", createdChannel);
-        return ResponseEntity.ok(channelConverter.toTarget(createdChannel));
+        Channel response = channelConverter.toTarget(createdChannel);
+        log.info("NotificationResource create channel: {}", response);
+        return ResponseEntity.ok(response);
     }
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
     public ResponseEntity<Notification> createOrUpdateNotification(@Valid Notification notification) {
         var createdNotification = notificationService.create(notificationConverter.toSource(notification));
-        log.info("NotificationResource create notification: {}", createdNotification);
-        return ResponseEntity.ok(notificationConverter.toTarget(createdNotification));
+        Notification response = notificationConverter.toTarget(createdNotification);
+        log.info("NotificationResource create notification: {}", response);
+        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -74,6 +77,7 @@ public class NotificationResource implements NotificationsApi {
             com.rbkmoney.swag.fraudbusters.management.model.@Valid Notification notification) {
         var validationResponse = notificationService.validate(notificationConverter.toSource(notification));
         ValidationResponse response = validationConverter.convert(validationResponse);
+        log.info("NotificationResource validate notification with result {}", response);
         return ResponseEntity.ok(response);
     }
 
@@ -95,6 +99,7 @@ public class NotificationResource implements NotificationsApi {
         NotificationListResponse response = new NotificationListResponse();
         response.setResult(filteredNotifications);
         response.setContinuationId(notificationListResponse.getContinuationId());
+        log.info("NotificationResource get notifications: {}", Arrays.toString(response.getResult().toArray()));
         return ResponseEntity.ok(response);
     }
 
@@ -116,6 +121,7 @@ public class NotificationResource implements NotificationsApi {
         ChannelListResponse response = new ChannelListResponse();
         response.setResult(channels);
         response.setContinuationId(channelListResponse.getContinuationId());
+        log.info("NotificationResource get channels: {}", Arrays.toString(response.getResult().toArray()));
         return ResponseEntity.ok(response);
     }
 
@@ -139,6 +145,7 @@ public class NotificationResource implements NotificationsApi {
                 .collect(Collectors.toList());
         ChannelTypeListResponse response = new ChannelTypeListResponse();
         response.setResult(channelTypes);
+        log.info("NotificationResource get channel types: {}", Arrays.toString(response.getResult().toArray()));
         return ResponseEntity.ok(response);
     }
 
@@ -152,6 +159,7 @@ public class NotificationResource implements NotificationsApi {
                         .collect(Collectors.toList());
         NotificationTemplateListResponse response = new NotificationTemplateListResponse();
         response.setResult(notificationTemplates);
+        log.info("NotificationResource get templates: {}", Arrays.toString(response.getResult().toArray()));
         return ResponseEntity.ok(response);
     }
 }

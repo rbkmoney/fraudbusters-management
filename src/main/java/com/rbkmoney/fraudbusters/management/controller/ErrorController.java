@@ -89,10 +89,12 @@ public class ErrorController {
     }
 
     private HttpStatus getStatus(int code) {
-        if (code == VALIDATION_ERROR) {
-            return HttpStatus.BAD_REQUEST;
+        switch (code) {
+            case VALIDATION_ERROR:
+                return HttpStatus.BAD_REQUEST;
+            default:
+                return HttpStatus.BAD_GATEWAY;
         }
-        return HttpStatus.BAD_GATEWAY;
     }
 
 }
