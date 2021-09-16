@@ -76,8 +76,15 @@ service:
   cleaner:
     cron: "-"
     fresh-period: 30
-  fb-notificator:
-    url: "http://fraudbusters-notificator:8080/"
+  notification:
+    url: http://localhost:8999/notification/v1
+    networkTimeout: 5000
+  notification-channel:
+    url: http://localhost:8999/notification-channel/v1
+    networkTimeout: 5000
+  notification-template:
+    url: http://localhost:8999/notification-template/v1
+    networkTimeout: 5000
 
 keycloak:
   auth-server-url: http://localhost:8080/auth

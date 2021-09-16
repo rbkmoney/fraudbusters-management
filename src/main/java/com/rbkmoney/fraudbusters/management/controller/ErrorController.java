@@ -4,11 +4,15 @@ import com.rbkmoney.dao.DaoException;
 import com.rbkmoney.fraudbusters.management.domain.response.ErrorResponse;
 import com.rbkmoney.fraudbusters.management.exception.KafkaProduceException;
 import com.rbkmoney.fraudbusters.management.exception.KafkaSerializationException;
+import com.rbkmoney.fraudbusters.management.exception.NotificatorCallException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+
+import static com.rbkmoney.damsel.fraudbusters_notificator.fraudbusters_notificatorConstants.VALIDATION_ERROR;
 
 @Slf4j
 @ControllerAdvice
@@ -20,6 +24,7 @@ public class ErrorController {
     public static final String INVALID_PARAMETERS = "invalidParameters";
     public static final String DATA_BASE_INVOCATION_EXCEPTION = "dataBaseInvocationException";
     public static final String KAFKA_PRODUCE_ERROR = "kafkaProduceError";
+    public static final String NOTIFICATOR_CALL_EXCEPTION = "notificatorCallException";
 
     @ExceptionHandler(HttpClientErrorException.Unauthorized.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -70,6 +75,26 @@ public class ErrorController {
                 .code(KAFKA_PRODUCE_ERROR)
                 .message(e.getMessage())
                 .build();
+    }
+
+    @ExceptionHandler(NotificatorCallException.class)
+    public ResponseEntity<ErrorResponse> handleNotificationException(NotificatorCallException e) {
+        log.error("NotificatorCallException exception e: ", e);
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(NOTIFICATOR_CALL_EXCEPTION)
+                .message(e.getMessage())
+                .build();
+        HttpStatus status = getStatus(e.getCode());
+        return new ResponseEntity<>(errorResponse, status);
+    }
+
+    private HttpStatus getStatus(int code) {
+        switch (code) {
+            case VALIDATION_ERROR:
+                return HttpStatus.BAD_REQUEST;
+            default:
+                return HttpStatus.BAD_GATEWAY;
+        }
     }
 
 }
