@@ -70,14 +70,14 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
     public List<PaymentGroupReferenceModel> filterReference(FilterRequest filterRequest) {
         SelectWhereStep<FGroupReferenceRecord> from = getDslContext()
                 .selectFrom(F_GROUP_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy())
-                ? F_GROUP_REFERENCE.GROUP_ID
-                : F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class);
-        SelectConditionStep<FGroupReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
-                ? from.where(DSL.trueCondition())
-                : from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())
+        Field<String> field = StringUtils.hasLength(filterRequest.getSortBy())
+                ? F_GROUP_REFERENCE.field(filterRequest.getSortBy(), String.class)
+                : F_GROUP_REFERENCE.GROUP_ID;
+        SelectConditionStep<FGroupReferenceRecord> whereQuery = StringUtils.hasLength(filterRequest.getSearchValue())
+                ? from.where(F_GROUP_REFERENCE.GROUP_ID.like(filterRequest.getSearchValue())
                 .or(F_GROUP_REFERENCE.PARTY_ID.like(filterRequest.getSearchValue())
-                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue()))));
+                        .or(F_GROUP_REFERENCE.SHOP_ID.like(filterRequest.getSearchValue()))))
+                : from.where(DSL.trueCondition());
         SelectSeekStep2<FGroupReferenceRecord, String, Long> filterGroupReferenceRecords = addSortCondition(
                 F_GROUP_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -94,7 +94,7 @@ public class GroupReferenceDaoImpl extends AbstractDao implements PaymentGroupRe
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(F_GROUP_REFERENCE)
-                .where(!StringUtils.isEmpty(filterValue)
+                .where(StringUtils.hasLength(filterValue)
                         ? F_GROUP_REFERENCE.GROUP_ID.like(filterValue)
                         .or(F_GROUP_REFERENCE.PARTY_ID.like(filterValue)
                                 .or(F_GROUP_REFERENCE.SHOP_ID.like(filterValue)))

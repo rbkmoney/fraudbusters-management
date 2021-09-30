@@ -100,7 +100,7 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                 .select(F_GROUP.GROUP_ID, F_GROUP.TEMPLATE_ID, F_GROUP.PRIORITY, F_GROUP.LAST_UPDATE_DATE)
                 .from(F_GROUP);
         SelectConditionStep<Record1<String>> selectGroupsId = null;
-        if (!StringUtils.isEmpty(filterValue)) {
+        if (StringUtils.hasLength(filterValue)) {
             selectGroupsId = getDslContext()
                     .selectDistinct(F_GROUP.GROUP_ID)
                     .from(F_GROUP)
@@ -108,7 +108,9 @@ public class PaymentGroupDao extends AbstractDao implements GroupDao {
                             .or(F_GROUP.TEMPLATE_ID.like(filterValue)));
         }
         List<GroupPriorityRow> list =
-                fetch(StringUtils.isEmpty(filterValue) ? from : from.where(F_GROUP.GROUP_ID.in(selectGroupsId)),
+                fetch(StringUtils.hasLength(filterValue)
+                                ? from.where(F_GROUP.GROUP_ID.in(selectGroupsId))
+                                : from,
                         (rs, rowNum) -> createGroupPriorityRow(rs)
                 );
         return groupRowToModelMapper.groupByGroupId(list);

@@ -94,13 +94,13 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
     public List<P2pReferenceModel> filterReferences(FilterRequest filterRequest, boolean isGlobal) {
         SelectWhereStep<P2pFReferenceRecord> from = getDslContext()
                 .selectFrom(P2P_F_REFERENCE);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy())
-                ? P2P_F_REFERENCE.TEMPLATE_ID
-                : P2P_F_REFERENCE.field(filterRequest.getSortBy(), String.class);
-        SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
-                ? from.where(DSL.trueCondition())
-                : from.where(P2P_F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
-                .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterRequest.getSearchValue())));
+        Field<String> field = StringUtils.hasLength(filterRequest.getSortBy())
+                ? P2P_F_REFERENCE.field(filterRequest.getSortBy(), String.class)
+                : P2P_F_REFERENCE.TEMPLATE_ID;
+        SelectConditionStep<P2pFReferenceRecord> whereQuery = StringUtils.hasLength(filterRequest.getSearchValue())
+                ? from.where(P2P_F_REFERENCE.TEMPLATE_ID.like(filterRequest.getSearchValue())
+                .or(P2P_F_REFERENCE.IDENTITY_ID.like(filterRequest.getSearchValue())))
+                : from.where(DSL.trueCondition());
         SelectSeekStep2<P2pFReferenceRecord, String, String> filterReferenceRecords = addSortCondition(
                 P2P_F_REFERENCE.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -118,7 +118,8 @@ public class P2pReferenceDaoImpl extends AbstractDao implements P2pReferenceDao 
     }
 
     private Condition referenceFullFieldSearchCondition(String searchValue, Boolean isGlobal) {
-        return appendConditions(StringUtils.isEmpty(searchValue) ? DSL.trueCondition() : DSL.falseCondition(),
+        return appendConditions(StringUtils.hasLength(searchValue)
+                        ? DSL.falseCondition() : DSL.trueCondition(),
                 Operator.OR,
                 new ConditionParameterSource()
                         .addValue(P2P_F_REFERENCE.ID, searchValue, LIKE)
