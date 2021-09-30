@@ -75,7 +75,7 @@ public abstract class AbstractKafkaIntegrationTest {
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues
-                    .of("kafka.bootstrap.servers=" + kafka.getBootstrapServers())
+                    .of("kafka.bootstrap-servers=" + kafka.getBootstrapServers())
                     .applyTo(configurableApplicationContext.getEnvironment());
         }
     }

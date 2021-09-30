@@ -1,23 +1,26 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.dataset;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.payment.CheckedDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.CheckedPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.DataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentModel;
-import org.junit.Test;
+import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@JooqTest
+@PostgresqlTestcontainerSingleton
 @ContextConfiguration(classes = {DataSetCheckingResultDaoImpl.class, DataSetDaoImpl.class,
         PaymentDaoImpl.class})
-public class TestDataSetCheckingResultDaoImpl extends AbstractPostgresIntegrationTest {
+public class TestDataSetCheckingResultDaoImpl {
 
     public static final String TEST = "test";
 
@@ -29,7 +32,7 @@ public class TestDataSetCheckingResultDaoImpl extends AbstractPostgresIntegratio
     private PaymentDaoImpl paymentDao;
 
     @Test
-    public void testDataSetCheckingResult() {
+    void testDataSetCheckingResult() {
         PaymentModel paymentModel = createTestPaymentModel();
         Optional<Long> dataSetId = dataSetDao.insert(createDataSet(paymentModel));
         Long testDataSetId = dataSetId.get();

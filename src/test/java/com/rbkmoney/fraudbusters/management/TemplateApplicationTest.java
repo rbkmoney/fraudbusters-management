@@ -21,22 +21,21 @@ import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsReferenceRe
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsTemplatesResource;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import com.rbkmoney.swag.fraudbusters.management.model.*;
+import com.rbkmoney.testcontainers.annotations.KafkaSpringBootTest;
+import com.rbkmoney.testcontainers.annotations.kafka.KafkaTestcontainerSingleton;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -45,21 +44,26 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@KafkaTestcontainerSingleton(topicsKeys = {
+        "kafka.topic.fraudbusters.unknown-initiating-entity"
+})
 @Slf4j
-@RunWith(SpringRunner.class)
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@SpringBootTest(classes = FraudbustersManagementApplication.class)
-public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
+@KafkaSpringBootTest
+public class TemplateApplicationTest {
 
     public static final String PARTY_ID = "party_id";
     public static final String SHOP_ID = "shop_id";
     public static final String TEST = "test";
     public static final String ID = "id";
     public static final String TEMPLATE_ID = "template_id";
+
+    @Value("${kafka.topic.fraudbusters.unknown-initiating-entity}")
+    public String topicUnknownInitiatingEntity;
 
     @MockBean
     public PaymentTemplateDao paymentTemplateDao;
@@ -89,8 +93,11 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     @Autowired
     PaymentGroupsResource paymentGroupsResource;
 
+    @Autowired
+    private com.rbkmoney.testcontainers.annotations.kafka.config.KafkaProducer<TBase<?, ?>> testThriftKafkaProducer;
+
     @Test
-    public void templateTest() throws TException {
+    void templateTest() throws TException {
         TemplateModel templateModel = createTemplate(ID);
         paymentTemplateCommandResource.removeTemplate(ID);
 
@@ -100,7 +107,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         });
     }
 
-    public TemplateModel createTemplate(String id) throws TException {
+    private TemplateModel createTemplate(String id) throws TException {
         when(iface.validateCompilationTemplate(anyList())).thenReturn(new ValidateTemplateResponse()
                 .setErrors(List.of()));
 
@@ -116,7 +123,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void groupTest() throws IOException {
+    void groupTest() throws IOException {
         Group groupModel = new Group();
         groupModel.setGroupId(ID);
         groupModel.setPriorityTemplates(List.of(new PriorityId()
@@ -144,7 +151,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void referenceTest() {
+    void referenceTest() {
         when(unknownPaymentTemplateInReferenceFilter.test(any())).thenReturn(true);
         PaymentReference referenceModel = createPaymentReference(TEMPLATE_ID);
 
@@ -170,7 +177,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
         verify(referenceDao, times(0)).insert(any());
     }
 
-    public PaymentReference createPaymentReference(String templateId) {
+    private PaymentReference createPaymentReference(String templateId) {
         return new PaymentReference()
                 .id(ID)
                 .templateId(templateId)
@@ -178,7 +185,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
                 .shopId(SHOP_ID);
     }
 
-    public PaymentReferenceModel createPaymentReferenceModel(String templateId) {
+    private PaymentReferenceModel createPaymentReferenceModel(String templateId) {
         PaymentReferenceModel referenceModel = new PaymentReferenceModel();
         referenceModel.setId(ID);
         referenceModel.setTemplateId(templateId);
@@ -189,19 +196,14 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void defaultReferenceTest() {
+    void defaultReferenceTest() {
         when(defaultReferenceDao.getByPartyAndShop(any(), any())).thenReturn(Optional.of(buildDefaultReference()));
 
-        try (Producer<String, ReferenceInfo> producer = createProducer()) {
-            ProducerRecord<String, ReferenceInfo> producerRecord = new ProducerRecord<>(UNKNOWN_INITIATING_ENTITY, TEST,
-                    ReferenceInfo.merchant_info(new MerchantInfo()
-                            .setPartyId(PARTY_ID)
-                            .setShopId(SHOP_ID))
-            );
-            producer.send(producerRecord).get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ReferenceInfo referenceInfo = ReferenceInfo.merchant_info(new MerchantInfo()
+                .setPartyId(PARTY_ID)
+                .setShopId(SHOP_ID));
+        testThriftKafkaProducer.send(topicUnknownInitiatingEntity, referenceInfo);
+
         await().untilAsserted(() -> {
             verify(referenceDao, times(1)).insert(any());
         });
@@ -214,7 +216,7 @@ public class TemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void groupReferenceTest() {
+    void groupReferenceTest() {
         GroupReference groupReferenceModel = new GroupReference();
         groupReferenceModel.setId(ID);
         groupReferenceModel.setPartyId(PARTY_ID);

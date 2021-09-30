@@ -9,7 +9,6 @@ management:
     export:
       statsd:
         flavor: etsy
----
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
@@ -35,7 +34,7 @@ info:
   stage: dev
 
 kafka:
-  bootstrap.servers: "localhost:29092"
+  bootstrap-servers: "localhost:29092"
   consumer-group:
     wb-list: FraudBusterListenerWbList
   topic:

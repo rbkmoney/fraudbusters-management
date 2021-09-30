@@ -1,29 +1,32 @@
 package com.rbkmoney.fraudbusters.management.dao.payment;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@JooqTest
+@PostgresqlTestcontainerSingleton
 @Slf4j
 @ContextConfiguration(classes = {PaymentTemplateDao.class})
-public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
+public class PaymentTemplateDaoTest {
 
     @Autowired
     TemplateDao templateDao;
 
     @Test
-    public void insertTest() {
+    void insertTest() {
         String id = "id";
         TemplateModel templateModel = createTemplateModel(id);
         templateDao.insert(templateModel);
@@ -60,7 +63,7 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void constraintDeduplicate() {
+    void constraintDeduplicate() {
         String dedId = "ded_id";
         TemplateModel templateModel = createTemplateModel(dedId);
         templateDao.insert(templateModel);
@@ -78,7 +81,7 @@ public class PaymentTemplateDaoTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void filterTemplateTest() {
+    void filterTemplateTest() {
         TemplateModel templateModel = createTemplateModel("filter_id");
         templateDao.insert(templateModel);
 
