@@ -150,7 +150,7 @@ public class WbListApplicationTest {
     }
 
     @Test
-    void insertToBlackList() {
+    void insertToList() {
         Mockito.doNothing().when(wbListDao).saveListRecord(any());
 
         PaymentListRecord record = new PaymentListRecord();
@@ -177,7 +177,7 @@ public class WbListApplicationTest {
     }
 
     @Test
-    void deleteFromWhiteList() {
+    void deleteFromList() {
         String test = "test";
         when(wbListDao.getById(test)).thenReturn(new WbListRecords("id",
                 "partyId",
