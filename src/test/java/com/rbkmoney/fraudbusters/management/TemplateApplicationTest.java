@@ -4,6 +4,7 @@ import com.rbkmoney.damsel.fraudbusters.MerchantInfo;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ReferenceInfo;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
+import com.rbkmoney.fraudbusters.management.config.KafkaITest;
 import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
@@ -21,8 +22,7 @@ import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsReferenceRe
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsTemplatesResource;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import com.rbkmoney.swag.fraudbusters.management.model.*;
-import com.rbkmoney.testcontainers.annotations.KafkaSpringBootTest;
-import com.rbkmoney.testcontainers.annotations.kafka.KafkaTestcontainerSingleton;
+import com.rbkmoney.testcontainers.annotations.kafka.config.KafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,12 +49,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@KafkaTestcontainerSingleton(topicsKeys = {
-        "kafka.topic.fraudbusters.unknown-initiating-entity"
-})
+@KafkaITest
 @Slf4j
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@KafkaSpringBootTest
+@SpringBootTest
 public class TemplateApplicationTest {
 
     public static final String PARTY_ID = "party_id";
@@ -94,7 +93,7 @@ public class TemplateApplicationTest {
     PaymentGroupsResource paymentGroupsResource;
 
     @Autowired
-    private com.rbkmoney.testcontainers.annotations.kafka.config.KafkaProducer<TBase<?, ?>> testThriftKafkaProducer;
+    private KafkaProducer<TBase<?, ?>> testThriftKafkaProducer;
 
     @Test
     void templateTest() throws TException {

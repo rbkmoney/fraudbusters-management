@@ -1,18 +1,17 @@
 package com.rbkmoney.fraudbusters.management.dao.payment;
 
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
 import org.jooq.DSLContext;
 import org.jooq.SortOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
@@ -23,8 +22,7 @@ import java.util.UUID;
 import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
 import static org.junit.jupiter.api.Assertions.*;
 
-@JooqTest
-@PostgresqlTestcontainerSingleton
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {PaymentReferenceDaoImpl.class, DefaultPaymentReferenceDaoImpl.class})
 public class ReferenceDaoImplTest {
 

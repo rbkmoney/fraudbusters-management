@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.wblist;
 
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverterImpl;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pCountInfoListRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.p2p.P2pListRecordToRowConverter;
@@ -11,11 +12,9 @@ import com.rbkmoney.fraudbusters.management.domain.p2p.P2pCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.P2pCountInfoGenerator;
-import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
@@ -23,8 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@JooqTest
-@PostgresqlTestcontainerSingleton
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {P2PWbListDaoImpl.class, P2pWbListRecordsToListRecordWithRowConverter.class,
         P2pListRecordToRowConverter.class, P2pCountInfoListRequestToRowConverter.class,
         ListRecordToRowConverterImpl.class,

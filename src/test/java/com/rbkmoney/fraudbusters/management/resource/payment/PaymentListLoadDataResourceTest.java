@@ -12,14 +12,14 @@ import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -28,7 +28,7 @@ import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {PaymentsListsResource.class, CsvPaymentCountInfoParser.class,
         WbListRecordsModelToWbListRecordConverter.class, PaymentsListsService.class})
 public class PaymentListLoadDataResourceTest {
@@ -50,7 +50,7 @@ public class PaymentListLoadDataResourceTest {
     PaymentsListsResource paymentsListsResource;
 
     @Test
-    public void loadFraudOperation() throws IOException, TException {
+    void loadFraudOperation() throws IOException, TException {
         File file = new File("src/test/resources/csv/list-test.csv");
         FileInputStream input = new FileInputStream(file);
         MultipartFile multipartFile =

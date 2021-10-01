@@ -1,7 +1,6 @@
 package com.rbkmoney.fraudbusters.management.resource;
 
 import com.rbkmoney.fraudbusters.management.converter.payment.TemplateModelToTemplateConverterImpl;
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
@@ -21,9 +20,10 @@ import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
 import com.rbkmoney.fraudbusters.management.utils.UserInfoService;
 import com.rbkmoney.swag.fraudbusters.management.model.EmulateResponse;
 import com.rbkmoney.swag.fraudbusters.management.model.Template;
-import org.junit.Assert;
-import org.junit.Test;
+import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -31,10 +31,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@JooqTest
+@PostgresqlTestcontainerSingleton
 @ContextConfiguration(classes = {PaymentEmulateResource.class, PaymentGroupDao.class, PaymentTemplateDao.class,
         GroupReferenceDaoImpl.class, PaymentReferenceDaoImpl.class, GroupRowToModelMapper.class, UserInfoService.class,
         TemplateModelToTemplateConverterImpl.class, PaymentEmulateService.class})
-public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest {
+public class PaymentEmulateResourceTest {
 
     private static final String PARTY_ID = "partyId";
     private static final String SHOP_ID = "shopId";
@@ -56,7 +60,7 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
     TemplateDao templateDao;
 
     @Test
-    public void getRulesByPartyAndShop() {
+    void getRulesByPartyAndShop() {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(GROUP_ID);
         ArrayList<PriorityIdModel> priorityTemplates = new ArrayList<>();
@@ -101,17 +105,17 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
                 PARTY_ID,
                 SHOP_ID);
 
-        Assert.assertTrue(rulesByPartyAndShop.hasBody());
+        assertTrue(rulesByPartyAndShop.hasBody());
         EmulateResponse emulateResponse = rulesByPartyAndShop.getBody();
         List<Template> templateModels = emulateResponse.getResult();
-        Assert.assertFalse(templateModels.isEmpty());
-        Assert.assertEquals(5, templateModels.size());
+        assertFalse(templateModels.isEmpty());
+        assertEquals(5, templateModels.size());
 
-        Assert.assertEquals(GLOBAL_TEMPLATE, templateModels.get(0).getId());
-        Assert.assertEquals(TEMPLATE_2, templateModels.get(1).getId());
-        Assert.assertEquals(TEMPLATE_1, templateModels.get(2).getId());
-        Assert.assertEquals(TEMPLATE_3, templateModels.get(3).getId());
-        Assert.assertEquals(TEMPLATE_1, templateModels.get(4).getId());
+        assertEquals(GLOBAL_TEMPLATE, templateModels.get(0).getId());
+        assertEquals(TEMPLATE_2, templateModels.get(1).getId());
+        assertEquals(TEMPLATE_1, templateModels.get(2).getId());
+        assertEquals(TEMPLATE_3, templateModels.get(3).getId());
+        assertEquals(TEMPLATE_1, templateModels.get(4).getId());
 
         referenceDao.remove(referenceModel1);
 
@@ -119,15 +123,15 @@ public class PaymentEmulateResourceTest extends AbstractPostgresIntegrationTest 
                 PARTY_ID,
                 SHOP_ID);
         emulateResponse = rulesByPartyAndShop.getBody();
-        Assert.assertTrue(rulesByPartyAndShop.hasBody());
+        assertTrue(rulesByPartyAndShop.hasBody());
         templateModels = emulateResponse.getResult();
-        Assert.assertFalse(templateModels.isEmpty());
-        Assert.assertEquals(4, templateModels.size());
+        assertFalse(templateModels.isEmpty());
+        assertEquals(4, templateModels.size());
 
-        Assert.assertEquals(GLOBAL_TEMPLATE, templateModels.get(0).getId());
-        Assert.assertEquals(TEMPLATE_2, templateModels.get(1).getId());
-        Assert.assertEquals(TEMPLATE_1, templateModels.get(2).getId());
-        Assert.assertEquals(TEMPLATE_3, templateModels.get(3).getId());
+        assertEquals(GLOBAL_TEMPLATE, templateModels.get(0).getId());
+        assertEquals(TEMPLATE_2, templateModels.get(1).getId());
+        assertEquals(TEMPLATE_1, templateModels.get(2).getId());
+        assertEquals(TEMPLATE_3, templateModels.get(3).getId());
     }
 
     private void insertTemplate(String template, String id) {

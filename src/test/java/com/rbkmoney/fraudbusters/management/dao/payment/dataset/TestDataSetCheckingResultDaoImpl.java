@@ -1,13 +1,12 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.dataset;
 
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.domain.payment.CheckedDataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.CheckedPaymentModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.DataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentModel;
-import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
@@ -16,8 +15,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@JooqTest
-@PostgresqlTestcontainerSingleton
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {DataSetCheckingResultDaoImpl.class, DataSetDaoImpl.class,
         PaymentDaoImpl.class})
 public class TestDataSetCheckingResultDaoImpl {

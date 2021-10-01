@@ -1,23 +1,21 @@
 package com.rbkmoney.fraudbusters.management.dao.payment;
 
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.template.PaymentTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@JooqTest
-@PostgresqlTestcontainerSingleton
+@PostgresqlJooqITest
 @Slf4j
 @ContextConfiguration(classes = {PaymentTemplateDao.class})
 public class PaymentTemplateDaoTest {

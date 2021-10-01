@@ -1,14 +1,13 @@
 package com.rbkmoney.fraudbusters.management.dao.payment;
 
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.tables.records.FGroupReferenceRecord;
-import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
@@ -17,8 +16,7 @@ import static com.rbkmoney.fraudbusters.management.domain.tables.FGroupReference
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@JooqTest
-@PostgresqlTestcontainerSingleton
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {GroupReferenceDaoImpl.class})
 public class PaymentGroupReferenceDaoImplTest {
 
@@ -55,8 +53,8 @@ public class PaymentGroupReferenceDaoImplTest {
 
         groupReferenceDao.insert(referenceModel);
 
-        FGroupReferenceRecord fGroupReferenceRecord = dslContext.fetchAny(F_GROUP_REFERENCE);
-        assertEquals(PARTY_ID, fGroupReferenceRecord.getPartyId());
+        FGroupReferenceRecord groupReferenceRecord = dslContext.fetchAny(F_GROUP_REFERENCE);
+        assertEquals(PARTY_ID, groupReferenceRecord.getPartyId());
         ;
     }
 

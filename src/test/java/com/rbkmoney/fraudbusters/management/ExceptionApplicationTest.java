@@ -17,11 +17,8 @@ import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentsListsService;
 import com.rbkmoney.fraudbusters.management.utils.*;
 import com.rbkmoney.fraudbusters.management.utils.parser.CsvPaymentCountInfoParser;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +34,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -46,11 +42,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = {ParametersService.class, PaymentsListsResource.class,
         UserInfoService.class, WbListRecordToRowConverter.class, PaymentCountInfoGenerator.class,
         CountInfoUtils.class, CountInfoApiUtils.class, CsvPaymentCountInfoParser.class,
@@ -91,8 +87,8 @@ public class ExceptionApplicationTest {
     String paymentListPath;
     String paymentListFilterPath;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         paymentListPath = String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.INSERT_PAYMENTS_LIST_ROW_PATH,
                 serverPort);
         paymentListFilterPath = String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.INSERT_PAYMENTS_FILTER_PATH,
@@ -109,7 +105,7 @@ public class ExceptionApplicationTest {
     }
 
     @Test
-    public void executionRestTest() {
+    void executionRestTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
                 .thenReturn(ResponseEntity.ok(List.of(ID_TEST)));
@@ -117,16 +113,17 @@ public class ExceptionApplicationTest {
         ResponseEntity<List<String>> response = restTemplate.exchange(paymentListPath, HttpMethod.POST,
                 new HttpEntity<>(createRequest()), new ParameterizedTypeReference<>() {
                 });
-        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assert.assertEquals(response.getBody().get(0), ID_TEST);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getBody().get(0), ID_TEST);
     }
 
-    @Test(expected = HttpServerErrorException.InternalServerError.class)
-    public void executionRestDaoExceptionTest() {
+    @Test
+    void executionRestDaoExceptionTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
                 .thenThrow(new DaoException(TEST_MESSAGE));
-        restTemplate.postForEntity(paymentListPath, createRequest(), ErrorResponse.class);
+        assertThrows(HttpServerErrorException.InternalServerError.class,
+                () -> restTemplate.postForEntity(paymentListPath, createRequest(), ErrorResponse.class));
     }
 
     private ListRowsInsertRequest createRequest() {
@@ -138,17 +135,18 @@ public class ExceptionApplicationTest {
         return listRowsInsertRequest;
     }
 
-    @Test(expected = HttpServerErrorException.InternalServerError.class)
-    public void executionRestKafkaSerializationTest() {
+    @Test
+    void executionRestKafkaSerializationTest() {
         RestTemplate restTemplate = restTemplateBuilder.build();
         Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
                 .thenThrow(new KafkaSerializationException(TEST_MESSAGE));
 
-        restTemplate.postForEntity(paymentListPath, createRequest(), ErrorResponse.class);
+        assertThrows(HttpServerErrorException.InternalServerError.class,
+                () -> restTemplate.postForEntity(paymentListPath, createRequest(), ErrorResponse.class));
     }
 
-    @Test(expected = HttpClientErrorException.BadRequest.class)
-    public void getRestTestBadRequest() {
+    @Test
+    void getRestTestBadRequest() {
         Mockito.when(wbListCommandService.sendListRecords(any(), any(), any(), any()))
                 .thenThrow(new KafkaSerializationException(TEST_MESSAGE));
         HashMap<String, Object> uriVariables = new HashMap<>();
@@ -159,6 +157,7 @@ public class ExceptionApplicationTest {
         uriVariables.put("partyId", PARTY_ID);
         uriVariables.put("shopId", SHOP_ID);
         RestTemplate restTemplate = restTemplateBuilder.build();
-        restTemplate.getForEntity(builder.buildAndExpand(uriVariables).toUri(), ErrorResponse.class);
+        assertThrows(HttpClientErrorException.BadRequest.class,
+                () -> restTemplate.getForEntity(builder.buildAndExpand(uriVariables).toUri(), ErrorResponse.class));
     }
 }

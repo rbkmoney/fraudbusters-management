@@ -1,12 +1,12 @@
 package com.rbkmoney.fraudbusters.management.dao.group;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.GroupDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupDao;
 import com.rbkmoney.fraudbusters.management.domain.GroupModel;
 import com.rbkmoney.fraudbusters.management.domain.PriorityIdModel;
 import com.rbkmoney.fraudbusters.management.utils.GroupRowToModelMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -14,10 +14,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {PaymentGroupDao.class, GroupRowToModelMapper.class})
-public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
+public class PaymentGroupDaoTest {
 
     public static final String GROUP_1 = "group_1";
     public static final String GROUP_2 = "group_2";
@@ -60,7 +61,7 @@ public class PaymentGroupDaoTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void update() {
+    void update() {
         GroupModel groupModel = new GroupModel();
         groupModel.setGroupId(UPDATE_GROUP);
         groupModel.setPriorityTemplates(List.of(

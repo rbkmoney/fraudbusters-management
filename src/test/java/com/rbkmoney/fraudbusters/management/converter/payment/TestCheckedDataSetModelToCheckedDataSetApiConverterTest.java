@@ -1,18 +1,18 @@
 package com.rbkmoney.fraudbusters.management.converter.payment;
 
 import com.rbkmoney.fraudbusters.management.domain.payment.CheckedDataSetModel;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CheckedDataSetModelToCheckedDataSetApiConverter.class,
         CheckedPaymentModelToCheckedDataSetRowConverter.class,
         PaymentModelToPaymentApiConverter.class})
@@ -26,7 +26,7 @@ public class TestCheckedDataSetModelToCheckedDataSetApiConverterTest {
     CheckedDataSetModelToCheckedDataSetApiConverter checkedDataSetModelToCheckedDataSetApiConverter;
 
     @Test
-    public void testConvert() {
+    void testConvert() {
         CheckedDataSetModel testDataSetModel = CheckedDataSetModel.builder()
                 .initiator(TEST)
                 .testDataSetId(1L)

@@ -1,5 +1,6 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.wblist;
 
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverterImpl;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
@@ -12,14 +13,12 @@ import com.rbkmoney.fraudbusters.management.utils.CountInfoApiUtils;
 import com.rbkmoney.fraudbusters.management.utils.CountInfoUtils;
 import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.swag.fraudbusters.management.model.PaymentCountInfo;
-import com.rbkmoney.testcontainers.annotations.postgresql.PostgresqlTestcontainerSingleton;
 import org.jooq.DSLContext;
 import org.jooq.SortOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
@@ -31,8 +30,7 @@ import static com.rbkmoney.fraudbusters.management.TestObjectFactory.randomStrin
 import static com.rbkmoney.fraudbusters.management.domain.tables.WbListRecords.WB_LIST_RECORDS;
 import static org.junit.jupiter.api.Assertions.*;
 
-@JooqTest
-@PostgresqlTestcontainerSingleton
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class,
         PaymentListRecordToRowConverter.class, PaymentCountInfoRequestToRowConverter.class,
         ListRecordToRowConverterImpl.class, CountInfoApiUtils.class,

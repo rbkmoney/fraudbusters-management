@@ -1,27 +1,26 @@
 package com.rbkmoney.fraudbusters.management.dao.p2p;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import org.jooq.DSLContext;
 import org.jooq.SortOrder;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 import java.util.UUID;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.P2pFReference.P2P_F_REFERENCE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {P2pReferenceDaoImpl.class})
-public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
+public class P2pReferenceDaoImplTest {
 
     public static final String IDENTITY_ID = "identity_id";
     public static final String SECOND = "second_";
@@ -32,27 +31,27 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     P2pReferenceDao p2pReferenceDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
-    @After
-    public void cleanup() {
-        jdbcTemplate.execute("TRUNCATE " + P2P_F_REFERENCE.getSchema().getName() + "." + P2P_F_REFERENCE.getName());
+    @AfterEach
+    void cleanup() {
+        dslContext.deleteFrom(P2P_F_REFERENCE).execute();
     }
 
     @Test
-    public void insert() {
+    void insert() {
         String id = "id";
         P2pReferenceModel referenceModel = createReference(id);
 
         p2pReferenceDao.insert(referenceModel);
 
         P2pReferenceModel byId = p2pReferenceDao.getById(id);
-        Assert.assertEquals(referenceModel.getId(), byId.getId());
+        assertEquals(referenceModel.getId(), byId.getId());
 
         p2pReferenceDao.remove(referenceModel);
 
         byId = p2pReferenceDao.getById(id);
-        Assert.assertNull(byId);
+        assertNull(byId);
     }
 
     private P2pReferenceModel createReference(String id) {
@@ -65,7 +64,7 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void constraintTest() {
+    void constraintTest() {
         String id = "id";
         P2pReferenceModel referenceModel = createReference(id);
 
@@ -76,7 +75,7 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         p2pReferenceDao.insert(referenceModel);
 
         P2pReferenceModel byId = p2pReferenceDao.getById(id);
-        Assert.assertEquals(byId.getTemplateId(), test);
+        assertEquals(byId.getTemplateId(), test);
 
         String firstGlobal = UUID.randomUUID().toString();
         referenceModel.setId(firstGlobal);
@@ -91,22 +90,22 @@ public class P2pReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         p2pReferenceDao.insert(referenceModel);
 
         byId = p2pReferenceDao.getById(globalId);
-        Assert.assertEquals(byId.getTemplateId(), global);
+        assertEquals(byId.getTemplateId(), global);
 
         byId = p2pReferenceDao.getById(firstGlobal);
-        Assert.assertNull(byId);
+        assertNull(byId);
 
         List<P2pReferenceModel> listByTFilters = p2pReferenceDao.getListByTFilters(IDENTITY_ID, null, 10);
 
-        Assert.assertEquals(2, listByTFilters.size());
+        assertEquals(2, listByTFilters.size());
 
         listByTFilters = p2pReferenceDao.getListByTFilters(null, true, 10);
 
-        Assert.assertEquals(1, listByTFilters.size());
+        assertEquals(1, listByTFilters.size());
     }
 
     @Test
-    public void filterTest() {
+    void filterTest() {
         String id = "filter_id";
         P2pReferenceModel referenceModel = createReference(id);
         p2pReferenceDao.insert(referenceModel);

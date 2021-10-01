@@ -2,21 +2,18 @@ package com.rbkmoney.fraudbusters.management;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.damsel.wb_list.*;
+import com.rbkmoney.fraudbusters.management.config.KafkaITest;
 import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.p2p.P2pListRecord;
 import com.rbkmoney.fraudbusters.management.domain.p2p.request.P2pListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.P2pWbListRecords;
-import com.rbkmoney.fraudbusters.management.serializer.CommandChangeDeserializer;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.rbkmoney.testcontainers.annotations.kafka.config.KafkaConsumer;
+import com.rbkmoney.testcontainers.annotations.kafka.config.KafkaProducer;
+import org.apache.thrift.TBase;
+import org.junit.jupiter.api.Test;
+import org.rnorth.ducttape.unreliables.Unreliables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,26 +27,23 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.testcontainers.shaded.com.trilead.ssh2.ChannelCondition.TIMEOUT;
 
-@Slf4j
-@RunWith(SpringRunner.class)
+@KafkaITest
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@SpringBootTest(
-        classes = FraudbustersManagementApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class P2pWbListApplicationTest {
 
     public static final String IDENTITY_ID = "identityId";
     private static final String VALUE = "value";
@@ -69,20 +63,23 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
     @LocalServerPort
     private int port;
 
+    @Autowired
+    private KafkaProducer<TBase<?, ?>> testThriftKafkaProducer;
+
+    @Autowired
+    private KafkaConsumer<ChangeCommand> testCommandKafkaConsumer;
+
     @Test
-    public void listenCreated() throws ExecutionException, InterruptedException {
+    void listenCreated() {
         clearInvocations(wbListDao);
 
         Event event = new Event();
         Row row = createRow(ListType.black);
         event.setRow(row);
         event.setEventType(EventType.CREATED);
-        ProducerRecord producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
-        try (Producer<String, Event> producer = createProducer()) {
-            producer.send(producerRecord).get();
-            producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
-            producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
-        }
+        testThriftKafkaProducer.send(topicEventSink, event);
+        testThriftKafkaProducer.send(topicEventSink, event);
+        testThriftKafkaProducer.send(topicEventSink, event);
 
         await().untilAsserted(() -> {
             verify(wbListDao, times(3)).saveListRecord(any());
@@ -90,7 +87,7 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void listenCreatedGrey() throws ExecutionException, InterruptedException {
+    void listenCreatedGrey() {
         clearInvocations(wbListDao);
 
         Event event = new Event();
@@ -105,12 +102,9 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
         event.setRow(row);
 
-        try (Producer<String, Event> producer = createProducer()) {
-            ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
-            producer.send(producerRecord).get();
-            producer.send(new ProducerRecord<>(topicEventSink, "test_1", event)).get();
-            producer.send(new ProducerRecord<>(topicEventSink, "test_2", event)).get();
-        }
+        testThriftKafkaProducer.send(topicEventSink, event);
+        testThriftKafkaProducer.send(topicEventSink, event);
+        testThriftKafkaProducer.send(topicEventSink, event);
 
         await().untilAsserted(() -> {
             verify(wbListDao, times(3)).saveListRecord(any());
@@ -118,25 +112,23 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void listenDeleted() throws ExecutionException, InterruptedException {
+    void listenDeleted() {
         Event event = new Event();
         Row row = createRow(ListType.black);
         event.setRow(row);
         event.setEventType(EventType.DELETED);
-        try (Producer<String, Event> producer = createProducer()) {
-            ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(topicEventSink, "test", event);
-            producer.send(producerRecord).get();
-            await().untilAsserted(() -> {
-                verify(wbListDao, times(1)).removeRecord((P2pWbListRecords) any());
-            });
-        }
+        testThriftKafkaProducer.send(topicEventSink, event);
+
+        await().untilAsserted(() -> {
+            verify(wbListDao, times(1)).removeRecord(any(P2pWbListRecords.class));
+        });
     }
 
     @Test
-    public void getAvailableListNames() {
+    void getAvailableListNames() {
         final String[] names = restTemplate.getForObject(
                 "http://localhost:" + port + "/fb-management/v1/p2p/lists/availableListNames", String[].class);
-        Assert.assertEquals(6, names.length);
+        assertEquals(6, names.length);
     }
 
     private Row createRow(ListType listType) {
@@ -152,7 +144,7 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
     @Test
     @WithMockUser("customUsername")
-    public void executeTest() {
+    void insertInBlackList() {
         doNothing().when(wbListDao).saveListRecord(any());
 
         P2pListRecord record = new P2pListRecord();
@@ -162,33 +154,13 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
 
         insertToBlackList(record);
 
-        try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
-            consumer.subscribe(Collections.singletonList(topicCommand));
-            List<ChangeCommand> eventList = consumeCommand(consumer);
+        List<ChangeCommand> eventList = new ArrayList<>();
+        testCommandKafkaConsumer.read(topicCommand, data -> eventList.add(data.value()));
+        Unreliables.retryUntilTrue(TIMEOUT, TimeUnit.SECONDS, () -> eventList.size() == 1);
 
-            Assert.assertEquals(1, eventList.size());
-            Assert.assertEquals(eventList.get(0).command, Command.CREATE);
-            Assert.assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
-
-        }
-
-        String test = "test";
-        when(wbListDao.getById(test)).thenReturn(new P2pWbListRecords("id",
-                "identity",
-                com.rbkmoney.fraudbusters.management.domain.enums.ListType.white,
-                "test",
-                "test",
-                "test",
-                LocalDateTime.now()));
-        deleteFromWhiteList(test);
-        try (Consumer<String, ChangeCommand> consumer = createConsumer(CommandChangeDeserializer.class)) {
-            consumer.subscribe(Collections.singletonList(topicCommand));
-            List<ChangeCommand> eventList = consumeCommand(consumer);
-
-            Assert.assertEquals(1, eventList.size());
-            Assert.assertEquals(Command.DELETE, eventList.get(0).command);
-            Assert.assertEquals(ListType.white, eventList.get(0).getRow().getListType());
-        }
+        assertEquals(1, eventList.size());
+        assertEquals(Command.CREATE, eventList.get(0).command);
+        assertEquals(ListType.black, eventList.get(0).getRow().getListType());
     }
 
     private void insertToBlackList(P2pListRecord... values) {
@@ -210,19 +182,30 @@ public class P2pWbListApplicationTest extends AbstractKafkaIntegrationTest {
         System.out.println(response);
     }
 
-    private void deleteFromWhiteList(String id) {
-        restTemplate.delete("http://localhost:" + port + "/fb-management/v1/p2p/lists/" + id);
+    @Test
+    @WithMockUser("customUsername")
+    void deleteFromWhiteList() {
+        String test = "test";
+        when(wbListDao.getById(test)).thenReturn(new P2pWbListRecords("id",
+                "identity",
+                com.rbkmoney.fraudbusters.management.domain.enums.ListType.white,
+                "test",
+                "test",
+                "test",
+                LocalDateTime.now()));
+
+        deleteFromWhiteList(test);
+
+        List<ChangeCommand> eventList2 = new ArrayList<>();
+        testCommandKafkaConsumer.read(topicCommand, data -> eventList2.add(data.value()));
+        Unreliables.retryUntilTrue(TIMEOUT, TimeUnit.SECONDS, () -> eventList2.size() == 1);
+
+        assertEquals(1, eventList2.size());
+        assertEquals(Command.DELETE, eventList2.get(0).command);
+        assertEquals(ListType.white, eventList2.get(0).getRow().getListType());
     }
 
-    private List<ChangeCommand> consumeCommand(Consumer<String, ChangeCommand> consumer) {
-        List<ChangeCommand> eventList = new ArrayList<>();
-        ConsumerRecords<String, ChangeCommand> consumerRecords =
-                consumer.poll(Duration.ofSeconds(10));
-        consumerRecords.forEach(command -> {
-            log.info("poll command: {}", command.value());
-            eventList.add(command.value());
-        });
-        consumer.close();
-        return eventList;
+    private void deleteFromWhiteList(String id) {
+        restTemplate.delete("http://localhost:" + port + "/fb-management/v1/p2p/lists/" + id);
     }
 }

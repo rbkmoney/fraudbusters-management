@@ -1,40 +1,37 @@
 package com.rbkmoney.fraudbusters.management.dao.p2p;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.TemplateDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.template.P2pTemplateDao;
 import com.rbkmoney.fraudbusters.management.domain.TemplateModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.jooq.SortOrder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {P2pTemplateDao.class})
-public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
+public class P2pTemplateDaoTest {
 
     @Autowired
     TemplateDao templateDao;
 
     @Test
-    public void insertTest() {
+    void insertTest() {
         String id = "id";
         TemplateModel templateModel = createTemplateModel(id);
         templateDao.insert(templateModel);
         TemplateModel byId = templateDao.getById(id);
-        Assert.assertEquals(templateModel.getId(), byId.getId());
+        assertEquals(templateModel.getId(), byId.getId());
 
         templateDao.remove(id);
         byId = templateDao.getById(id);
-        Assert.assertNull(byId);
+        assertNull(byId);
     }
 
     private TemplateModel createTemplateModel(String id) {
@@ -68,16 +65,16 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
         TemplateModel templateModel = createTemplateModel(dedId);
         templateDao.insert(templateModel);
         TemplateModel byId = templateDao.getById(dedId);
-        Assert.assertEquals(templateModel.getId(), byId.getId());
+        assertEquals(templateModel.getId(), byId.getId());
 
         templateModel.setTemplate("rule:blackList_1:inBlackList");
         templateDao.insert(templateModel);
         byId = templateDao.getById(dedId);
-        Assert.assertEquals(templateModel.getId(), byId.getId());
+        assertEquals(templateModel.getId(), byId.getId());
 
         templateDao.remove(dedId);
         byId = templateDao.getById(dedId);
-        Assert.assertNull(byId);
+        assertNull(byId);
     }
 
     @Test
@@ -95,7 +92,6 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
                 1,
                 null,
                 SortOrder.DESC));
-        log.info("list: {}", list);
         assertEquals(1, list.size());
 
         TemplateModel templateModel1 = list.get(0);
@@ -106,7 +102,6 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
                 1,
                 null,
                 SortOrder.DESC));
-        log.info("list: {}", list);
         assertEquals(1, list.size());
         assertNotEquals(templateModel1.getId(), list.get(0).getId());
 
@@ -119,7 +114,6 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
                 2,
                 null,
                 SortOrder.DESC));
-        log.info("list: {}", list);
         assertEquals(2, list.size());
 
         //filter and pagination by id
@@ -130,7 +124,6 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
                 1,
                 null,
                 SortOrder.DESC));
-        log.info("list: {}", list);
         assertEquals(1, list.size());
 
         String id = list.get(0).getId();
@@ -141,7 +134,6 @@ public class P2pTemplateDaoTest extends AbstractPostgresIntegrationTest {
                 1,
                 null,
                 SortOrder.DESC));
-        log.info("list: {}", list);
         assertEquals(1, list.size());
         assertNotEquals(id, list.get(0).getId());
 
