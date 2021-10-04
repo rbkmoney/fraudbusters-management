@@ -1,11 +1,10 @@
 package com.rbkmoney.fraudbusters.management.config;
 
-import com.rbkmoney.fraudbusters.management.FraudbustersManagementApplication;
-import com.rbkmoney.testcontainers.annotations.kafka.KafkaTestcontainerSingleton;
-import com.rbkmoney.testcontainers.annotations.kafka.config.KafkaConsumerConfig;
-import com.rbkmoney.testcontainers.annotations.kafka.config.KafkaProducerConfig;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
+import com.rbkmoney.testcontainers.annotations.KafkaSpringBootTest;
+import com.rbkmoney.testcontainers.annotations.kafka.KafkaTestcontainer;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,7 +13,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@KafkaTestcontainerSingleton(topicsKeys = {
+@KafkaTestcontainer(topicsKeys = {
         "kafka.topic.fraudbusters.unknown-initiating-entity",
         "kafka.topic.wblist.command",
         "kafka.topic.wblist.event.sink",
@@ -27,11 +26,7 @@ import java.lang.annotation.Target;
         "kafka.topic.fraudbusters.p2p.group.list",
         "kafka.topic.fraudbusters.p2p.group.reference"
 })
-@ContextConfiguration(
-        classes = {
-                FraudbustersManagementApplication.class,
-                KafkaProducerConfig.class,
-                KafkaConsumerConfig.class})
-@DirtiesContext
+@KafkaSpringBootTest
+@EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 public @interface KafkaITest {
 }

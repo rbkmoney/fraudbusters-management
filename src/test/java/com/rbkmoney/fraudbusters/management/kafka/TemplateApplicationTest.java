@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management;
+package com.rbkmoney.fraudbusters.management.kafka;
 
 import com.rbkmoney.damsel.fraudbusters.MerchantInfo;
 import com.rbkmoney.damsel.fraudbusters.PaymentServiceSrv;
@@ -23,17 +23,12 @@ import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsTemplatesRe
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
 import com.rbkmoney.swag.fraudbusters.management.model.*;
 import com.rbkmoney.testcontainers.annotations.kafka.config.KafkaProducer;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,9 +45,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @KafkaITest
-@Slf4j
-@EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@SpringBootTest
 public class TemplateApplicationTest {
 
     public static final String PARTY_ID = "party_id";

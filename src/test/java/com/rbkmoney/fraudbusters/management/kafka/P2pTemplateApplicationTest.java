@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management;
+package com.rbkmoney.fraudbusters.management.kafka;
 
 import com.rbkmoney.damsel.fraudbusters.P2PServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
@@ -20,10 +20,6 @@ import org.apache.thrift.TException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +33,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @KafkaITest
-@EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@SpringBootTest
 public class P2pTemplateApplicationTest {
 
     public static final String TEMPLATE_ID = "template_id";

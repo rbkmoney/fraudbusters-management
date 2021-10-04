@@ -1,4 +1,4 @@
-package com.rbkmoney.fraudbusters.management;
+package com.rbkmoney.fraudbusters.management.kafka;
 
 import com.rbkmoney.damsel.wb_list.*;
 import com.rbkmoney.fraudbusters.management.config.KafkaITest;
@@ -12,9 +12,6 @@ import com.rbkmoney.fraudbusters.management.utils.MethodPaths;
 import com.rbkmoney.swag.fraudbusters.management.model.ListResponse;
 import com.rbkmoney.testcontainers.annotations.kafka.config.KafkaConsumer;
 import com.rbkmoney.testcontainers.annotations.kafka.config.KafkaProducer;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.thrift.TBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +19,6 @@ import org.mockito.Mockito;
 import org.rnorth.ducttape.unreliables.Unreliables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -33,23 +27,17 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.testcontainers.shaded.com.trilead.ssh2.ChannelCondition.TIMEOUT;
 
 @KafkaITest
-@Slf4j
-@EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WbListApplicationTest {
 
@@ -150,72 +138,20 @@ public class WbListApplicationTest {
     }
 
     @Test
-    void insertToList() {
-        Mockito.doNothing().when(wbListDao).saveListRecord(any());
-
-        PaymentListRecord record = new PaymentListRecord();
-        record.setListName(LIST_NAME);
-        record.setPartyId(PARTY_ID);
-        record.setShopId(SHOP_ID);
-        record.setValue(VALUE);
-
-        PaymentListRecord recordSecond = new PaymentListRecord();
-        recordSecond.setListName(LIST_NAME);
-        recordSecond.setPartyId(PARTY_ID);
-        recordSecond.setShopId(SHOP_ID);
-        recordSecond.setValue(VALUE + 2);
-
-        insertToBlackList(record, recordSecond);
-
-        List<ChangeCommand> eventList = new ArrayList<>();
-        testCommandKafkaConsumer.read(topicCommand, data -> eventList.add(data.value()));
-        Unreliables.retryUntilTrue(TIMEOUT, TimeUnit.SECONDS, () -> eventList.size() == 2);
-        assertEquals(2, eventList.size());
-        assertEquals(eventList.get(0).command, Command.CREATE);
-        assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
-
-    }
-
-    @Test
-    void deleteFromList() {
-        String test = "test";
-        when(wbListDao.getById(test)).thenReturn(new WbListRecords("id",
-                "partyId",
-                "shopId",
-                com.rbkmoney.fraudbusters.management.domain.enums.ListType.white,
-                "test",
-                "test",
-                LocalDateTime.now(), null, null, LocalDateTime.now()));
-
-        deleteFromWhiteList(test);
-
-        List<ChangeCommand> eventList2 = new ArrayList<>();
-        testCommandKafkaConsumer.read(topicCommand, data -> eventList2.add(data.value()));
-        Unreliables.retryUntilTrue(TIMEOUT, TimeUnit.SECONDS, () -> eventList2.size() == 1);
-
-        assertEquals(1, eventList2.size());
-        assertEquals(eventList2.get(0).command, Command.DELETE);
-        assertEquals(eventList2.get(0).getRow().getListType(), ListType.white);
-
-    }
-
-    @Test
     void createListRow() {
         String value = VALUE + 66;
         HttpEntity<ListRowsInsertRequest> entity =
                 new HttpEntity<>(createListRowsInsertRequest(value), new org.springframework.http.HttpHeaders());
         restTemplate.exchange(paymentListPath, HttpMethod.POST, entity, String.class);
 
-        List<ChangeCommand> eventList3 = new ArrayList<>();
-        testCommandKafkaConsumer.read(topicCommand, data -> eventList3.add(data.value()));
-        Unreliables.retryUntilTrue(TIMEOUT, TimeUnit.SECONDS, () -> eventList3.size() == 1);
+        List<ChangeCommand> eventList = new ArrayList<>();
+        testCommandKafkaConsumer.read(topicCommand, data -> eventList.add(data.value()));
+        Unreliables.retryUntilTrue(TIMEOUT, TimeUnit.SECONDS, () -> eventList.size() == 1);
 
-        assertEquals(1, eventList3.size());
-        assertEquals(eventList3.get(0).command, Command.CREATE);
-        assertEquals(eventList3.get(0).getRow().getListType(), ListType.black);
-        assertEquals(value, eventList3.get(0).getRow().getValue());
-        log.info("{}", eventList3.get(0).getRow());
-
+        assertEquals(1, eventList.size());
+        assertEquals(eventList.get(0).command, Command.CREATE);
+        assertEquals(eventList.get(0).getRow().getListType(), ListType.black);
+        assertEquals(value, eventList.get(0).getRow().getValue());
 
         String paymentListNames = String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.LISTS_NAMES_LIST_TYPE_PATH,
                 port);
@@ -236,37 +172,5 @@ public class WbListApplicationTest {
         paymentCountInfo.setListRecord(listRecord);
         listRowsInsertRequest.setRecords(List.of(paymentCountInfo));
         return listRowsInsertRequest;
-    }
-
-    private void insertToBlackList(PaymentListRecord... values) {
-        List<PaymentCountInfo> collect = List.of(values).stream()
-                .map(paymentListRecord -> {
-                    PaymentCountInfo paymentCountInfo = new PaymentCountInfo();
-                    paymentCountInfo.setListRecord(paymentListRecord);
-                    return paymentCountInfo;
-                })
-                .collect(Collectors.toList());
-        ListRowsInsertRequest insertRequest = new ListRowsInsertRequest();
-        insertRequest.setListType(ListType.black);
-        insertRequest.setRecords(collect);
-        HttpEntity<ListRowsInsertRequest> entity = new HttpEntity<>(insertRequest,
-                new org.springframework.http.HttpHeaders());
-        restTemplate.exchange(paymentListPath, HttpMethod.POST, entity,
-                String.class);
-    }
-
-    private void deleteFromWhiteList(String id) {
-        restTemplate.delete(String.format(MethodPaths.SERVICE_BASE_URL + MethodPaths.DELETE_LIST_ROWS_PATH, port, id));
-    }
-
-    private List<ChangeCommand> consumeCommand(Consumer<String, ChangeCommand> consumer) {
-        List<ChangeCommand> eventList = new ArrayList<>();
-        ConsumerRecords<String, ChangeCommand> consumerRecords =
-                consumer.poll(Duration.ofSeconds(10));
-        consumerRecords.forEach(command -> {
-            log.info("poll command: {}", command.value());
-            eventList.add(command.value());
-        });
-        return eventList;
     }
 }
