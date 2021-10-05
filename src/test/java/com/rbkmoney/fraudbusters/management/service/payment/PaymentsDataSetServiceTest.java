@@ -44,13 +44,13 @@ public class PaymentsDataSetServiceTest {
         dataSetModel.getPaymentModelList().get(0).setPaymentId(DataSetModelUtils.TEST + "2");
         paymentsDataSetService.insertDataSet(dataSetModel);
 
-        DataSetModel dataSetModel3 = DataSetModelUtils.initTestDataSetModel(lastModificationDate.plusDays(1));
+        DataSetModel dataSetModel3 = DataSetModelUtils.initTestDataSetModel(lastModificationDate.plusDays(2));
         dataSetModel.setName(DataSetModelUtils.TEST + "3");
         dataSetModel3.setLastModificationInitiator(TEST_INITIATOR);
         paymentsDataSetService.insertDataSet(dataSetModel3);
 
         String from = lastModificationDate.minusDays(1L).format(DateTimeUtils.DATE_TIME_FORMATTER);
-        String to = lastModificationDate.format(DateTimeUtils.DATE_TIME_FORMATTER);
+        String to = lastModificationDate.plusDays(1L).format(DateTimeUtils.DATE_TIME_FORMATTER);
         List<DataSetModel> dataSetModels = paymentsDataSetService.filterDataSets(
                 from,
                 to,
