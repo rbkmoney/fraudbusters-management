@@ -45,6 +45,7 @@ public class PaymentsDataSetServiceTest {
         paymentsDataSetService.insertDataSet(dataSetModel);
 
         DataSetModel dataSetModel3 = DataSetModelUtils.initTestDataSetModel(lastModificationDate.plusDays(1));
+        dataSetModel.setName(DataSetModelUtils.TEST + "3");
         dataSetModel3.setLastModificationInitiator(TEST_INITIATOR);
         paymentsDataSetService.insertDataSet(dataSetModel3);
 

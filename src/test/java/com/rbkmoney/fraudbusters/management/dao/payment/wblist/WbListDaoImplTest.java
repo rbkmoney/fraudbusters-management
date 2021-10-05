@@ -61,7 +61,10 @@ public class WbListDaoImplTest {
 
         wbListDao.saveListRecord(listRecord);
         WbListRecords byId = wbListDao.getById(id);
-        assertEquals(listRecord, byId);
+        assertEquals(listRecord.getListType(), byId.getListType());
+        assertEquals(listRecord.getListName(), byId.getListName());
+        assertEquals(listRecord.getValue(), byId.getValue());
+        assertEquals(listRecord.getId(), byId.getId());
 
         wbListDao.removeRecord(listRecord);
         byId = wbListDao.getById(id);
@@ -77,7 +80,10 @@ public class WbListDaoImplTest {
 
         wbListDao.saveListRecord(listRecord);
         WbListRecords byId = wbListDao.getById(id);
-        assertEquals(listRecord, byId);
+        assertEquals(listRecord.getListType(), byId.getListType());
+        assertEquals(listRecord.getListName(), byId.getListName());
+        assertEquals(listRecord.getValue(), byId.getValue());
+        assertEquals(listRecord.getId(), byId.getId());
 
         wbListDao.removeRecord(listRecord);
         byId = wbListDao.getById(id);

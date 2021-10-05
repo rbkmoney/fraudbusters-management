@@ -43,7 +43,10 @@ public class P2pWbListDaoImplTest {
 
         p2PWbListDao.saveListRecord(listRecord);
         P2pWbListRecords byId = p2PWbListDao.getById(id);
-        assertEquals(listRecord, byId);
+        assertEquals(listRecord.getListType(), byId.getListType());
+        assertEquals(listRecord.getListName(), byId.getListName());
+        assertEquals(listRecord.getValue(), byId.getValue());
+        assertEquals(listRecord.getIdentityId(), byId.getIdentityId());
 
         p2PWbListDao.removeRecord(listRecord);
         byId = p2PWbListDao.getById(id);
@@ -58,7 +61,10 @@ public class P2pWbListDaoImplTest {
 
         p2PWbListDao.saveListRecord(listRecord);
         P2pWbListRecords byId = p2PWbListDao.getById(id);
-        assertEquals(listRecord, byId);
+        assertEquals(listRecord.getListType(), byId.getListType());
+        assertEquals(listRecord.getListName(), byId.getListName());
+        assertEquals(listRecord.getValue(), byId.getValue());
+        assertEquals(listRecord.getIdentityId(), byId.getIdentityId());
 
         p2PWbListDao.removeRecord(listRecord);
         byId = p2PWbListDao.getById(id);
