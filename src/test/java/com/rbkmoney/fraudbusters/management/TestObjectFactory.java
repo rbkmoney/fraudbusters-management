@@ -82,7 +82,6 @@ public abstract class TestObjectFactory {
 
     public static Notification testNotification() {
         Notification notification = new Notification();
-        notification.setId(randomLong());
         notification.setName(randomString());
         notification.setSubject(randomString());
         notification.setStatus(Notification.StatusEnum.ACTIVE);
