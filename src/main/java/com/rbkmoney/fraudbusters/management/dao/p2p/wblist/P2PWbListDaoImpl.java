@@ -110,14 +110,14 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
                 .selectFrom(P2P_WB_LIST_RECORDS);
         Condition condition =
                 P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<P2pWbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
-                ? from.where(condition)
-                : from.where(condition.and(
+        SelectConditionStep<P2pWbListRecordsRecord> whereQuery = StringUtils.hasLength(filterRequest.getSearchValue())
+                ? from.where(condition.and(
                 P2P_WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
-                        .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterRequest.getSearchValue()))));
-        Field field = StringUtils.isEmpty(filterRequest.getSortBy())
-                ? P2P_WB_LIST_RECORDS.INSERT_TIME
-                : P2P_WB_LIST_RECORDS.field(filterRequest.getSortBy());
+                        .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterRequest.getSearchValue()))))
+                : from.where(condition);
+        Field field = StringUtils.hasLength(filterRequest.getSortBy())
+                ? P2P_WB_LIST_RECORDS.field(filterRequest.getSortBy())
+                : P2P_WB_LIST_RECORDS.INSERT_TIME;
         SelectSeekStep2<P2pWbListRecordsRecord, Object, String> wbListRecordsRecords =
                 addSortCondition(P2P_WB_LIST_RECORDS.ID,
                         field, filterRequest.getSortOrder(), whereQuery);
@@ -139,11 +139,11 @@ public class P2PWbListDaoImpl extends AbstractDao implements P2PWbListDao {
                 .from(P2P_WB_LIST_RECORDS);
         Condition condition =
                 P2P_WB_LIST_RECORDS.LIST_NAME.in(listNames).and(P2P_WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue)
-                ? from.where(condition)
-                : from.where(condition.and(
+        SelectConditionStep<Record1<Integer>> where = StringUtils.hasLength(filterValue)
+                ? from.where(condition.and(
                 P2P_WB_LIST_RECORDS.VALUE.like(filterValue)
-                        .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterValue))));
+                        .or(P2P_WB_LIST_RECORDS.IDENTITY_ID.like(filterValue))))
+                : from.where(condition);
         return fetchOne(where, Integer.class);
     }
 

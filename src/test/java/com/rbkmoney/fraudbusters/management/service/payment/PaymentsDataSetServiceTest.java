@@ -1,43 +1,56 @@
 package com.rbkmoney.fraudbusters.management.service.payment;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.payment.dataset.DataSetCheckingResultDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.dataset.DataSetDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.dataset.PaymentDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.payment.DataSetModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import com.rbkmoney.fraudbusters.management.domain.tables.records.TestPaymentRecord;
 import com.rbkmoney.fraudbusters.management.utils.DateTimeUtils;
-import org.junit.Test;
+import org.jooq.DSLContext;
+import org.jooq.Result;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.rbkmoney.fraudbusters.management.domain.tables.TestPayment.TEST_PAYMENT;
 import static com.rbkmoney.fraudbusters.management.service.payment.DataSetModelUtils.TEST_INITIATOR;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {DataSetCheckingResultDaoImpl.class, PaymentsDataSetService.class,
         DataSetDaoImpl.class, PaymentDaoImpl.class})
-public class PaymentsDataSetServiceTest extends AbstractPostgresIntegrationTest {
+public class PaymentsDataSetServiceTest {
 
     @Autowired
     PaymentsDataSetService paymentsDataSetService;
 
+    @Autowired
+    DSLContext dslContext;
+
     @Test
-    @SuppressWarnings("VariableDeclarationUsageDistance")
     public void filterDataSets() {
         LocalDateTime lastModificationDate = LocalDateTime.now();
         DataSetModel dataSetModel = DataSetModelUtils.initTestDataSetModel(lastModificationDate);
         dataSetModel.setLastModificationInitiator(TEST_INITIATOR);
-        Long idFirst = paymentsDataSetService.insertDataSet(dataSetModel);
+        paymentsDataSetService.insertDataSet(dataSetModel);
 
         dataSetModel.setName(DataSetModelUtils.TEST + "2");
         dataSetModel.getPaymentModelList().get(0).setPaymentId(DataSetModelUtils.TEST + "2");
-        Long idSecond = paymentsDataSetService.insertDataSet(dataSetModel);
+        paymentsDataSetService.insertDataSet(dataSetModel);
+
+        DataSetModel dataSetModel3 = DataSetModelUtils.initTestDataSetModel(lastModificationDate.plusDays(2));
+        dataSetModel.setName(DataSetModelUtils.TEST + "3");
+        dataSetModel3.setLastModificationInitiator(TEST_INITIATOR);
+        paymentsDataSetService.insertDataSet(dataSetModel3);
 
         String from = lastModificationDate.minusDays(1L).format(DateTimeUtils.DATE_TIME_FORMATTER);
-        String to = lastModificationDate.format(DateTimeUtils.DATE_TIME_FORMATTER);
+        String to = lastModificationDate.plusDays(1L).format(DateTimeUtils.DATE_TIME_FORMATTER);
         List<DataSetModel> dataSetModels = paymentsDataSetService.filterDataSets(
                 from,
                 to,
@@ -46,30 +59,28 @@ public class PaymentsDataSetServiceTest extends AbstractPostgresIntegrationTest 
                         .build());
 
         assertEquals(2, dataSetModels.size());
-
-        paymentsDataSetService.removeDataSet(String.valueOf(idFirst), TEST_INITIATOR);
-        dataSetModels = paymentsDataSetService.filterDataSets(
-                from,
-                to,
-                FilterRequest.builder()
-                        .size(10)
-                        .build());
-
-        assertEquals(1, dataSetModels.size());
-
-        paymentsDataSetService.removeDataSet(String.valueOf(idSecond), TEST_INITIATOR);
-        dataSetModels = paymentsDataSetService.filterDataSets(
-                from,
-                to,
-                FilterRequest.builder()
-                        .size(10)
-                        .build());
-
-        assertEquals(0, dataSetModels.size());
     }
 
     @Test
-    public void insertDataSet() {
+    public void removeDataSets() {
+        LocalDateTime lastModificationDate = LocalDateTime.now();
+        DataSetModel dataSetModel = DataSetModelUtils.initTestDataSetModel(lastModificationDate);
+        dataSetModel.setLastModificationInitiator(TEST_INITIATOR);
+        Long idFirst = paymentsDataSetService.insertDataSet(dataSetModel);
+
+        Result<TestPaymentRecord> dataSetModels = dslContext.fetch(TEST_PAYMENT);
+
+        assertEquals(1, dataSetModels.size());
+
+        paymentsDataSetService.removeDataSet(String.valueOf(idFirst), TEST_INITIATOR);
+
+        dataSetModels = dslContext.fetch(TEST_PAYMENT);
+
+        assertTrue(dataSetModels.isEmpty());
+    }
+
+    @Test
+    void insertDataSet() {
         LocalDateTime lastModificationDate = LocalDateTime.now();
         Long id = paymentsDataSetService.insertDataSet(DataSetModelUtils.initTestDataSetModel(lastModificationDate));
 
@@ -87,7 +98,6 @@ public class PaymentsDataSetServiceTest extends AbstractPostgresIntegrationTest 
                 });
 
         paymentsDataSetService.removeDataSet(String.valueOf(id), TEST_INITIATOR);
-
     }
 
 }

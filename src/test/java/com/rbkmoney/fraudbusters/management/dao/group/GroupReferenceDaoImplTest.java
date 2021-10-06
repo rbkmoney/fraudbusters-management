@@ -1,23 +1,22 @@
 package com.rbkmoney.fraudbusters.management.dao.group;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.GroupReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.dao.payment.group.PaymentGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentGroupReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import org.jooq.SortOrder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {GroupReferenceDaoImpl.class})
-public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
+public class GroupReferenceDaoImplTest {
 
     public static final String PARTY_ID = "partyId";
     public static final String SHOP_ID = "shopId";
@@ -26,7 +25,7 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     PaymentGroupReferenceDao groupReferenceDao;
 
     @Test
-    public void insert() {
+    void insert() {
         PaymentGroupReferenceModel referenceModel = new PaymentGroupReferenceModel();
         referenceModel.setPartyId(PARTY_ID);
         referenceModel.setShopId(SHOP_ID);
@@ -39,7 +38,7 @@ public class GroupReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
         groupReferenceDao.remove(referenceModel);
 
         byId = groupReferenceDao.getByGroupId(GROUP_ID);
-        Assert.assertTrue(byId.isEmpty());
+        assertTrue(byId.isEmpty());
 
         groupReferenceDao.insert(referenceModel);
 

@@ -1,17 +1,17 @@
 package com.rbkmoney.fraudbusters.management.dao.payment;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.ReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
+import org.jooq.DSLContext;
 import org.jooq.SortOrder;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
@@ -20,10 +20,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.rbkmoney.fraudbusters.management.domain.tables.FReference.F_REFERENCE;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {PaymentReferenceDaoImpl.class, DefaultPaymentReferenceDaoImpl.class})
-public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
+public class ReferenceDaoImplTest {
 
     public static final String PARTY_ID = "party_id";
     public static final String TEMPLATE_ID = "template_id";
@@ -37,15 +38,15 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     DefaultPaymentReferenceDaoImpl defaultReferenceDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
-    @After
-    public void cleanup() {
-        jdbcTemplate.execute("TRUNCATE " + F_REFERENCE.getSchema().getName() + "." + F_REFERENCE.getName());
+    @AfterEach
+    void cleanup() {
+        dslContext.truncate(F_REFERENCE);
     }
 
     @Test
-    public void insert() {
+    void insert() {
         String id = "id";
         PaymentReferenceModel referenceModel = createReference(id);
 
@@ -72,7 +73,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void constraintTest() {
+    void constraintTest() {
         String id = "id";
         PaymentReferenceModel referenceModel = createReference(id);
 
@@ -109,7 +110,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void testDefault() throws IOException, InterruptedException {
+    void testDefault() throws IOException, InterruptedException {
         String id = "id";
         PaymentReferenceModel referenceModel = createReference(id);
         referenceDao.insert(referenceModel);
@@ -136,7 +137,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void filterTest() {
+    void filterTest() {
         String id = "filter_id";
         PaymentReferenceModel referenceModel = createReference(id);
         referenceDao.insert(referenceModel);
@@ -248,7 +249,7 @@ public class ReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void testExist() {
+    void testExist() {
         String id = "exist_id";
         PaymentReferenceModel referenceModel = createReference(id);
         referenceDao.insert(referenceModel);

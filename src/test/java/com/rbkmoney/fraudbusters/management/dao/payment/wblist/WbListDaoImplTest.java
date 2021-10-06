@@ -1,10 +1,10 @@
 package com.rbkmoney.fraudbusters.management.dao.payment.wblist;
 
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.converter.ListRecordToRowConverterImpl;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentCountInfoRequestToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.PaymentListRecordToRowConverter;
 import com.rbkmoney.fraudbusters.management.converter.payment.WbListRecordsToCountInfoListRequestConverter;
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
 import com.rbkmoney.fraudbusters.management.domain.enums.ListType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.WbListRecords;
@@ -15,8 +15,8 @@ import com.rbkmoney.fraudbusters.management.utils.PaymentCountInfoGenerator;
 import com.rbkmoney.swag.fraudbusters.management.model.PaymentCountInfo;
 import org.jooq.DSLContext;
 import org.jooq.SortOrder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,13 +28,14 @@ import java.util.stream.Collectors;
 import static com.rbkmoney.fraudbusters.management.TestObjectFactory.createWbListRecordsRecord;
 import static com.rbkmoney.fraudbusters.management.TestObjectFactory.randomString;
 import static com.rbkmoney.fraudbusters.management.domain.tables.WbListRecords.WB_LIST_RECORDS;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {WbListDaoImpl.class, WbListRecordsToCountInfoListRequestConverter.class,
         PaymentListRecordToRowConverter.class, PaymentCountInfoRequestToRowConverter.class,
         ListRecordToRowConverterImpl.class, CountInfoApiUtils.class,
         PaymentCountInfoGenerator.class, JacksonAutoConfiguration.class, CountInfoUtils.class})
-public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
+public class WbListDaoImplTest {
 
     public static final String PARTY = "party";
     public static final String SHOP = "shop";
@@ -48,19 +49,22 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     @Autowired
     WbListRecordsToCountInfoListRequestConverter wbListRecordsToListRecordWithRowConverter;
 
-    @Before
-    public void setUp() {
-        dslContext.delete(WB_LIST_RECORDS);
+    @BeforeEach
+    void setUp() {
+        dslContext.deleteFrom(WB_LIST_RECORDS).execute();
     }
 
     @Test
-    public void saveListRecord() {
+    void saveListRecord() {
         String id = "id";
         WbListRecords listRecord = createListRecord(id);
 
         wbListDao.saveListRecord(listRecord);
         WbListRecords byId = wbListDao.getById(id);
-        assertEquals(listRecord, byId);
+        assertEquals(listRecord.getListType(), byId.getListType());
+        assertEquals(listRecord.getListName(), byId.getListName());
+        assertEquals(listRecord.getValue(), byId.getValue());
+        assertEquals(listRecord.getId(), byId.getId());
 
         wbListDao.removeRecord(listRecord);
         byId = wbListDao.getById(id);
@@ -68,7 +72,7 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void saveEmptyPartyListRecord() {
+    void saveEmptyPartyListRecord() {
         String id = "id";
         WbListRecords listRecord = createListRecord(id);
         listRecord.setPartyId(null);
@@ -76,7 +80,10 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
 
         wbListDao.saveListRecord(listRecord);
         WbListRecords byId = wbListDao.getById(id);
-        assertEquals(listRecord, byId);
+        assertEquals(listRecord.getListType(), byId.getListType());
+        assertEquals(listRecord.getListName(), byId.getListName());
+        assertEquals(listRecord.getValue(), byId.getValue());
+        assertEquals(listRecord.getId(), byId.getId());
 
         wbListDao.removeRecord(listRecord);
         byId = wbListDao.getById(id);
@@ -96,7 +103,7 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void getFilteredListRecords() {
+    void getFilteredListRecords() {
         String firstId = "1";
         WbListRecords listRecord = createListRecord(firstId);
         String secondId = "2";
@@ -179,13 +186,13 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void shouldGetNothingWithNotExistRecords() {
+    void shouldGetNothingWithNotExistRecords() {
         List<WbListRecords> rottenRecords = wbListDao.getRottenRecords(LocalDateTime.now());
         assertTrue(rottenRecords.isEmpty());
     }
 
     @Test
-    public void shouldGetNothingRottenRecords() {
+    void shouldGetNothingRottenRecords() {
         WbListRecordsRecord freshRecord1 = createWbListRecordsRecord(randomString());
         freshRecord1.setTimeToLive(LocalDateTime.now().plusDays(1));
         freshRecord1.setValue(randomString());
@@ -203,7 +210,7 @@ public class WbListDaoImplTest extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    public void shouldGetRottenRecords() {
+    void shouldGetRottenRecords() {
         WbListRecordsRecord rotRecord1 = createWbListRecordsRecord(randomString());
         rotRecord1.setTimeToLive(LocalDateTime.now().minusDays(1));
         rotRecord1.setValue(randomString());

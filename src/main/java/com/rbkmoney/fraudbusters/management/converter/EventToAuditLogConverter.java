@@ -23,7 +23,7 @@ public class EventToAuditLogConverter implements Converter<Event, CommandAudit> 
         model.setCommandType(parseEventType(event));
         model.setObjectType(ObjectType.valueOf(event.getRow().getListType().name()));
         model.setObject(event.getRow().toString());
-        model.setInitiator(event.getUserInfo() != null && !StringUtils.isEmpty(event.getUserInfo().getUserId())
+        model.setInitiator(event.getUserInfo() != null && StringUtils.hasLength(event.getUserInfo().getUserId())
                 ? event.getUserInfo().getUserId()
                 : UNKNOWN);
         return model;

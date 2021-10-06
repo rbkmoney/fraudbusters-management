@@ -5,7 +5,7 @@ import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EventToAuditLogConverterTest {
 
@@ -22,7 +22,7 @@ class EventToAuditLogConverterTest {
                 .setUserInfo(new UserInfo())
                 .setCommandTime(""));
 
-        assertFalse(StringUtils.isEmpty(audit.getObject()));
+        assertTrue(StringUtils.hasLength(audit.getObject()));
 
         audit = eventToAuditLogConverter.convert(new Event().setEventType(EventType.CREATED)
                 .setRow(new Row()
@@ -33,6 +33,6 @@ class EventToAuditLogConverterTest {
                 .setUserInfo(new UserInfo())
                 .setCommandTime(""));
 
-        assertFalse(StringUtils.isEmpty(audit.getObject()));
+        assertTrue(StringUtils.hasLength(audit.getObject()));
     }
 }

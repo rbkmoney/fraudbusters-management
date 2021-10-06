@@ -1,9 +1,9 @@
 package com.rbkmoney.fraudbusters.management.dao.payment;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.CollectionUtils;
@@ -12,10 +12,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {DefaultPaymentReferenceDaoImpl.class})
-public class DefaultPaymentReferenceDaoImplTest extends AbstractPostgresIntegrationTest {
+public class DefaultPaymentReferenceDaoImplTest {
 
     public static final String PARTY_ID = "party_id";
     public static final String TEST = "test";
@@ -25,7 +26,7 @@ public class DefaultPaymentReferenceDaoImplTest extends AbstractPostgresIntegrat
     DefaultPaymentReferenceDaoImpl referenceDao;
 
     @Test
-    public void insert() {
+    void insert() {
         final String uid = UUID.randomUUID().toString();
         DefaultPaymentReferenceModel referenceModel = createReference(uid);
         referenceDao.insert(referenceModel);
@@ -43,7 +44,7 @@ public class DefaultPaymentReferenceDaoImplTest extends AbstractPostgresIntegrat
     }
 
     @Test
-    public void filter() {
+    void filter() {
         final String uid_1 = UUID.randomUUID().toString();
         DefaultPaymentReferenceModel referenceModel = createReference(uid_1);
         referenceDao.insert(referenceModel);

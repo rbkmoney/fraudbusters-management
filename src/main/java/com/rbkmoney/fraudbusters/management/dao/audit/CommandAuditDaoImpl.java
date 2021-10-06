@@ -43,14 +43,14 @@ public class CommandAuditDaoImpl extends AbstractDao implements CommandAuditDao 
                 .selectFrom(COMMAND_AUDIT);
         Condition condition =
                 COMMAND_AUDIT.COMMAND_TYPE.in(commandTypes).and(COMMAND_AUDIT.OBJECT_TYPE.in(objectTypes));
-        SelectConditionStep<CommandAuditRecord> where = StringUtils.isEmpty(filterRequest.getSearchValue())
-                ? select.where(condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to)))
-                : select.where(condition.and(
+        SelectConditionStep<CommandAuditRecord> where = StringUtils.hasLength(filterRequest.getSearchValue())
+                ? select.where(condition.and(
                 COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
-                .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
-        Field field = StringUtils.isEmpty(filterRequest.getSortBy())
-                ? COMMAND_AUDIT.INSERT_TIME
-                : COMMAND_AUDIT.field(filterRequest.getSortBy());
+                .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)))
+                : select.where(condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
+        Field field = StringUtils.hasLength(filterRequest.getSortBy())
+                ? COMMAND_AUDIT.field(filterRequest.getSortBy())
+                : COMMAND_AUDIT.INSERT_TIME;
         SelectSeekStep2<CommandAuditRecord, Object, String> auditRecords = addSortCondition(COMMAND_AUDIT.ID,
                 field, filterRequest.getSortOrder(), where);
         return fetch(
@@ -74,10 +74,10 @@ public class CommandAuditDaoImpl extends AbstractDao implements CommandAuditDao 
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(COMMAND_AUDIT)
-                .where(StringUtils.isEmpty(filterRequest.getSearchValue())
-                        ? condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to))
-                        : condition.and(COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
-                        .and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
+                .where(StringUtils.hasLength(filterRequest.getSearchValue())
+                        ? condition.and(COMMAND_AUDIT.INITIATOR.like(filterRequest.getSearchValue()))
+                        .and(COMMAND_AUDIT.INSERT_TIME.between(from, to))
+                        : condition.and(COMMAND_AUDIT.INSERT_TIME.between(from, to)));
         return fetchOne(where, Integer.class);
     }
 

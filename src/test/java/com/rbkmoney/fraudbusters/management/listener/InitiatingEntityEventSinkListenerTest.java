@@ -6,16 +6,19 @@ import com.rbkmoney.fraudbusters.management.dao.payment.DefaultPaymentReferenceD
 import com.rbkmoney.fraudbusters.management.dao.payment.reference.PaymentReferenceDaoImpl;
 import com.rbkmoney.fraudbusters.management.domain.payment.DefaultPaymentReferenceModel;
 import com.rbkmoney.fraudbusters.management.service.payment.PaymentTemplateReferenceService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith({MockitoExtension.class, SpringExtension.class})
 public class InitiatingEntityEventSinkListenerTest {
 
     public static final String PARTY_ID = "partyId";
@@ -30,15 +33,14 @@ public class InitiatingEntityEventSinkListenerTest {
 
     InitiatingEntityEventSinkListener initiatingEntityEventSinkListener;
 
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
+    @BeforeEach
+    void init() {
         initiatingEntityEventSinkListener = new InitiatingEntityEventSinkListener(
                 paymentTemplateReferenceService, defaultPaymentReferenceDao, paymentReferenceDaoImpl);
     }
 
     @Test
-    public void listen() {
+    void listen() {
         when(defaultPaymentReferenceDao.getByPartyAndShop(PARTY_ID, null)).thenReturn(Optional.empty());
         when(defaultPaymentReferenceDao.getByPartyAndShop(PARTY_ID, SHOP_ID)).thenReturn(Optional.empty());
         when(defaultPaymentReferenceDao.getByPartyAndShop(null, null))

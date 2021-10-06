@@ -1,12 +1,12 @@
 package com.rbkmoney.fraudbusters.management.dao.audit;
 
-import com.rbkmoney.fraudbusters.management.dao.AbstractPostgresIntegrationTest;
+import com.rbkmoney.fraudbusters.management.config.PostgresqlJooqITest;
 import com.rbkmoney.fraudbusters.management.domain.enums.CommandType;
 import com.rbkmoney.fraudbusters.management.domain.enums.ObjectType;
 import com.rbkmoney.fraudbusters.management.domain.request.FilterRequest;
 import com.rbkmoney.fraudbusters.management.domain.tables.pojos.CommandAudit;
 import org.jooq.SortOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -15,18 +15,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@PostgresqlJooqITest
 @ContextConfiguration(classes = {CommandAuditDaoImpl.class})
-public class CommandAuditDaoImplTest extends AbstractPostgresIntegrationTest {
+public class CommandAuditDaoImplTest {
 
     public static final String INITIATOR = "initiator";
     public static final String STRUGA = "struga";
+
     @Autowired
     CommandAuditDao commandAuditDao;
 
     @Test
-    public void insert() {
+    void insert() {
         CommandAudit log = new CommandAudit();
         log.setInitiator(INITIATOR);
         log.setObject("{test}");

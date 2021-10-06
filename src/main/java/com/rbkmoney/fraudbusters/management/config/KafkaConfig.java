@@ -37,7 +37,7 @@ public class KafkaConfig {
     public static final String PKCS_12 = "PKCS12";
     private static final String GROUP_ID = "FraudBusterListener";
     private static final String EARLIEST = "earliest";
-    @Value("${kafka.bootstrap.servers}")
+    @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
     @Value("${kafka.ssl.server-password}")
     private String serverStorePassword;

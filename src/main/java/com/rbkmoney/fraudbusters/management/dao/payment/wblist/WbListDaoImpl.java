@@ -120,14 +120,15 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
         SelectWhereStep<WbListRecordsRecord> from = getDslContext()
                 .selectFrom(WB_LIST_RECORDS);
         Condition condition = WB_LIST_RECORDS.LIST_NAME.in(listNames).and(WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<WbListRecordsRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
-                ? from.where(condition)
-                : from.where(condition.and(
+        SelectConditionStep<WbListRecordsRecord> whereQuery = StringUtils.hasLength(filterRequest.getSearchValue())
+                ? from.where(condition.and(
                 WB_LIST_RECORDS.VALUE.like(filterRequest.getSearchValue())
                         .or(WB_LIST_RECORDS.PARTY_ID.like(filterRequest.getSearchValue())
-                                .or(WB_LIST_RECORDS.SHOP_ID.like(filterRequest.getSearchValue())))));
-        Field field = StringUtils.isEmpty(filterRequest.getSortBy()) ? WB_LIST_RECORDS.INSERT_TIME :
-                WB_LIST_RECORDS.field(filterRequest.getSortBy());
+                                .or(WB_LIST_RECORDS.SHOP_ID.like(filterRequest.getSearchValue())))))
+                : from.where(condition);
+        Field field = StringUtils.hasLength(filterRequest.getSortBy())
+                ? WB_LIST_RECORDS.field(filterRequest.getSortBy())
+                : WB_LIST_RECORDS.INSERT_TIME;
         SelectSeekStep2<WbListRecordsRecord, Object, String> wbListRecordsRecords = addSortCondition(WB_LIST_RECORDS.ID,
                 field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -146,12 +147,12 @@ public class WbListDaoImpl extends AbstractDao implements WbListDao {
                 .selectCount()
                 .from(WB_LIST_RECORDS);
         Condition condition = WB_LIST_RECORDS.LIST_NAME.in(listNames).and(WB_LIST_RECORDS.LIST_TYPE.eq(listType));
-        SelectConditionStep<Record1<Integer>> where = StringUtils.isEmpty(filterValue)
-                ? from.where(condition)
-                : from.where(condition.and(
+        SelectConditionStep<Record1<Integer>> where = StringUtils.hasLength(filterValue)
+                ? from.where(condition.and(
                 WB_LIST_RECORDS.VALUE.like(filterValue)
                         .or(WB_LIST_RECORDS.PARTY_ID.like(filterValue)
-                                .or(WB_LIST_RECORDS.SHOP_ID.like(filterValue)))));
+                                .or(WB_LIST_RECORDS.SHOP_ID.like(filterValue)))))
+                : from.where(condition);
         return fetchOne(where, Integer.class);
     }
 

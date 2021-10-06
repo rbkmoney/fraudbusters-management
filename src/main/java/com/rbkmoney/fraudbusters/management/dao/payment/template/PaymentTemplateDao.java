@@ -81,7 +81,7 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
         filterTemplateRecord.setId(filterRequest.getLastId());
         SelectConditionStep<FTemplateRecord> where = getDslContext()
                 .selectFrom(F_TEMPLATE)
-                .where(!StringUtils.isEmpty(filterRequest.getSearchValue())
+                .where(StringUtils.hasLength(filterRequest.getSearchValue())
                         ? F_TEMPLATE.ID.like(filterRequest.getSearchValue())
                         : DSL.noCondition());
         SelectSeekStep1<FTemplateRecord, String> selectSeekStep =
@@ -95,7 +95,7 @@ public class PaymentTemplateDao extends AbstractDao implements TemplateDao {
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(F_TEMPLATE)
-                .where(!StringUtils.isEmpty(id) ? F_TEMPLATE.ID.like(id) : DSL.noCondition());
+                .where(StringUtils.hasLength(id) ? F_TEMPLATE.ID.like(id) : DSL.noCondition());
         return fetchOne(where, Integer.class);
     }
 

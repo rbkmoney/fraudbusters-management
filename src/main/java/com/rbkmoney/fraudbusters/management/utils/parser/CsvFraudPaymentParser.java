@@ -29,7 +29,7 @@ public class CsvFraudPaymentParser implements CsvParser<FraudPayment> {
     @Override
     public FraudPayment mapFraudPayment(CSVRecord csvRecord) {
         String eventTime = Instant.now().toString();
-        if (!StringUtils.isEmpty(csvRecord.get(CsvFraudPaymentFields.EVENT_TIME))) {
+        if (StringUtils.hasLength(csvRecord.get(CsvFraudPaymentFields.EVENT_TIME))) {
             isValidFormat(csvRecord.get(CsvFraudPaymentFields.EVENT_TIME));
             eventTime = csvRecord.get(CsvFraudPaymentFields.EVENT_TIME);
         }

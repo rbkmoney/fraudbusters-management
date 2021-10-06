@@ -1,7 +1,8 @@
-package com.rbkmoney.fraudbusters.management;
+package com.rbkmoney.fraudbusters.management.kafka;
 
 import com.rbkmoney.damsel.fraudbusters.P2PServiceSrv;
 import com.rbkmoney.damsel.fraudbusters.ValidateTemplateResponse;
+import com.rbkmoney.fraudbusters.management.config.KafkaITest;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2PGroupDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.group.P2pGroupReferenceDao;
 import com.rbkmoney.fraudbusters.management.dao.p2p.reference.P2pReferenceDao;
@@ -14,21 +15,14 @@ import com.rbkmoney.fraudbusters.management.filter.UnknownP2pTemplateInReference
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2PTemplateCommandResource;
 import com.rbkmoney.fraudbusters.management.resource.p2p.P2pGroupCommandResource;
 import com.rbkmoney.fraudbusters.management.service.iface.AuditService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,11 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@Slf4j
-@RunWith(SpringRunner.class)
-@EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, JooqAutoConfiguration.class})
-@SpringBootTest(classes = FraudbustersManagementApplication.class)
-public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
+@KafkaITest
+public class P2pTemplateApplicationTest {
 
     public static final String TEMPLATE_ID = "template_id";
     public static final String IDENTITY_ID = "identity_id";
@@ -73,7 +64,7 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     P2pGroupCommandResource groupCommandResource;
 
     @Test
-    public void templateTest() throws TException {
+    void templateTest() throws TException {
         when(iface.validateCompilationTemplate(anyList())).thenReturn(new ValidateTemplateResponse()
                 .setErrors(List.of()));
 
@@ -93,7 +84,7 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void referenceTest() {
+    void referenceTest() {
         when(unknownP2pTemplateInReferenceFilter.test(any())).thenReturn(true);
 
         P2pReferenceModel referenceModel = createReference(ID, TEMPLATE_ID);
@@ -128,7 +119,7 @@ public class P2pTemplateApplicationTest extends AbstractKafkaIntegrationTest {
     }
 
     @Test
-    public void groupReferenceTest() {
+    void groupReferenceTest() {
         P2pGroupReferenceModel groupReferenceModel = new P2pGroupReferenceModel();
         groupReferenceModel.setId(ID);
         String identityId = IDENTITY_ID;

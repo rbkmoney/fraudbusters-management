@@ -99,7 +99,7 @@ public class P2PGroupDao extends AbstractDao implements GroupDao {
                         P2P_F_GROUP.MODIFIED_BY_USER)
                 .from(P2P_F_GROUP);
         SelectConditionStep<Record1<String>> selectGroupsId = null;
-        if (!StringUtils.isEmpty(filterValue)) {
+        if (StringUtils.hasLength(filterValue)) {
             selectGroupsId = getDslContext()
                     .selectDistinct(P2P_F_GROUP.GROUP_ID)
                     .from(P2P_F_GROUP)

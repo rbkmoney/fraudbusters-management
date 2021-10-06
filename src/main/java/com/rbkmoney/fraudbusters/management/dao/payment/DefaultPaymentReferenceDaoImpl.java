@@ -61,14 +61,14 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao
     public List<DefaultPaymentReferenceModel> filterReferences(FilterRequest filterRequest) {
         SelectWhereStep<FDefaultRefRecord> from = getDslContext()
                 .selectFrom(F_DEFAULT_REF);
-        Field<String> field = StringUtils.isEmpty(filterRequest.getSortBy())
-                ? F_DEFAULT_REF.TEMPLATE_ID
-                : F_DEFAULT_REF.field(filterRequest.getSortBy(), String.class);
-        SelectConditionStep<FDefaultRefRecord> whereQuery = StringUtils.isEmpty(filterRequest.getSearchValue())
-                ? from.where(DSL.trueCondition())
-                : from.where(F_DEFAULT_REF.TEMPLATE_ID.like(filterRequest.getSearchValue())
+        Field<String> field = StringUtils.hasLength(filterRequest.getSortBy())
+                ? F_DEFAULT_REF.field(filterRequest.getSortBy(), String.class)
+                : F_DEFAULT_REF.TEMPLATE_ID;
+        SelectConditionStep<FDefaultRefRecord> whereQuery = StringUtils.hasLength(filterRequest.getSearchValue())
+                ? from.where(F_DEFAULT_REF.TEMPLATE_ID.like(filterRequest.getSearchValue())
                 .or(F_DEFAULT_REF.PARTY_ID.like(filterRequest.getSearchValue()))
-                .or(F_DEFAULT_REF.SHOP_ID.like(filterRequest.getSearchValue())));
+                .or(F_DEFAULT_REF.SHOP_ID.like(filterRequest.getSearchValue())))
+                : from.where(DSL.trueCondition());
         SelectSeekStep2<FDefaultRefRecord, String, String> filterReferenceRecords = addSortCondition(
                 F_DEFAULT_REF.ID, field, filterRequest.getSortOrder(), whereQuery);
         return fetch(
@@ -87,7 +87,7 @@ public class DefaultPaymentReferenceDaoImpl extends AbstractDao
         SelectConditionStep<Record1<Integer>> where = getDslContext()
                 .selectCount()
                 .from(F_DEFAULT_REF)
-                .where(!StringUtils.isEmpty(filterValue)
+                .where(StringUtils.hasLength(filterValue)
                         ? F_DEFAULT_REF.TEMPLATE_ID.like(filterValue)
                         .or(F_DEFAULT_REF.PARTY_ID.like(filterValue)
                                 .or(F_DEFAULT_REF.SHOP_ID.like(filterValue)))
