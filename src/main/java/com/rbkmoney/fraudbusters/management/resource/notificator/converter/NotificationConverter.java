@@ -44,7 +44,9 @@ public class NotificationConverter
         }
         com.rbkmoney.damsel.fraudbusters_notificator.Notification result =
                 new com.rbkmoney.damsel.fraudbusters_notificator.Notification();
-        result.setId(notification.getId());
+        if (Objects.nonNull(notification.getId())) {
+            result.setId(notification.getId());
+        }
         result.setName(notification.getName());
         result.setSubject(notification.getSubject());
         result.setChannel(notification.getChannel());
