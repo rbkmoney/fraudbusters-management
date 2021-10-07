@@ -14,4 +14,6 @@ public interface NotificationService {
 
     NotificationListResponse getAll(Page page, Filter filter);
 
+    Notification getById(Long id);
+
 }

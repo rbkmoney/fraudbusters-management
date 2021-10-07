@@ -68,4 +68,14 @@ public class NotificationServiceImpl implements NotificationService {
             throw new NotificatorCallException("Error call notificator getAll notifications");
         }
     }
+
+    @Override
+    public Notification getById(Long id) {
+        try {
+            return notificationClient.getById(id);
+        } catch (TException e) {
+            log.error("Error call notificator getById notification ", e);
+            throw new NotificatorCallException("Error call notificator getById notification");
+        }
+    }
 }
