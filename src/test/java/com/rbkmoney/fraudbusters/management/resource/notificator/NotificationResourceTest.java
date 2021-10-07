@@ -305,6 +305,36 @@ class NotificationResourceTest {
     }
 
     @Test
+    void getNotificationByID() throws Exception {
+        var notification = TestObjectFactory.testInternalNotification();
+        long id = 1L;
+        when(notificationClient
+                .getById(id))
+                .thenReturn(notification);
+
+        mockMvc.perform(get("/notifications/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(notification.getName())))
+                .andExpect(jsonPath("$.channel", is(notification.getChannel())))
+                .andExpect(jsonPath("$.subject", is(notification.getSubject())));
+    }
+
+    @Test
+    void getNotificationByIDWithErrorCall() throws Exception {
+        long id = 1L;
+        when(notificationClient
+                .getById(id))
+                .thenThrow(new TException());
+
+        mockMvc.perform(get("/notifications/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator getById notification")));
+    }
+
+    @Test
     void getChannelsWithErrorCall() throws Exception {
         String continuationId = String.valueOf(1L);
         int size = 10;
@@ -341,6 +371,35 @@ class NotificationResourceTest {
                 .param("searchValue", searchValue))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result.[*]", hasSize(channels.size())));
+    }
+
+    @Test
+    void getChannelByID() throws Exception {
+        var channel = TestObjectFactory.testInternalChannel();
+        String name = TestObjectFactory.randomString();
+        when(channelClient
+                .getById(name))
+                .thenReturn(channel);
+
+        mockMvc.perform(get("/notifications/channels/{id}", name)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(channel.getName())))
+                .andExpect(jsonPath("$.destination", is(channel.getDestination())));
+    }
+
+    @Test
+    void getChannelByIDWithErrorCall() throws Exception {
+        String name = TestObjectFactory.randomString();
+        when(channelClient
+                .getById(name))
+                .thenThrow(new TException());
+
+        mockMvc.perform(get("/notifications/channels/{name}", name)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.code", is(NOTIFICATOR_CALL_EXCEPTION)))
+                .andExpect(jsonPath("$.message", is("Error call notificator getById channel")));
     }
 
     @Test

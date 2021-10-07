@@ -12,4 +12,6 @@ public interface ChannelService {
 
     ChannelTypeListResponse getAllTypes();
 
+    Channel getById(String name);
+
 }

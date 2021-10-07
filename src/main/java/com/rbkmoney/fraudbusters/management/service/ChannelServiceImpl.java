@@ -33,7 +33,6 @@ public class ChannelServiceImpl implements ChannelService {
             log.error("Error call notificator remove channel ", e);
             throw new NotificatorCallException("Error call notificator remove channel");
         }
-
     }
 
     @Override
@@ -53,6 +52,16 @@ public class ChannelServiceImpl implements ChannelService {
         } catch (TException e) {
             log.error("Error call notificator getAll channel types ", e);
             throw new NotificatorCallException("Error call notificator getAll channel types");
+        }
+    }
+
+    @Override
+    public Channel getById(String name) {
+        try {
+            return channelClient.getById(name);
+        } catch (TException e) {
+            log.error("Error call notificator getById channel ", e);
+            throw new NotificatorCallException("Error call notificator getById channel");
         }
     }
 }

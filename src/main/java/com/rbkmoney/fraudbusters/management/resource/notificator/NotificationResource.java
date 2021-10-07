@@ -39,10 +39,23 @@ public class NotificationResource implements NotificationsApi {
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<Channel> createChannel(@Valid Channel channel) {
-        var createdChannel = channelService.create(channelConverter.toSource(channel));
-        Channel response = channelConverter.toTarget(createdChannel);
-        log.info("NotificationResource create channel: {}", response);
+    public ResponseEntity<NotificationListResponse> getNotifications(
+            @Valid @RequestParam(value = "lastId", required = false) Long lastId,
+            @Valid @RequestParam(value = "size", required = false) Integer size,
+            @Valid @RequestParam(value = "searchValue", required = false) String searchValue) {
+        Page page = new Page()
+                .setContinuationId(String.valueOf(lastId))
+                .setSize(size);
+        Filter filter = new Filter()
+                .setSearchField(searchValue);
+        var notificationListResponse = notificationService.getAll(page, filter);
+        List<Notification> filteredNotifications = notificationListResponse.getNotifications().stream()
+                .map(notificationConverter::toTarget)
+                .collect(Collectors.toList());
+        NotificationListResponse response = new NotificationListResponse();
+        response.setResult(filteredNotifications);
+        response.setContinuationId(notificationListResponse.getContinuationId());
+        log.info("NotificationResource get notifications: {}", Arrays.toString(response.getResult().toArray()));
         return ResponseEntity.ok(response);
     }
 
@@ -57,10 +70,11 @@ public class NotificationResource implements NotificationsApi {
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<Void> removeChannel(String name) {
-        channelService.delete(name);
-        log.info("NotificationResource delete channel with name: {}", name);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Notification> getNotification(Long id) {
+        var notification = notificationService.getById(id);
+        Notification response = notificationConverter.toTarget(notification);
+        log.info("NotificationResource get by id {} notification: {}", id, response);
+        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -83,24 +97,13 @@ public class NotificationResource implements NotificationsApi {
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<NotificationListResponse> getNotifications(
-            @Valid @RequestParam(value = "lastId", required = false) Long lastId,
-            @Valid @RequestParam(value = "size", required = false) Integer size,
-            @Valid @RequestParam(value = "searchValue", required = false) String searchValue) {
-        Page page = new Page()
-                .setContinuationId(String.valueOf(lastId))
-                .setSize(size);
-        Filter filter = new Filter()
-                .setSearchField(searchValue);
-        var notificationListResponse = notificationService.getAll(page, filter);
-        List<Notification> filteredNotifications = notificationListResponse.getNotifications().stream()
-                .map(notificationConverter::toTarget)
-                .collect(Collectors.toList());
-        NotificationListResponse response = new NotificationListResponse();
-        response.setResult(filteredNotifications);
-        response.setContinuationId(notificationListResponse.getContinuationId());
-        log.info("NotificationResource get notifications: {}", Arrays.toString(response.getResult().toArray()));
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> updateNotificationStatus(Long id,
+                                                         @Valid String notificationStatus) {
+        var status = com.rbkmoney.damsel.fraudbusters_notificator.NotificationStatus
+                .valueOf(notificationStatus);
+        notificationService.updateStatus(id, status);
+        log.info("NotificationResource update notification status: {}", notificationStatus);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
@@ -127,12 +130,27 @@ public class NotificationResource implements NotificationsApi {
 
     @Override
     @PreAuthorize("hasAnyRole('fraud-officer')")
-    public ResponseEntity<Void> updateNotificationStatus(Long id,
-                                                         @Valid String notificationStatus) {
-        var status = com.rbkmoney.damsel.fraudbusters_notificator.NotificationStatus
-                .valueOf(notificationStatus);
-        notificationService.updateStatus(id, status);
-        log.info("NotificationResource update notification status: {}", notificationStatus);
+    public ResponseEntity<Channel> createChannel(@Valid Channel channel) {
+        var createdChannel = channelService.create(channelConverter.toSource(channel));
+        Channel response = channelConverter.toTarget(createdChannel);
+        log.info("NotificationResource create channel: {}", response);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<Channel> getChannel(String name) {
+        var channel = channelService.getById(name);
+        Channel response = channelConverter.toTarget(channel);
+        log.info("NotificationResource get by id {} channel: {}", name, response);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('fraud-officer')")
+    public ResponseEntity<Void> removeChannel(String name) {
+        channelService.delete(name);
+        log.info("NotificationResource delete channel with name: {}", name);
         return ResponseEntity.noContent().build();
     }
 
