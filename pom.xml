@@ -21,7 +21,8 @@
         <java.version>11</java.version>
 
         <server.port>8080</server.port>
-        <exposed.ports>${server.port}</exposed.ports>
+        <management.port>8023</management.port>
+        <exposed.ports>${server.port} ${management.port}</exposed.ports>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <flyway.version>5.2.3</flyway.version>
         <db.name>fraudbusters</db.name>
