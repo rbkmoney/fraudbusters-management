@@ -4,11 +4,22 @@ server:
     context-path: "/fb-management/v1"
 management:
   security:
-    flag: false
+    enabled: false
+  server:
+    port: @management.port@
   metrics:
     export:
       statsd:
         flavor: etsy
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
 spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
