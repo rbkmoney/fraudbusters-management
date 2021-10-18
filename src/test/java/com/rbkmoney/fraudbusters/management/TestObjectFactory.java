@@ -3,9 +3,6 @@ package com.rbkmoney.fraudbusters.management;
 import com.rbkmoney.damsel.fraudbusters_notificator.ChannelType;
 import com.rbkmoney.damsel.fraudbusters_notificator.NotificationStatus;
 import com.rbkmoney.damsel.wb_list.*;
-import com.rbkmoney.fraudbusters.management.domain.p2p.P2pCountInfo;
-import com.rbkmoney.fraudbusters.management.domain.p2p.P2pListRecord;
-import com.rbkmoney.fraudbusters.management.domain.p2p.request.P2pListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentCountInfo;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInsertRequest;
@@ -166,20 +163,6 @@ public abstract class TestObjectFactory {
         insertRequest.setListType(ListType.black);
         insertRequest.setRecords(collect);
         return insertRequest;
-    }
-
-    public static P2pListRowsInsertRequest testListRowsInsertRequest(P2pListRecord... values) {
-        List<P2pCountInfo> collect = List.of(values).stream()
-                .map(p2pListRecord -> {
-                    P2pCountInfo p2pCountInfo = new P2pCountInfo();
-                    p2pCountInfo.setListRecord(p2pListRecord);
-                    return p2pCountInfo;
-                })
-                .collect(Collectors.toList());
-        P2pListRowsInsertRequest p2pListRowsInsertRequest = new P2pListRowsInsertRequest();
-        p2pListRowsInsertRequest.setListType(ListType.black);
-        p2pListRowsInsertRequest.setRecords(collect);
-        return p2pListRowsInsertRequest;
     }
 
 }

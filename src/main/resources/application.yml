@@ -59,12 +59,6 @@ kafka:
         group:
           list: "group"
           reference: "group_reference"
-      p2p:
-        template: "p2p_template"
-        reference: "p2p_reference"
-        group:
-          list: "p2p_group"
-          reference: "p2p_group_reference"
       unknown-initiating-entity: unknown_initiating_entity
   ssl:
     enable: false
@@ -74,9 +68,6 @@ kafka:
     server-password: kenny12
     server-keystore-location: src/main/resources/cert/truststore.p12
 service:
-  p2p:
-    url: http://fraudbusters:8022/fraud_p2p/v1
-    networkTimeout: 5000
   payment:
     url: http://localhost:8999/fraud_payment/v1
     networkTimeout: 5000
