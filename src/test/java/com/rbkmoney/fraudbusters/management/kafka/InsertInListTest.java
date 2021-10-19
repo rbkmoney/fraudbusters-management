@@ -8,7 +8,7 @@ import com.rbkmoney.damsel.wb_list.ListType;
 import com.rbkmoney.fraudbusters.management.TestObjectFactory;
 import com.rbkmoney.fraudbusters.management.config.KafkaITest;
 import com.rbkmoney.fraudbusters.management.controller.ErrorController;
-import com.rbkmoney.fraudbusters.management.dao.p2p.wblist.P2PWbListDao;
+import com.rbkmoney.fraudbusters.management.dao.payment.wblist.WbListDao;
 import com.rbkmoney.fraudbusters.management.domain.payment.PaymentListRecord;
 import com.rbkmoney.fraudbusters.management.domain.payment.request.ListRowsInsertRequest;
 import com.rbkmoney.fraudbusters.management.resource.payment.PaymentsListsResource;
@@ -45,7 +45,7 @@ public class InsertInListTest {
     @Value("${kafka.topic.wblist.command}")
     public String topicCommand;
     @MockBean
-    public P2PWbListDao wbListDao;
+    public WbListDao wbListDao;
     @Autowired
     private KafkaConsumer<ChangeCommand> testCommandKafkaConsumer;
 

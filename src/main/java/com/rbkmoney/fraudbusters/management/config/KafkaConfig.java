@@ -126,20 +126,6 @@ public class KafkaConfig {
     }
 
     @Bean
-    @Autowired
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaP2PTemplateListenerContainerFactory(
-            ConsumerFactory<String, Command> consumerTemplateFactory) {
-        return createDefaultContainerFactory(consumerTemplateFactory);
-    }
-
-    @Bean
-    @Autowired
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaP2PGroupListenerContainerFactory(
-            ConsumerFactory<String, Command> consumerTemplateFactory) {
-        return createDefaultContainerFactory(consumerTemplateFactory);
-    }
-
-    @Bean
     public ConsumerFactory<String, Command> consumerReferenceFactory() {
         Map<String, Object> configs = consumerConfigs();
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CommandFraudDeserializer.class);
@@ -156,20 +142,6 @@ public class KafkaConfig {
     @Bean
     @Autowired
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaGroupReferenceListenerContainerFactory(
-            ConsumerFactory<String, Command> consumerReferenceFactory) {
-        return createDefaultContainerFactory(consumerReferenceFactory);
-    }
-
-    @Bean
-    @Autowired
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaP2PReferenceListenerContainerFactory(
-            ConsumerFactory<String, Command> consumerReferenceFactory) {
-        return createDefaultContainerFactory(consumerReferenceFactory);
-    }
-
-    @Bean
-    @Autowired
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Command>> kafkaP2PGroupReferenceListenerContainerFactory(
             ConsumerFactory<String, Command> consumerReferenceFactory) {
         return createDefaultContainerFactory(consumerReferenceFactory);
     }
